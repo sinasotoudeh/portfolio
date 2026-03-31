@@ -1,0 +1,433 @@
+/* Hero.module.css */
+
+.heroPinContainer {
+    position: relative;
+    height: 400vh;
+}
+
+.heroPanel {
+    position: sticky;
+    top: 0;
+    width: 100%;
+    height: 100vh;
+    overflow: hidden;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    padding: 0;
+    background-color: var(--color-background, #0d0e12);
+    /* Fallback added */
+}
+
+/* Canvas Integration */
+.canvasContainer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.mainCanvas {
+    display: block;
+    width: 100%;
+    height: 100%;
+}
+
+.liquidOverlay {
+    position: absolute;
+    inset: 0;
+    background: radial-gradient(ellipse at center, rgba(13, 14, 18, 0) 20%, rgba(13, 14, 18, 0.4) 60%, var(--color-background, #0d0e12) 100%);
+    mix-blend-mode: multiply;
+    z-index: 2;
+    pointer-events: none;
+}
+
+/* Wordmark Base */
+.heroWordmark {
+    position: absolute;
+    z-index: 10;
+    display: flex;
+    justify-content: center;
+    align-items: center;
+    width: 100%;
+    height: 100%;
+    pointer-events: none;
+}
+
+.wmGroup {
+    display: flex;
+    align-items: center;
+    font-family: var(--font-display, sans-serif);
+    font-size: clamp(5rem, 14vw, 12rem);
+    font-weight: 900;
+    letter-spacing: -0.04em;
+    line-height: 1;
+    color: var(--color-text-primary, #ffffff);
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+    will-change: transform, font-size, top, left;
+}
+
+.wmLetterO {
+    display: inline-block;
+    width: 0.8em;
+    text-align: center;
+    transition: opacity 0.8s ease, color 0.8s ease;
+}
+
+/* Wordmark States */
+.state0 .wmGroup {
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -50%);
+    font-size: clamp(5rem, 14vw, 12rem);
+}
+
+.state0 .wmLetterO {
+    opacity: 0;
+}
+
+.state1 .wmGroup {
+    top: 12vh;
+    left: 6vw;
+    transform: translate(0, 0);
+    font-size: clamp(3.5rem, 7vw, 6rem);
+}
+
+.state1 .wmLetterO {
+    opacity: 1;
+    color: var(--color-accent-primary, #a78bfa);
+}
+
+.state2 .wmGroup {
+    top: 12vh;
+    left: 6vw;
+    transform: translate(0, 0);
+    font-size: clamp(2.5rem, 5vw, 4rem);
+    opacity: 0.4;
+}
+
+.state2 .wmLetterO {
+    opacity: 1;
+    color: var(--color-text-primary, #fff);
+}
+
+.state3 .wmGroup {
+    top: -20%;
+    opacity: 0;
+}
+
+/* Tagline & Hint */
+.heroTagline {
+    position: absolute;
+    z-index: 10;
+    transition: opacity 1s ease, transform 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+    bottom: 12vh;
+    right: 8vw;
+    text-align: right;
+    max-width: 320px;
+}
+
+/* استایل جدید و نئونی برای اسکرول */
+.heroScrollHint {
+    position: absolute;
+    z-index: 10;
+    bottom: 4vh;
+    left: 50%;
+    transform: translateX(-50%);
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+    gap: 10px;
+    color: var(--color-accent-primary, #a78bfa);
+    font-family: var(--font-display, sans-serif);
+    font-size: 0.9rem;
+    letter-spacing: 0.2em;
+    text-transform: uppercase;
+    transition: opacity 0.8s ease;
+    animation: neonPulse 2s infinite alternate;
+}
+
+@keyframes neonPulse {
+    0% {
+        opacity: 0.4;
+        text-shadow: 0 0 5px rgba(167, 139, 250, 0.2);
+    }
+
+    100% {
+        opacity: 1;
+        text-shadow: 0 0 15px rgba(167, 139, 250, 0.8), 0 0 30px rgba(167, 139, 250, 0.4);
+    }
+}
+
+.heroTagline.hidden,
+.heroScrollHint.hidden {
+    opacity: 0;
+    pointer-events: none;
+}
+
+.heroTagline.hidden {
+    transform: translateY(30px);
+}
+
+
+.heroTagline p {
+    font-size: clamp(1rem, 1.2vw, 1.25rem);
+    color: rgba(255, 255, 255, 0.6);
+}
+
+.heroTagline span {
+    color: #ffffff;
+    font-style: italic;
+}
+
+/* Burst Cards (State 1) */
+.burstCardsContainer {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    pointer-events: none;
+}
+
+.burstCard {
+    position: absolute;
+    background: rgba(20, 20, 22, 0.4);
+    border: 1px solid rgba(255, 255, 255, 0.05);
+    border-top: 1px solid rgba(255, 255, 255, 0.15);
+    border-radius: 16px;
+    backdrop-filter: blur(20px);
+    padding: 32px;
+    opacity: 0;
+    transform: translateY(40px) scale(0.9);
+    transition: opacity 0.7s cubic-bezier(0.19, 1, 0.22, 1), transform 0.9s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.burstCard[data-position="left-mid"] {
+    top: 45%;
+    left: 10vw;
+    width: 300px;
+    transition-delay: 0.1s;
+}
+
+.burstCard[data-position="right-top"] {
+    top: 45%;
+    right: 45vw;
+    width: 300px;
+    transition-delay: 0.3s;
+}
+
+.burstCard[data-position="right-bottom"] {
+    top: 45%;
+    right: 15vw;
+    width: 300px;
+    transition-delay: 0.6s;
+}
+
+.active .burstCard {
+    opacity: 1;
+    transform: translateY(0) scale(1);
+    pointer-events: auto;
+    animation: float 6s ease-in-out infinite;
+}
+
+.active .burstCard[data-position="right-top"] {
+    animation-delay: -2s;
+}
+
+.active .burstCard[data-position="right-bottom"] {
+    animation-delay: -4s;
+}
+
+.exiting .burstCard {
+    opacity: 0;
+    transform: translateY(-30px) scale(0.9);
+    transition-duration: 0.5s;
+    transition-delay: 0s !important;
+    animation: none;
+}
+
+@keyframes float {
+
+    0%,
+    100% {
+        transform: translateY(0px);
+    }
+
+    50% {
+        transform: translateY(-15px);
+    }
+}
+
+/* Fluid Work (State 2) */
+.fluidWorkContainer {
+    position: absolute;
+    inset: 0;
+    z-index: 8;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    padding-left: 25vw;
+    gap: 4vh;
+    pointer-events: none;
+}
+
+
+.fluidWorkItem {
+    display: flex;
+    align-items: center;
+    gap: 24px;
+    opacity: 0;
+    transform: translateX(-60px);
+    transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
+    transition-delay: calc(var(--index, 0) * 0.15s);
+}
+
+.fwLine {
+    width: 0px;
+    height: 1px;
+    background: rgba(255, 255, 255, 0.3);
+    transition: width 1s cubic-bezier(0.19, 1, 0.22, 1);
+    transition-delay: calc((var(--index, 0) * 0.15s) + 0.3s);
+}
+
+.active .fluidWorkItem {
+    opacity: 1;
+    transform: translateX(0);
+    pointer-events: auto;
+}
+
+.active .fwLine {
+    width: 60px;
+}
+
+.exiting .fluidWorkItem {
+    opacity: 0;
+    transform: translateY(-30px);
+    transition-duration: 0.5s;
+}
+
+/* Styles for internals (h3, spans) stay largely the same... */
+.fwNum {
+    color: #fff;
+    opacity: 0.5;
+}
+
+.fwTag {
+    color: var(--color-accent-primary, #a78bfa);
+    font-size: 0.7rem;
+    letter-spacing: 0.1em;
+    text-transform: uppercase;
+}
+
+.fluidWorkItem h3 {
+    font-size: clamp(2rem, 4vw, 3.5rem);
+    color: #fff;
+    margin: 0;
+    font-weight: 400;
+}
+
+/* Connect CTA (State 3) */
+.heroConnect {
+    position: absolute;
+    top: 50%;
+    left: 50%;
+    transform: translate(-50%, -40%);
+    z-index: 10;
+    text-align: center;
+    pointer-events: none;
+    opacity: 0;
+    transition: all 1.4s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.heroConnect.active {
+    opacity: 1;
+    transform: translate(-50%, -50%);
+    pointer-events: auto;
+}
+
+.connectHeadline {
+    font-size: clamp(3rem, 7vw, 6rem);
+    font-weight: 900;
+    color: #fff;
+    margin: 0 0 48px 0;
+}
+
+.connectHeadline em {
+    color: var(--color-accent-primary, #a78bfa);
+    font-style: normal;
+}
+
+.ctaPremium {
+    display: inline-flex;
+    align-items: center;
+    gap: 16px;
+    padding: 20px 40px;
+    background: #fff;
+    color: #000;
+    border-radius: 100px;
+    text-decoration: none;
+    font-weight: 500;
+    transition: transform 0.3s ease;
+}
+
+.ctaPremium:hover {
+    transform: scale(1.05);
+}
+
+/* =========================================
+   Responsive Adjustments (Tablet & Mobile)
+   ========================================= */
+
+@media (max-width: 1024px) {
+
+    /* فقط کانتینر کارت‌ها را هدف قرار می‌دهیم */
+    .burstCardsContainer {
+        display: flex;
+        flex-direction: column;
+        align-items: center;
+        /* مرکزچین کردن افقی کارت‌ها */
+        justify-content: flex-start;
+        /* شروع چیدمان از بالا به جای وسط، تا بتوانیم فاصله را کنترل کنیم */
+        padding-top: 18vh;
+        /* ایجاد فاصله امن و قطعی از بالا تا کارت‌ها زیر لوگوی سمت چپ نیفتند */
+        gap: 3vh;
+        /* فاصله بین خود کارت‌ها */
+        height: 100%;
+        box-sizing: border-box;
+    }
+
+    /* خنثی کردن موقعیت‌های شناور (Absolute) فقط برای کارت‌ها */
+    .burstCard[data-position="left-mid"],
+    .burstCard[data-position="right-top"],
+    .burstCard[data-position="right-bottom"] {
+        position: relative;
+        top: auto !important;
+        left: auto !important;
+        right: auto !important;
+        bottom: auto !important;
+        width: 75vw;
+        max-width: 450px;
+        transform: none !important;
+        /* جلوگیری از پرش یا جابجایی ناخواسته */
+    }
+}
+
+@media (max-width: 768px) {
+    .burstCardsContainer {
+        padding-top: 20vh;
+        /* در موبایل فاصله از بالا کمی بیشتر شود تا حریم لوگو کاملاً حفظ شود */
+        gap: 2vh;
+    }
+
+    .burstCard[data-position="left-mid"],
+    .burstCard[data-position="right-top"],
+    .burstCard[data-position="right-bottom"] {
+        width: 88vw;
+        /* در موبایل کارت‌ها کمی عریض‌تر شوند تا متن خوانا بماند */
+        padding: 20px;
+    }
+
+}
