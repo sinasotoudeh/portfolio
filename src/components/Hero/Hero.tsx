@@ -107,6 +107,8 @@ export default function Hero() {
     const [uiState, setUiState] = useState<number>(0);
 
     useEffect(() => {
+        let cachedContainerTop = 0;
+
         const canvas = canvasRef.current;
         if (!canvas) return; // Null check for canvas
 
@@ -121,6 +123,7 @@ export default function Hero() {
             dimensionsRef.current.h = canvas.offsetHeight;
             canvas.width = dimensionsRef.current.w;
             canvas.height = dimensionsRef.current.h;
+            cachedContainerTop = container.offsetTop;
 
             const isMobile = dimensionsRef.current.w < 768;
             centerRef.current = {
@@ -135,24 +138,32 @@ export default function Hero() {
             );
         };
 
+        let resizeTimeout: ReturnType<typeof setTimeout>; // تعریف تایمر
+
         const handleResize = () => {
             if (!canvasRef.current) return;
             const w = canvasRef.current.offsetWidth;
             const h = canvasRef.current.offsetHeight;
 
+            // ۱. آپدیت فوری ابعاد بوم (برای جلوگیری از به هم ریختگی بصری)
             dimensionsRef.current.w = w;
             dimensionsRef.current.h = h;
             canvasRef.current.width = w;
             canvasRef.current.height = h;
 
-            particlesRef.current.forEach(p => {
-                p.states = {
-                    sphere: p.getSphereCoords(w, h),
-                    cube: p.getCubeCoords(w, h),
-                    fluid: p.getFluidCoords(w, h),
-                };
-            });
+            cachedContainerTop = container.offsetTop; // آپدیت کش اسکرول
 
+            // ۲. به تعویق انداختن محاسبات سنگین ریاضی (Debounce)
+            clearTimeout(resizeTimeout);
+            resizeTimeout = setTimeout(() => {
+                particlesRef.current.forEach(p => {
+                    p.states = {
+                        sphere: p.getSphereCoords(w, h),
+                        cube: p.getCubeCoords(w, h),
+                        fluid: p.getFluidCoords(w, h),
+                    };
+                });
+            }, 100); // ۲۵۰ میلی‌ثانیه پس از توقف کاربر، محاسبات انجام می‌شود
         };
 
         const handleMouseMove = (e: MouseEvent) => {
@@ -164,9 +175,8 @@ export default function Hero() {
             ctx.clearRect(0, 0, w, h);
 
             // Scroll Progress
-            const rect = container.getBoundingClientRect();
             const pinDuration = container.offsetHeight - window.innerHeight;
-            const scrollInPin = -rect.top;
+            const scrollInPin = window.scrollY - cachedContainerTop;
             const rawProgress = pinDuration > 0 ? clamp(scrollInPin / pinDuration, 0, 1) : 0;
 
             // Determine State
