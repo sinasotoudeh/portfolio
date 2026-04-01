@@ -290,7 +290,7 @@ section {
   position: relative;
 }
 
-section[data-section]:not(#hero) {
+section[data-section]:not(#hero, #manifesto) {
   padding-block: clamp(var(--spacing-3xl), 10vw, var(--spacing-4xl));
 }
 
