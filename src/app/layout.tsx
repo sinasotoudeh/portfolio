@@ -1,7 +1,8 @@
 import type { Metadata } from "next";
-import { Geist, Geist_Mono } from "next/font/google";
 import "./globals.css";
 
+// ایمپورت کامپوننت‌های اختصاصی با مسیرهای اصلاح شده
+import CustomCursor from '@/components/cursor/CustomCursor';
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -15,10 +16,17 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en"
-      className={` h-full antialiased`}
+      lang="en" // اگر پروژه فارسی است می‌توانید این را به "fa" تغییر دهید
+      className="h-full antialiased"
+      suppressHydrationWarning
     >
-      <body className="min-h-full flex flex-col">{children}</body>
+      <body className="min-h-full flex flex-col">
+        {/* اضافه کردن افکت‌ها و ماوس سفارشی در بالاترین سطح بدنه */}
+        <CustomCursor />
+
+        {/* محتوای اصلی صفحات */}
+        {children}
+      </body>
     </html>
   );
 }

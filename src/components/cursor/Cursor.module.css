@@ -1,0 +1,92 @@
+/* Cursor.module.css */
+
+.cursorContainer {
+
+    /* مخفی کردن در دستگاه‌های لمسی */
+    @media (hover: none) and (pointer: coarse) {
+        display: none;
+    }
+}
+
+.cursorDot,
+.cursorRing {
+    position: fixed;
+    top: 0;
+    left: 0;
+    pointer-events: none;
+    z-index: var(--z-cursor, 9999);
+    transform: translate(-50%, -50%);
+    will-change: transform;
+}
+
+/* نقطه مرکزی - تیز و دقیق */
+.cursorDot {
+    width: 6px;
+    height: 6px;
+    background: var(--color-accent-primary);
+    border-radius: 50%;
+    box-shadow: 0 0 10px var(--color-accent-primary);
+    transition: width 0.2s var(--ease-spring), height 0.2s var(--ease-spring);
+}
+
+/* حلقه بیرونی - شیشه‌ای و مدرن */
+.cursorRing {
+    width: 36px;
+    height: 36px;
+    border: 1px solid rgba(167, 139, 250, 0.4);
+    background: rgba(167, 139, 250, 0.05);
+    backdrop-filter: blur(2px);
+    border-radius: 50%;
+    transition:
+        width 0.3s var(--ease-spring),
+        height 0.3s var(--ease-spring),
+        border-color 0.3s ease,
+        background-color 0.3s ease,
+        border-radius 0.3s var(--ease-spring);
+}
+
+/* =========================================
+   States (Hover, Magnetic, Text, Click)
+   ========================================= */
+
+.isHovering .cursorRing {
+    width: 56px;
+    height: 56px;
+    background: rgba(167, 139, 250, 0.1);
+    border-color: rgba(167, 139, 250, 0.8);
+}
+
+.isHovering .cursorDot {
+    width: 0;
+    /* مخفی شدن نقطه در حالت هاور برای زیبایی */
+    height: 0;
+}
+
+.isMagnetic .cursorRing {
+    width: 72px;
+    height: 72px;
+    background: rgba(167, 139, 250, 0.15);
+    border-color: var(--color-accent-primary);
+    backdrop-filter: blur(4px);
+}
+
+.isText .cursorRing {
+    width: 4px;
+    height: 32px;
+    border-radius: 2px;
+    background: var(--color-accent-primary);
+    border-color: transparent;
+    mix-blend-mode: difference;
+}
+
+.isText .cursorDot {
+    opacity: 0;
+}
+
+.isClicked .cursorDot {
+    transform: translate(-50%, -50%) scale(0.5);
+}
+
+.isClicked .cursorRing {
+    transform: translate(-50%, -50%) scale(0.9);
+}
