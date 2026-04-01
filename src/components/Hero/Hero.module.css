@@ -15,7 +15,7 @@
     align-items: center;
     justify-content: center;
     padding: 0;
-    background-color: var(--color-background, #0d0e12);
+    background-color: var(--bg-primary, #080818);
     /* Fallback added */
 }
 
@@ -36,7 +36,7 @@
 .liquidOverlay {
     position: absolute;
     inset: 0;
-    background: radial-gradient(ellipse at center, rgba(13, 14, 18, 0) 20%, rgba(13, 14, 18, 0.4) 60%, var(--color-background, #0d0e12) 100%);
+    background: radial-gradient(ellipse at center, transparent 20%, rgba(8, 8, 24, 0.4) 60%, var(--bg-primary, #080818) 100%);
     mix-blend-mode: multiply;
     z-index: 2;
     pointer-events: none;
@@ -62,7 +62,7 @@
     font-weight: 900;
     letter-spacing: -0.04em;
     line-height: 1;
-    color: var(--color-text-primary, #ffffff);
+    color: var(--text-primary, #f0f0f8);
     position: absolute;
     top: 50%;
     left: 50%;
@@ -112,7 +112,7 @@
 
 .state2 .wmLetterO {
     opacity: 1;
-    color: var(--color-text-primary, #fff);
+    color: var(--text-primary, #f0f0f8);
 }
 
 .state3 .wmGroup {
