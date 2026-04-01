@@ -65,6 +65,7 @@
     display: flex;
     flex-direction: column;
     cursor: pointer;
+    transition: transform 0.3s cubic-bezier(0.22, 1, 0.36, 1);
 }
 
 .sidebarTitle {
@@ -84,7 +85,6 @@
     font-size: clamp(1.5rem, 2vw, 2.5rem);
 }
 
-/* Hover Effect for Inactive Titles (Optimized for full container hover) */
 .leftColItem:hover .sidebarTitleInactive {
     color: var(--proj-color) !important;
     -webkit-text-stroke: 0px !important;
@@ -155,6 +155,7 @@
 .rightColumn {
     flex: 1;
     position: relative;
+    min-height: 400px;
 }
 
 .rightContentWrapper {
@@ -301,22 +302,22 @@
 .mobileTitleWrapper {
     cursor: pointer;
     text-align: center;
+    -webkit-tap-highlight-color: transparent;
 }
 
 .hugeTitleMobile {
     font-size: clamp(3rem, 12vw, 6rem);
     font-weight: 900;
     text-transform: uppercase;
-    color: transparent;
     margin: 0;
-    transition: opacity 0.3s;
+    transition: opacity 0.3s, transform 0.3s;
 }
 
 .mobileTitleWrapper:active .hugeTitleMobile {
-    opacity: 0.5;
+    opacity: 0.7;
+    transform: scale(0.95);
 }
 
-/* Mobile Modal */
 .mobileModal {
     position: fixed;
     inset: 0;
@@ -324,8 +325,6 @@
     background: #000;
     overflow-y: auto;
     overflow-x: hidden;
-    cursor: auto;
-    pointer-events: auto;
 }
 
 .mobileModalBg {
@@ -340,7 +339,6 @@
     inset: 0;
     background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.95) 40%, #000 100%);
     backdrop-filter: blur(10px);
-    pointer-events: none;
 }
 
 .closeBtnMobile {
@@ -357,21 +355,13 @@
     align-items: center;
     justify-content: center;
     z-index: 1010;
-    cursor: pointer;
     backdrop-filter: blur(5px);
-    transition: background 0.3s;
-}
-
-.closeBtnMobile:active {
-    background: rgba(255, 255, 255, 0.3);
 }
 
 .mobileModalContent {
     padding: 100px 20px 40px;
     position: relative;
     z-index: 10;
-    display: flex;
-    flex-direction: column;
 }
 
 .modalTitle {
@@ -448,4 +438,56 @@
     color: rgba(255, 255, 255, 0.7);
     line-height: 1.5;
     margin: 0;
+}
+
+/* در فایل WorkMinimal.module.css */
+
+/* تغییر استایل عناوین موبایل - خط 232 */
+.hugeTitleMobile {
+    font-size: clamp(3rem, 12vw, 6rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0;
+    transition: all 0.5s cubic-bezier(0.22, 1, 0.36, 1);
+    -webkit-text-fill-color: transparent;
+}
+
+/* اضافه کردن hover برای موبایل - بعد از خط 238 */
+.mobileTitleWrapper:hover .hugeTitleMobile {
+    -webkit-text-fill-color: currentColor;
+}
+
+/* تغییر z-index مودال - خط 246 */
+.mobileModal {
+    position: fixed;
+    inset: 0;
+    z-index: 200;
+    background: #000;
+    overflow-y: auto;
+    overflow-x: hidden;
+}
+
+/* اضافه کردن cursor به دکمه بستن - خط 264 */
+.closeBtnMobile {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 201;
+    backdrop-filter: blur(5px);
+    cursor: pointer;
+    transition: all 0.3s;
+}
+
+.closeBtnMobile:hover {
+    background: rgba(255, 255, 255, 0.2);
+    transform: scale(1.1);
 }

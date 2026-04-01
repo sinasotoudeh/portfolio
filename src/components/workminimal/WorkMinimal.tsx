@@ -2,7 +2,7 @@
 
 import React, { useState, useEffect, useRef, useCallback } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence } from 'framer-motion';
+import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { PROJECTS_DATA, Project, Annotation } from '@/data/workminimal-projects';
 import styles from './WorkMinimal.module.css';
 
@@ -15,8 +15,9 @@ export default function WorkMinimal() {
     const [isMobile, setIsMobile] = useState(false);
 
     const containerRef = useRef<HTMLDivElement>(null);
+    const rightColumnRef = useRef<HTMLDivElement>(null);
+    const isInView = useInView(rightColumnRef, { once: false, amount: 0.3 });
 
-    // Ref ها برای مدیریت دقیق پرفورمنس اسکرول و قفل هنگام کلیک
     const ticking = useRef(false);
     const isClickScrolling = useRef(false);
     const scrollTimeout = useRef<NodeJS.Timeout | null>(null);
@@ -29,7 +30,6 @@ export default function WorkMinimal() {
     }, []);
 
     const handleScroll = useCallback(() => {
-        // اگر در حال انجام اسکرول برنامه‌ریزی شده با کلیک هستیم، مقدار State را تغییر ندهیم
         if (isMobile || isClickScrolling.current) return;
 
         if (!ticking.current) {
@@ -73,16 +73,11 @@ export default function WorkMinimal() {
 
     const handleProjectClick = (index: number) => {
         if (containerRef.current) {
-            // فعال‌سازی قفل جهت جلوگیری از تداخل ایونت اسکرول و باگ پرش نامنظم
             isClickScrolling.current = true;
-
-            // بلافاصله UI را به‌روزرسانی می‌کنیم تا سایت فورا واکنش نشان دهد
             setActiveIndex(index);
 
             const windowHeight = window.innerHeight;
             const containerAbsoluteTop = window.scrollY + containerRef.current.getBoundingClientRect().top;
-
-            // به جای 10 درصد، دقیقا روی مرکز باکس (50 درصد) اسکرول می‌کنیم تا پایداری 100 درصدی داشته باشیم
             const targetScrollY = containerAbsoluteTop + (index * windowHeight) + (windowHeight * 0.5);
 
             window.scrollTo({
@@ -90,11 +85,10 @@ export default function WorkMinimal() {
                 behavior: 'smooth'
             });
 
-            // پاک کردن تایمر قبلی و تنظیم تایمر جدید برای آزاد کردن قفل اسکرول
             if (scrollTimeout.current) clearTimeout(scrollTimeout.current);
             scrollTimeout.current = setTimeout(() => {
                 isClickScrolling.current = false;
-            }, 1000); // 1 ثانیه برای اتمام اسکرول نرم (Smooth Scroll) کافی است
+            }, 1000);
         }
     };
 
@@ -106,7 +100,6 @@ export default function WorkMinimal() {
         >
             {!isMobile && (
                 <section className={styles.desktopShowcase}>
-                    {/* Background Layer with Hover Logic */}
                     <div className={styles.backgroundLayer}>
                         <AnimatePresence mode="wait">
                             <motion.div
@@ -121,6 +114,7 @@ export default function WorkMinimal() {
                                     src={bgDisplayProject.coverImage || bgDisplayProject.image}
                                     alt={bgDisplayProject.title}
                                     fill
+                                    sizes="100vw"
                                     className={styles.bgMedia}
                                     priority
                                 />
@@ -185,7 +179,7 @@ export default function WorkMinimal() {
                             </div>
                         </div>
 
-                        <div className={styles.rightColumn}>
+                        <div className={styles.rightColumn} ref={rightColumnRef}>
                             <div className={styles.rightContentWrapper}>
                                 <svg className={styles.borderSvg} preserveAspectRatio="none">
                                     <motion.rect
@@ -195,7 +189,7 @@ export default function WorkMinimal() {
                                         strokeOpacity="0.3"
                                         strokeWidth="2"
                                         initial={{ pathLength: 0 }}
-                                        animate={{ pathLength: 1 }}
+                                        animate={{ pathLength: isInView ? 1 : 0 }}
                                         transition={{ duration: 1.5, ease: "easeInOut" }}
                                     />
                                 </svg>
@@ -214,6 +208,7 @@ export default function WorkMinimal() {
                                                 src={activeDesktopProject.image}
                                                 alt={activeDesktopProject.title}
                                                 fill
+                                                sizes="(max-width: 1024px) 100vw, 60vw"
                                                 className={styles.centerImage}
                                                 priority
                                             />
@@ -227,8 +222,7 @@ export default function WorkMinimal() {
                                                     />
                                                 ))}
                                             </div>
-                                        </div>
-                                    </motion.div>
+                                        </div></motion.div>
                                 </AnimatePresence>
                             </div>
                         </div>
@@ -236,7 +230,6 @@ export default function WorkMinimal() {
                 </section>
             )}
 
-            {/* Mobile View */}
             {isMobile && (
                 <section className={styles.mobileShowcase}>
                     <div className={styles.mobileHeader}>
@@ -255,7 +248,10 @@ export default function WorkMinimal() {
                                 >
                                     <h1
                                         className={styles.hugeTitleMobile}
-                                        style={{ WebkitTextStroke: `1.5px ${projColor}80` } as React.CSSProperties}
+                                        style={{
+                                            WebkitTextStroke: `1.5px ${projColor}80`,
+                                            color: projColor
+                                        } as React.CSSProperties}
                                     >
                                         {project.title}
                                     </h1>
@@ -278,6 +274,7 @@ export default function WorkMinimal() {
                                         src={mobileActiveProject.coverImage || mobileActiveProject.image}
                                         alt={mobileActiveProject.title}
                                         fill
+                                        sizes="100vw"
                                         className={styles.bgMedia}
                                     />
                                     <div className={styles.bgOverlaySolid} />
@@ -310,6 +307,7 @@ export default function WorkMinimal() {
                                             src={mobileActiveProject.image}
                                             alt={mobileActiveProject.title}
                                             fill
+                                            sizes="(max-width: 1024px) 100vw, 50vw"
                                             className={styles.mobileCenterImage}
                                         />
                                     </div>
@@ -391,8 +389,7 @@ function AnnotationPoint({ annotation, index, color }: { annotation: Annotation,
                         boxShadow: `0 0 15px ${color}60`,
                         background: `${color}30`
                     }}
-                >
-                    <div className={styles.pinDotInner} style={{ background: color }} />
+                ><div className={styles.pinDotInner} style={{ background: color }} />
                 </div>
             </motion.div>
 
