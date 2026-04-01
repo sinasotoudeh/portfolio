@@ -1,8 +1,9 @@
 import type { Metadata } from "next";
 import "./globals.css";
 
-// ایمپورت کامپوننت‌های اختصاصی با مسیرهای اصلاح شده
+// ایمپورت کامپوننت‌های اختصاصی
 import CustomCursor from '@/components/cursor/CustomCursor';
+import Navigation from '@/components/navigation/Navigation'; // اضافه شدن ایمپورت منو
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -16,16 +17,21 @@ export default function RootLayout({
 }>) {
   return (
     <html
-      lang="en" // اگر پروژه فارسی است می‌توانید این را به "fa" تغییر دهید
+      lang="en"
       className="h-full antialiased"
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        {/* اضافه کردن افکت‌ها و ماوس سفارشی در بالاترین سطح بدنه */}
+        {/* کامپوننت‌های سراسری (Global Components) */}
         <CustomCursor />
 
+        {/* اضافه کردن نوار ناوبری (منو) */}
+        <Navigation />
+
         {/* محتوای اصلی صفحات */}
-        {children}
+        <main className="flex-1 flex flex-col">
+          {children}
+        </main>
       </body>
     </html>
   );
