@@ -1,0 +1,294 @@
+/* src/components/WorkCarousel/Work.module.css */
+
+.workShowcase {
+    position: relative;
+    width: 100%;
+    background-color: var(--bg-primary);
+    /* اتصال به تم گلوبال */
+    overflow: clip;
+    /* جلوگیری از اسکرول افقی ناخواسته */
+}
+
+.stickyContainer {
+    position: sticky;
+    top: 0;
+    height: 100vh;
+    width: 100%;
+    overflow: hidden;
+    display: flex;
+    justify-content: center;
+}
+
+.globalProgressBar {
+    position: absolute;
+    top: 0;
+    left: 0;
+    width: 100%;
+    height: 4px;
+    background: var(--gradient-accent, linear-gradient(90deg, var(--color-accent-primary), var(--color-accent-secondary)));
+    z-index: var(--z-nav, 100);
+}
+
+.backgroundGlow {
+    position: absolute;
+    top: 50%;
+    left: 75%;
+    width: 70vw;
+    height: 70vw;
+    transform: translate(-50%, -50%);
+    background: radial-gradient(circle, rgba(167, 139, 250, 0.08) 0%, rgba(79, 195, 247, 0.04) 40%, transparent 70%);
+    pointer-events: none;
+    z-index: 1;
+}
+
+.vignetteOverlay {
+    position: absolute;
+    inset: 0;
+    z-index: 2;
+    pointer-events: none;
+    background: radial-gradient(ellipse at center, transparent 40%, var(--bg-primary) 100%);
+}
+
+/* ── Split Layout Architecture ── */
+.splitLayout {
+    position: relative;
+    z-index: 10;
+    display: grid;
+    grid-template-columns: 1fr 1fr;
+    width: 100%;
+    max-width: 1600px;
+    height: 100%;
+    padding: 10vh 5vw 5vh 5vw;
+    gap: 4vw;
+}
+
+/* ── Left Side: Text Content ── */
+.textContent {
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    height: 100%;
+    padding-right: 2rem;
+}
+
+.projectContext {
+    margin-bottom: 3rem;
+}
+
+.projectTitle {
+    font-size: clamp(2.5rem, 4vw, 4rem);
+    font-weight: 800;
+    letter-spacing: -0.03em;
+    color: var(--text-primary);
+    margin-bottom: 1rem;
+    line-height: 1.1;
+}
+
+.projectDesc {
+    font-size: clamp(1rem, 1.2vw, 1.15rem);
+    line-height: 1.8;
+    color: var(--text-secondary);
+    max-width: 90%;
+}
+
+.projectTags {
+    display: flex;
+    gap: 0.75rem;
+    margin-top: 1.5rem;
+    flex-wrap: wrap;
+}
+
+.tag {
+    font-size: 0.75rem;
+    font-weight: 600;
+    padding: 0.3rem 0.8rem;
+    border-radius: var(--radius-full);
+    background: var(--glass-bg);
+    border: 1px solid var(--glass-border);
+    color: var(--text-primary);
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
+}
+
+.featureDetails {
+    position: relative;
+    z-index: 20;
+}
+
+.featureCounter {
+    display: block;
+    font-family: var(--font-mono);
+    font-size: 0.9rem;
+    color: var(--color-accent-primary);
+    margin-bottom: 1rem;
+    letter-spacing: 0.1em;
+}
+
+.featureTitle {
+    font-size: clamp(1.3rem, 2vw, 1.8rem);
+    font-weight: 700;
+    color: var(--text-primary);
+    margin-bottom: 0.8rem;
+    line-height: 1.3;
+    text-transform: none;
+    /* override global h4 if needed */
+}
+
+.featureDesc {
+    font-size: 1.05rem;
+    color: var(--text-secondary);
+    line-height: 1.6;
+}
+
+/* ── Right Side: 3D Gallery ── */
+.galleryContent {
+    position: relative;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    height: 100%;
+    perspective: 1500px;
+}
+
+.deckContainer {
+    position: relative;
+    width: 100%;
+    aspect-ratio: 4/3;
+    max-width: 650px;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+}
+
+.featureCard {
+    position: absolute;
+    width: 100%;
+    height: 100%;
+    border-radius: var(--radius-xl);
+    will-change: transform, opacity, filter;
+    transform-origin: center center;
+    /* Allow highlights to overflow */
+    overflow: visible !important;
+}
+
+.cardInteractiveMock {
+    position: absolute;
+    inset: 0;
+    border-radius: var(--radius-xl);
+    overflow: hidden;
+    /* Only the image is clipped */
+    background: var(--bg-secondary);
+    box-shadow: var(--shadow-card);
+    border: 1px solid var(--surface-border);
+}
+
+.mockImage {
+    object-fit: cover;
+}
+
+.placeholderMock {
+    width: 100%;
+    height: 100%;
+    background: linear-gradient(135deg, var(--bg-secondary), var(--bg-primary));
+}
+
+/* ── Highlights Layer ── */
+.highlightsContainer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    /* Let clicks pass through if needed */
+    z-index: 30;
+    /* Above the image mask */
+}
+
+.highlightChip {
+    position: absolute;
+    background: var(--glass-bg-mid);
+    backdrop-filter: var(--glass-blur);
+    /* -webkit-backdrop-filter: var(--glass-blur); */
+    border: 1px solid var(--glass-border);
+    padding: 1rem 1.5rem;
+    border-radius: var(--radius-md);
+    box-shadow: 0 15px 35px rgba(0, 0, 0, 0.3);
+    color: var(--text-primary);
+    pointer-events: auto;
+    /* Re-enable clicks on chips */
+}
+
+.statContent {
+    display: flex;
+    flex-direction: column;
+}
+
+.statValue {
+    font-size: 1.8rem;
+    font-weight: 800;
+    font-family: var(--font-display);
+    background: linear-gradient(to right, var(--color-accent-emerald), var(--color-accent-secondary));
+    -webkit-background-clip: text;
+    background-clip: text;
+    -webkit-text-fill-color: transparent;
+    line-height: 1;
+}
+
+.statLabel {
+    font-size: 0.75rem;
+    color: var(--text-secondary);
+    text-transform: uppercase;
+    letter-spacing: 0.1em;
+    margin-top: 0.4rem;
+}
+
+.badgeContent {
+    font-size: 0.9rem;
+    font-weight: 600;
+    display: flex;
+    align-items: center;
+    gap: 0.6rem;
+}
+
+.badgeContent::before {
+    content: '';
+    display: block;
+    width: 8px;
+    height: 8px;
+    background: var(--color-accent-emerald);
+    border-radius: 50%;
+    box-shadow: 0 0 12px var(--color-accent-emerald);
+}
+
+/* ── Progress Indicators (Dots) ── */
+.progressIndicators {
+    position: absolute;
+    bottom: 5vh;
+    left: 50%;
+    transform: translateX(-50%);
+    z-index: 50;
+    display: flex;
+    gap: 0.75rem;
+    background: var(--glass-bg);
+    padding: 0.75rem 1.25rem;
+    border-radius: var(--radius-full);
+    backdrop-filter: var(--glass-blur);
+    border: 1px solid var(--glass-border);
+}
+
+.dot {
+    height: 6px;
+    border-radius: var(--radius-full);
+}
+
+@media (max-width: 968px) {
+    .splitLayout {
+        grid-template-columns: 1fr;
+        grid-template-rows: auto 1fr;
+        gap: 2rem;
+        padding-top: 15vh;
+        overflow-y: auto;
+    }
+
+    .textContent {
+        padding-right: 0;
+    }
+}
