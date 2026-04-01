@@ -1,0 +1,451 @@
+/* ─── BASE & LAYOUT ─── */
+.scrollContainer {
+    position: relative;
+    width: 100%;
+}
+
+.desktopShowcase {
+    position: sticky;
+    top: 0;
+    width: 100vw;
+    height: 100vh;
+    background-color: var(--bg-primary, #050505);
+    overflow: hidden;
+    color: var(--text-primary, #ffffff);
+}
+
+/* ─── BACKGROUND (Desktop) ─── */
+.backgroundLayer {
+    position: absolute;
+    inset: 0;
+    z-index: 1;
+    pointer-events: none;
+}
+
+.bgMediaContainer {
+    position: absolute;
+    inset: -5%;
+    width: 110%;
+    height: 110%;
+}
+
+.bgMedia {
+    object-fit: cover;
+    opacity: 0.6;
+}
+
+.bgOverlay {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(5, 5, 5, 0.4) 0%, rgba(5, 5, 5, 0.95) 100%);
+    z-index: 2;
+}
+
+/* ─── SPLIT CONTAINER (Desktop) ─── */
+.splitContainer {
+    position: relative;
+    z-index: 10;
+    display: flex;
+    width: 100%;
+    height: 100vh;
+    padding: 10vh 4vw 6vh;
+    gap: 4vw;
+    box-sizing: border-box;
+}
+
+.leftColumn {
+    flex: 0 0 35%;
+    display: flex;
+    flex-direction: column;
+    justify-content: center;
+    gap: 2.5rem;
+}
+
+.leftColItem {
+    display: flex;
+    flex-direction: column;
+    cursor: pointer;
+}
+
+.sidebarTitle {
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0;
+    line-height: 1.1;
+    transition: all 0.4s cubic-bezier(0.22, 1, 0.36, 1);
+}
+
+.sidebarTitleActive {
+    font-size: clamp(2.5rem, 4vw, 5rem);
+    -webkit-text-stroke: 0px !important;
+}
+
+.sidebarTitleInactive {
+    font-size: clamp(1.5rem, 2vw, 2.5rem);
+}
+
+/* Hover Effect for Inactive Titles (Optimized for full container hover) */
+.leftColItem:hover .sidebarTitleInactive {
+    color: var(--proj-color) !important;
+    -webkit-text-stroke: 0px !important;
+    transform: translateX(15px);
+    text-shadow: 0 0 20px rgba(255, 255, 255, 0.15);
+}
+
+.projectDescContainer {
+    overflow: hidden;
+    padding-top: 1rem;
+}
+
+.projectGeneralDesc {
+    font-size: 1.05rem;
+    line-height: 1.7;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 1.5rem 0;
+}
+
+.tagsWrapper {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+}
+
+.tag {
+    padding: 6px 14px;
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-radius: 20px;
+    font-size: 0.75rem;
+    color: rgba(255, 255, 255, 0.8);
+    transition: background 0.3s;
+}
+
+.tag:hover {
+    background: rgba(255, 255, 255, 0.1);
+}
+
+/* ─── DESKTOP HEADER ─── */
+.desktopHeader {
+    margin-bottom: 2rem;
+    padding-bottom: 1rem;
+    border-bottom: 1px solid rgba(255, 255, 255, 0.1);
+}
+
+.shNumber {
+    font-size: 0.9rem;
+    color: rgba(255, 255, 255, 0.4);
+    font-weight: bold;
+}
+
+.shTitle {
+    font-size: 1.1rem;
+    letter-spacing: 2px;
+    text-transform: uppercase;
+    margin: 0.5rem 0 0;
+    color: #fff;
+}
+
+.projectListWrapper {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+/* ─── RIGHT COLUMN & BORDER ─── */
+.rightColumn {
+    flex: 1;
+    position: relative;
+}
+
+.rightContentWrapper {
+    width: 100%;
+    height: 100%;
+    position: relative;
+    border-radius: 24px;
+    background: radial-gradient(circle at center, rgba(255, 255, 255, 0.02) 0%, transparent 80%);
+}
+
+.borderSvg {
+    position: absolute;
+    inset: 0;
+    width: 100%;
+    height: 100%;
+    border-radius: 24px;
+    pointer-events: none;
+    z-index: 2;
+}
+
+.imageAndAnnotations {
+    position: absolute;
+    inset: 4px;
+    border-radius: 20px;
+}
+
+.imageWrapper {
+    position: absolute;
+    inset: 0;
+}
+
+.centerImage {
+    object-fit: contain;
+    padding: 2rem;
+}
+
+/* ─── DESKTOP ANNOTATIONS ─── */
+.annotationsContainer {
+    position: absolute;
+    inset: 2rem;
+    pointer-events: none;
+}
+
+.annotationPin {
+    position: absolute;
+    z-index: 30;
+    width: 0;
+    height: 0;
+    pointer-events: auto;
+}
+
+.annotationLineSvg {
+    position: absolute;
+    top: -100px;
+    left: -100px;
+    width: 200px;
+    height: 200px;
+    pointer-events: none;
+    overflow: visible;
+    z-index: 1;
+}
+
+.pinDotWrapper {
+    position: absolute;
+    transform: translate(-50%, -50%);
+    z-index: 2;
+}
+
+.pinDot {
+    width: 18px;
+    height: 18px;
+    border: 1px solid;
+    border-radius: 50%;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    backdrop-filter: blur(4px);
+    transition: transform 0.3s cubic-bezier(0.175, 0.885, 0.32, 1.275);
+}
+
+.annotationPin:hover .pinDot {
+    transform: scale(1.3);
+}
+
+.pinDotInner {
+    width: 6px;
+    height: 6px;
+    border-radius: 50%;
+}
+
+.annotationContent {
+    position: absolute;
+    width: max-content;
+    max-width: 240px;
+    padding: 0.85rem 1.2rem;
+    background: rgba(8, 8, 8, 0.85);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-top-width: 2px;
+    border-radius: 12px;
+    backdrop-filter: blur(16px);
+    z-index: 3;
+    box-shadow: 0 10px 30px rgba(0, 0, 0, 0.5);
+    pointer-events: none;
+}
+
+.annoTitle {
+    font-size: 0.9rem;
+    margin: 0 0 0.3rem;
+    font-weight: 700;
+    letter-spacing: 0.5px;
+}
+
+.annoDesc {
+    font-size: 0.8rem;
+    color: rgba(255, 255, 255, 0.7);
+    margin: 0;
+    line-height: 1.5;
+}
+
+/* ─── MOBILE VIEW ─── */
+.mobileShowcase {
+    width: 100%;
+    min-height: 100vh;
+    background: #050505;
+    padding: 120px 20px 60px;
+    display: flex;
+    flex-direction: column;
+    align-items: center;
+}
+
+.mobileHeader {
+    margin-bottom: 4rem;
+    text-align: center;
+}
+
+.mobileListContainer {
+    display: flex;
+    flex-direction: column;
+    gap: 3rem;
+    width: 100%;
+    align-items: center;
+}
+
+.mobileTitleWrapper {
+    cursor: pointer;
+    text-align: center;
+}
+
+.hugeTitleMobile {
+    font-size: clamp(3rem, 12vw, 6rem);
+    font-weight: 900;
+    text-transform: uppercase;
+    color: transparent;
+    margin: 0;
+    transition: opacity 0.3s;
+}
+
+.mobileTitleWrapper:active .hugeTitleMobile {
+    opacity: 0.5;
+}
+
+/* Mobile Modal */
+.mobileModal {
+    position: fixed;
+    inset: 0;
+    z-index: 1000;
+    background: #000;
+    overflow-y: auto;
+    overflow-x: hidden;
+    cursor: auto;
+    pointer-events: auto;
+}
+
+.mobileModalBg {
+    position: absolute;
+    inset: 0;
+    z-index: -1;
+    height: 100vh;
+}
+
+.bgOverlaySolid {
+    position: absolute;
+    inset: 0;
+    background: linear-gradient(180deg, rgba(0, 0, 0, 0.6) 0%, rgba(0, 0, 0, 0.95) 40%, #000 100%);
+    backdrop-filter: blur(10px);
+    pointer-events: none;
+}
+
+.closeBtnMobile {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+    width: 44px;
+    height: 44px;
+    border-radius: 50%;
+    background: rgba(255, 255, 255, 0.1);
+    border: 1px solid rgba(255, 255, 255, 0.2);
+    color: #fff;
+    display: flex;
+    align-items: center;
+    justify-content: center;
+    z-index: 1010;
+    cursor: pointer;
+    backdrop-filter: blur(5px);
+    transition: background 0.3s;
+}
+
+.closeBtnMobile:active {
+    background: rgba(255, 255, 255, 0.3);
+}
+
+.mobileModalContent {
+    padding: 100px 20px 40px;
+    position: relative;
+    z-index: 10;
+    display: flex;
+    flex-direction: column;
+}
+
+.modalTitle {
+    font-size: 2.5rem;
+    font-weight: 900;
+    text-transform: uppercase;
+    margin: 0 0 1rem;
+}
+
+.modalDesc {
+    font-size: 1rem;
+    line-height: 1.6;
+    color: rgba(255, 255, 255, 0.8);
+    margin: 0 0 1.5rem;
+}
+
+.tagsWrapperMobile {
+    display: flex;
+    flex-wrap: wrap;
+    gap: 8px;
+    margin-bottom: 3rem;
+}
+
+.mobileImageContainer {
+    position: relative;
+    width: 100%;
+    height: 40vh;
+    border-radius: 16px;
+    background: rgba(255, 255, 255, 0.05);
+    margin-bottom: 3rem;
+}
+
+.mobileCenterImage {
+    object-fit: contain;
+    padding: 1rem;
+}
+
+.mobileAnnotationsList {
+    display: flex;
+    flex-direction: column;
+    gap: 1.5rem;
+}
+
+.mobileAnnoCard {
+    background: rgba(255, 255, 255, 0.05);
+    border: 1px solid rgba(255, 255, 255, 0.1);
+    border-left: 3px solid var(--card-color);
+    border-radius: 12px;
+    padding: 1.25rem;
+}
+
+.mobileAnnoHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 0.5rem;
+}
+
+.mobileAnnoIndex {
+    font-size: 0.8rem;
+    color: var(--card-color);
+    font-weight: 800;
+}
+
+.mobileAnnoTitle {
+    font-size: 1rem;
+    color: #fff;
+    margin: 0;
+    font-weight: 600;
+}
+
+.mobileAnnoDesc {
+    font-size: 0.85rem;
+    color: rgba(255, 255, 255, 0.7);
+    line-height: 1.5;
+    margin: 0;
+}
