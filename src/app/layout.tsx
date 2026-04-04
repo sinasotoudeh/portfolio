@@ -4,6 +4,7 @@ import "./globals.css";
 // ایمپورت کامپوننت‌های اختصاصی
 import CustomCursor from '@/components/cursor/CustomCursor';
 import Navigation from '@/components/navigation/Navigation'; // اضافه شدن ایمپورت منو
+import LenisProvider from '@/components/providers/LenisProvider'; // مسیر را بر اساس ساختار پروژه خود تنظیم کنید
 
 export const metadata: Metadata = {
   title: "Create Next App",
@@ -30,7 +31,9 @@ export default function RootLayout({
 
         {/* محتوای اصلی صفحات */}
         <main className="flex-1 flex flex-col">
-          {children}
+          <LenisProvider>
+            {children}
+          </LenisProvider>
         </main>
       </body>
     </html>
