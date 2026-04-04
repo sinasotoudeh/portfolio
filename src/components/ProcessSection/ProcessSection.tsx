@@ -10,34 +10,6 @@ import clsx from 'clsx';
 export default function ProcessSection() {
     const [activeIndex, setActiveIndex] = useState<number | null>(null);
     const sectionRef = useRef<HTMLElement>(null);
-    const cursorRef = useRef<HTMLDivElement>(null);
-
-    // Mouse tracking with RequestAnimationFrame for $60fps$ performance
-    useEffect(() => {
-        let requestRef: number;
-        const handleMouseMove = (e: MouseEvent) => {
-            cancelAnimationFrame(requestRef);
-            requestRef = requestAnimationFrame(() => {
-                if (sectionRef.current && cursorRef.current) {
-                    // Setting CSS Variables for mouse $X$ and $Y$
-                    sectionRef.current.style.setProperty('--mouseX', `${e.clientX}px`);
-                    sectionRef.current.style.setProperty('--mouseY', `${e.clientY}px`);
-                }
-            });
-        };
-
-        const section = sectionRef.current;
-        if (section) {
-            section.addEventListener('mousemove', handleMouseMove);
-        }
-
-        return () => {
-            if (section) {
-                section.removeEventListener('mousemove', handleMouseMove);
-            }
-            cancelAnimationFrame(requestRef);
-        };
-    }, []);
 
     // Split-text animation effect triggered on activeIndex change
     useEffect(() => {
@@ -82,9 +54,6 @@ export default function ProcessSection() {
                 color: activeNode ? activeNode.textColor : '#ffffff',
             } as React.CSSProperties}
         >
-            {/* Custom Brutalist Cursor (Local to this section) */}
-            <div ref={cursorRef} className={clsx(styles.cursor, activeIndex !== null && styles.cursorActive)} />
-
             <div className={styles.content}>
                 <div className={styles.titlesList}>
                     {processNodes.map((node, index) => (
