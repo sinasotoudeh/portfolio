@@ -75,6 +75,7 @@ export default function ProcessSection() {
     return (
         <section
             ref={sectionRef}
+            id='process'
             className={styles.container}
             style={{
                 backgroundColor: activeNode ? activeNode.bgColor : '#0f0f0f',
