@@ -25,8 +25,8 @@ export const PROJECTS_DATA: Project[] = [
         title: 'FoladMarket',
         generalDesc: 'Designing the brand identity and integrated B2B steel platform. Equipped with specialized weight and price calculators, a real-time inquiry system, and an automatic price update engine.',
         tags: ['Brand Identity', 'B2B Platform', 'Complex Tools', 'Real-time Data'],
-        image: '/images/work/folad-main.png',
-        coverImage: '/images/work/folad-blur.png',
+        image: '/images/work/folad.png',
+        coverImage: '/images/work/folad.png',
         annotations: [
             {
                 id: 'fm-anno-1',
@@ -59,8 +59,8 @@ export const PROJECTS_DATA: Project[] = [
         title: 'SadrHub',
         generalDesc: 'Comprehensive store builder service. Complete UI/UX design including an advanced management panel, secure login pages, and an integrated, engaging website creation flow.',
         tags: ['SaaS UI/UX', 'Dashboard', 'Website Builder', 'User Flow'],
-        image: '/images/work/sadr-main.png',
-        coverImage: '/images/work/sadr-blur.png',
+        image: '/images/work/sadr.png',
+        coverImage: '/images/work/sadr.png',
         annotations: [
             {
                 id: 'sh-anno-1',
@@ -93,8 +93,8 @@ export const PROJECTS_DATA: Project[] = [
         title: 'AutoDM',
         generalDesc: 'Visual identity design and modern features for an automation platform. Includes an interactive simulator, user panel mocks, and an automated chatbot system.',
         tags: ['Visual Identity', 'Automation', 'Interactive Mocks', 'Chatbot'],
-        image: '/images/work/auto-main.png',
-        coverImage: '/images/work/auto-blur.png',
+        image: '/images/work/autodm.png',
+        coverImage: '/images/work/autodm.png',
         annotations: [
             {
                 id: 'ad-anno-1',

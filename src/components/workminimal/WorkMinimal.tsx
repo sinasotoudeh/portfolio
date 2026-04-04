@@ -6,7 +6,7 @@ import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { PROJECTS_DATA, Project, Annotation } from '@/data/workminimal-projects';
 import styles from './WorkMinimal.module.css';
 
-const PROJECT_COLORS = ['#FF3366', '#00C3FF', '#FFD500', '#00FF66', '#B033FF', '#FF8C00'];
+const PROJECT_COLORS = ['#FFD500', '#FF3366', '#00FF66', '#00C3FF', '#B033FF', '#FF8C00'];
 
 export default function WorkMinimal() {
     const [activeIndex, setActiveIndex] = useState(0);
