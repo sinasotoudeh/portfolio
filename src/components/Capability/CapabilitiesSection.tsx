@@ -1,25 +1,26 @@
-// A:\NEXT\Development\Projects\nonato\src\components\Capability\CapabilitiesSection.tsx
 "use client";
 
-import React, { useRef, Suspense } from "react";
-// 🚀 FIX: useFrame اضافه شد
+import React, { useRef, Suspense, useState } from "react";
 import { Canvas, useFrame } from "@react-three/fiber";
-import { useScroll, useTransform, useSpring, MotionValue, motion } from "framer-motion";
+import { useScroll, useSpring, useTransform, MotionValue, motion } from "framer-motion";
+import { useDrag } from "@use-gesture/react";
 import { Group } from "three";
-import { CAPABILITIES, Capability } from "@/data/capabilities";
+import { CAPABILITIES } from "@/data/capabilities";
 import { CAPABILITIES_CONFIG as CONFIG } from "@/config/capabilities.config";
 import CylinderCard from "./CylinderCard";
 
 interface CylinderSceneProps {
     rotationProgress: MotionValue<number>;
+    dragRotation: number;
 }
 
-function CylinderScene({ rotationProgress }: CylinderSceneProps) {
+function CylinderScene({ rotationProgress, dragRotation }: CylinderSceneProps) {
     const groupRef = useRef<Group>(null);
 
     useFrame(() => {
         if (groupRef.current) {
-            groupRef.current.rotation.y = rotationProgress.get();
+            // ترکیب چرخش اسکرول و درگ (Drag)
+            groupRef.current.rotation.y = rotationProgress.get() + dragRotation;
         }
     });
 
@@ -38,22 +39,9 @@ function CylinderScene({ rotationProgress }: CylinderSceneProps) {
     );
 }
 
-const AccessibleContent = ({ capabilities }: { capabilities: Capability[] }) => (
-    <div className="sr-only">
-        <h2>Our Capabilities</h2>
-        <ul>
-            {capabilities.map(cap => (
-                <li key={`accessible-${cap.id}`}>
-                    <h3>{cap.title}</h3>
-                    <p>{cap.desc}</p>
-                </li>
-            ))}
-        </ul>
-    </div>
-);
-
 export default function CapabilitiesSection() {
     const containerRef = useRef<HTMLDivElement>(null);
+    const [dragRotation, setDragRotation] = useState(0);
 
     const { scrollYProgress } = useScroll({
         target: containerRef,
@@ -61,45 +49,79 @@ export default function CapabilitiesSection() {
     });
 
     const smoothProgress = useSpring(scrollYProgress, CONFIG.SCROLL_SPRING);
-    const rotationY = useTransform(smoothProgress, [0, 1], [0, -Math.PI * (CAPABILITIES.length / 2.5)]);
 
-    const thumbWidthPercent = (CONFIG.SCROLLBAR_THUMB_WIDTH_REM * 16 / 400) * 100;
-    const scrollbarLeft = useTransform(smoothProgress, [0, 1], [`0%`, `${100 - thumbWidthPercent}%`]);
+    const maxRotation = -Math.PI * (CAPABILITIES.length / 2);
+
+    // تبدیل مستقیم مقدار اسکرول به زاویه چرخش بدون نیاز به رندر مجدد
+    const rotationY = useTransform(smoothProgress, [0, 1], [0, maxRotation]);
+
+    // هندل کردن درگ ماوس/لمس (اضافه شده)
+    const bindDrag = useDrag(({ offset: [x] }) => {
+        setDragRotation(x * 0.005);
+    }, { axis: 'x' });
 
     return (
         <section
             id="capabilities"
             ref={containerRef}
-            className="relative w-full h-[450vh] bg-black"
+            className="relative w-full h-[400vh] bg-[#050505] text-white"
         >
-            <div className="sticky top-0 w-full h-screen overflow-hidden">
-                <AccessibleContent capabilities={CAPABILITIES} />
+            <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col-reverse lg:flex-row items-center">
 
-                <div className="absolute inset-0 z-0 cursor-grab active:cursor-grabbing">
+                {/* 
+                  تغییرات: 
+                  ۱. تبدیل div به motion.div
+                  ۲. تغییر Y به y (حرف کوچک)
+                */}
+                <motion.div
+                    className="absolute inset-0 pointer-events-none opacity-20 bg-center bg-cover bg-no-repeat mix-blend-screen z-0"
+                    style={{
+                        backgroundImage: "url('/images/capability/back.webp')",
+                        height: "120vh",
+                        // حرکت دادن عکس به سمت بالا هنگام اسکرول
+                        y: useTransform(smoothProgress, [0, 1], ["0%", "-15%"])
+                    }}
+                />
+
+                {/* گردونه سه‌بعدی */}
+                <div
+                    {...bindDrag()}
+                    className="relative w-full lg:w-1/2 h-[50vh] lg:h-full z-10 cursor-grab active:cursor-grabbing touch-none"
+                >
                     <Canvas
                         camera={{ position: [0, 0, CONFIG.CAMERA_Z_POSITION], fov: CONFIG.CAMERA_FOV }}
-                        gl={{ antialias: true, alpha: true }}
+                        gl={{ antialias: true, alpha: true, powerPreference: "high-performance" }}
+                        dpr={[1, 2]}
                     >
-                        <ambientLight intensity={1.5} />
-                        <directionalLight position={[5, 5, 5]} intensity={1} />
+                        <ambientLight intensity={2} />
+                        <directionalLight position={[10, 10, 10]} intensity={1.5} />
                         <Suspense fallback={null}>
-                            <CylinderScene rotationProgress={rotationY} />
+                            <CylinderScene rotationProgress={rotationY} dragRotation={dragRotation} />
                         </Suspense>
                     </Canvas>
                 </div>
 
-                <div className="absolute bottom-10 md:bottom-12 left-1/2 -translate-x-1/2 w-11/12 max-w-sm z-10 pointer-events-none">
-                    <div className="w-full h-1 bg-white/10 mx-auto rounded-full relative">
-                        <motion.div
-                            className="absolute top-0 h-full bg-white rounded-full"
-                            style={{
-                                width: `${CONFIG.SCROLLBAR_THUMB_WIDTH_REM}rem`,
-                                left: scrollbarLeft
-                            }}
-                        />
-                    </div>
+                {/* محتوای متنی */}
+                <div className="relative w-full lg:w-1/2 h-[50vh] lg:h-full flex flex-col justify-center px-8 py-12 lg:py-0 lg:pl-16 lg:pr-32 z-20 pointer-events-none">
+                    <motion.div
+                        initial={{ opacity: 0, x: 50 }}
+                        whileInView={{ opacity: 1, x: 0 }}
+                        transition={{ duration: 0.8 }}
+                        className="pointer-events-auto"
+                    >
+                        <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black mb-4 lg:mb-6 tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40">
+                            What We Master.
+                        </h2>
+                        <p className="text-base sm:text-lg lg:text-xl text-white/60 leading-relaxed font-light mb-6 lg:mb-8">
+                            We blend engineering precision with artistic vision. Scroll or drag the cylinder to explore our core competencies and discover how we build the future.
+                        </p>
+                        <div className="w-16 lg:w-24 h-1 bg-gradient-to-r from-white to-transparent rounded-full" />
+                    </motion.div>
                 </div>
+
             </div>
         </section>
     );
+
+
 }

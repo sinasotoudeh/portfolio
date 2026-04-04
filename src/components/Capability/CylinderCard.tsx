@@ -1,4 +1,3 @@
-// A:\NEXT\Development\Projects\nonato\src\components\Capability\CylinderCard.tsx
 "use client";
 
 import React, { useRef, memo } from "react";
@@ -15,7 +14,6 @@ interface CylinderCardProps {
     radius: number;
 }
 
-// 🚀 FIX: تایپ پارامتر htmlRef نیز برای پذیرش null اصلاح شد
 const useCardAnimation = (
     groupRef: React.RefObject<Group | null>,
     htmlRef: React.RefObject<HTMLDivElement | null>,
@@ -26,21 +24,25 @@ const useCardAnimation = (
 
         const parentRotation = groupRef.current.parent?.rotation.y || 0;
         const globalAngle = baseAngle + parentRotation;
+
+        // محاسبه عمق کارت برای تغییر استایل (بدون استفاده از فیلترهای سنگین blur)
         const normalizedZ = (Math.cos(globalAngle) + 1) / 2;
 
-        const opacity = Math.pow(normalizedZ, 3);
-        const blur = (1 - normalizedZ) * 8;
-        const scale = 0.85 + (normalizedZ * 0.15);
+        const opacity = Math.pow(normalizedZ, 2); // توان کمتر برای نرمی بیشتر
+        const scale = 0.9 + (normalizedZ * 0.1); // تغییر مقیاس ملایم‌تر
 
         const el = htmlRef.current;
 
-        el.style.display = opacity < 0.01 ? 'none' : 'flex';
-        if (el.style.display === 'none') return;
+        // پرفورمنس: عدم رندر کارت‌هایی که در پشت هستند
+        if (opacity < 0.05) {
+            el.style.visibility = 'hidden';
+            return;
+        }
 
-        el.style.opacity = opacity.toFixed(3);
-        el.style.filter = `blur(${blur.toFixed(1)}px)`;
+        el.style.visibility = 'visible';
+        el.style.opacity = opacity.toFixed(2);
         el.style.transform = `scale(${scale.toFixed(3)})`;
-        el.style.pointerEvents = opacity > 0.95 ? "auto" : "none";
+        el.style.pointerEvents = opacity > 0.9 ? "auto" : "none";
     });
 };
 
@@ -52,7 +54,6 @@ const CylinderCardComponent = ({ data, index, total, radius }: CylinderCardProps
     const x = Math.sin(angle) * radius;
     const z = Math.cos(angle) * radius;
 
-    // اکنون هر دو ref با نوع صحیح به هوک پاس داده می‌شوند و خطایی وجود نخواهد داشت
     useCardAnimation(groupRef, htmlContainerRef, angle);
 
     return (
@@ -65,54 +66,66 @@ const CylinderCardComponent = ({ data, index, total, radius }: CylinderCardProps
                 transform
                 center
                 distanceFactor={CAPABILITIES_CONFIG.CARD_DISTANCE_FACTOR}
-                occlude="blending"
+                occlude={false} // غیرفعال کردن occlude برای افزایش شدید پرفورمنس
                 zIndexRange={[100, 0]}
+                style={{
+                    transformStyle: 'preserve-3d', // جلوگیری از پیکسلی شدن در مرورگرهای WebKit
+                    WebkitFontSmoothing: 'antialiased'
+                }}
             >
                 <div
                     ref={htmlContainerRef}
-                    className="will-change-transform-opacity flex flex-col justify-start transition-colors duration-300"
+                    className="flex flex-col justify-start relative overflow-hidden group"
                     style={{
                         width: `${CAPABILITIES_CONFIG.CARD_WIDTH_PX}px`,
                         height: `${CAPABILITIES_CONFIG.CARD_HEIGHT_PX}px`,
-                        backgroundColor: 'rgba(22, 22, 24, 0.75)',
-                        backdropFilter: 'blur(12px) saturate(1.2)',
-                        border: '1px solid rgba(255, 255, 255, 0.1)',
-                        borderRadius: '24px',
-                        padding: '32px 24px',
-                        color: '#f1f1f1',
-                        boxShadow: '0 16px 40px -15px rgba(0,0,0,0.6)',
-                        overflow: 'hidden'
+                        backgroundColor: '#111111', // استفاده از رنگ سالید به جای ترانسپرنت + بلر برای پرفورمنس
+                        borderRadius: '28px',
+                        padding: '36px 28px',
+                        color: '#ffffff',
+                        boxShadow: `0 20px 50px -15px ${data.color}30`,
+                        border: `1px solid ${data.color}40`,
+                        willChange: 'transform, opacity',
                     }}
                 >
-                    <div className="flex justify-between items-center mb-6">
+                    {/* بک‌گراند گرادیانت رنگی */}
+                    <div
+                        className="absolute inset-0 opacity-10 transition-opacity duration-500 group-hover:opacity-20 pointer-events-none"
+                        style={{
+                            background: `linear-gradient(135deg, ${data.color} 0%, transparent 70%)`
+                        }}
+                    />
+
+                    <div className="flex justify-between items-center mb-8 relative z-10">
                         <div
-                            className="w-12 h-12 rounded-full flex items-center justify-center text-xl font-bold border"
+                            className="w-14 h-14 rounded-2xl flex items-center justify-center text-2xl font-bold shadow-lg"
                             style={{
-                                backgroundColor: `${data.color}20`,
-                                color: data.color,
-                                borderColor: `${data.color}40`
+                                backgroundColor: data.color,
+                                color: '#111',
                             }}
                         >
                             {data.icon.charAt(0).toUpperCase()}
                         </div>
-                        <span className="text-white/30 text-2xl font-light font-mono">{data.number}</span>
+                        <span className="text-white/20 text-4xl font-black font-mono tracking-tighter">{data.number}</span>
                     </div>
 
-                    <h3 className="text-2xl font-bold mb-3 text-white">{data.title}</h3>
-                    <p className="text-white/70 text-base leading-relaxed mb-auto">
+                    <h3 className="text-2xl font-extrabold mb-4 text-white relative z-10">{data.title}</h3>
+                    <p className="text-white/60 text-sm leading-relaxed mb-auto relative z-10 font-medium">
                         {data.desc}
                     </p>
 
-                    <div className="flex flex-wrap gap-2 mt-6">
+                    <div className="flex flex-wrap gap-2 mt-6 relative z-10">
                         {data.tags.slice(0, 3).map((tag, i) => (
                             <span
                                 key={i}
-                                className="text-xs uppercase tracking-wider px-2.5 py-1 rounded-md bg-white/5 text-white/60 border border-white/10"
+                                // کلاس inline-block اضافه شد
+                                className="inline-block text-[10px] font-bold uppercase tracking-widest px-3 py-1.5 rounded-full bg-white/5 text-white/80 border border-white/10"
                             >
                                 {tag}
                             </span>
                         ))}
                     </div>
+
                 </div>
             </Html>
         </group>

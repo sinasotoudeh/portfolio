@@ -95,6 +95,7 @@ export default function WorkMinimal() {
     return (
         <div
             ref={containerRef}
+            id='work'
             className={styles.scrollContainer}
             style={{ height: isMobile ? 'auto' : `${(PROJECTS_DATA.length + 0.8) * 100}vh` }}
         >
