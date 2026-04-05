@@ -56,7 +56,7 @@ export default function ProcessSection() {
             {/* لایه تصویر پس‌زمینه - منطبق با رفتار سکشن قبلی */}
             <div
                 className={styles.bgImage}
-                style={{ backgroundImage: "url('/images/process/e16c4c84-5ae3-4cb3-9ffa-1dbc90cdddde (1).png')" }}
+                style={{ backgroundImage: "url('/images/process/default.png')" }}
             />
 
 
