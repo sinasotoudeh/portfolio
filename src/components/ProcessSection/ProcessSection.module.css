@@ -7,19 +7,48 @@
     align-items: center;
     padding: 0 5vw;
     transition: background-color 0.1s ease, color 0.1s ease;
-    /* Instant Brutalist Snap */
     overflow: hidden;
-    cursor: none;
-    /* Hide default cursor */
+    /* بسیار مهم برای جلوگیری از بیرون زدن تصویر */
 }
 
+/* =========================================
+   Background Image Layer
+   ========================================= */
+.bgImage {
+    position: absolute;
+    inset: 0;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
+    pointer-events: none;
+    opacity: 0.5;
+    /* کمی شفافیت را بیشتر کنید تا افکت بهتر دیده شود */
+    z-index: 0;
+
+    /* حاشیه تیز + سایه سخت (Hard Shadow) بروتالیستی */
+    filter:
+        /* ایجاد خط دور (Stroke) سفید */
+        drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(-1px -1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(1px -1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(-1px 1px 0 rgba(255, 255, 255, 0.8))
+        /* سایه سخت و رنگی با فاصله زیاد (رنگ نئونی مثل بنفش یا سبز فسفری) */
+        drop-shadow(20px 20px 0 rgba(138, 43, 226, 0.9));
+
+    transition: filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+}
+
+
+
 .content {
+    position: relative;
+    z-index: 1;
+    /* قرارگیری محتوا روی تصویر */
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
     width: 100%;
     align-items: center;
 }
+
+
 
 /* Brutalist Typography */
 .titlesList {
@@ -34,12 +63,19 @@
     line-height: 0.9;
     margin: 0;
     padding: 10px 0;
-    cursor: none;
-    transition: opacity 0.3s ease, -webkit-text-stroke 0.3s ease, color 0.3s ease;
+    /* Transition آپدیت شد: transform به اینجا منتقل شد تا برگشت هم نرم باشد */
+    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, -webkit-text-stroke 0.3s ease, color 0.3s ease;
     transform-origin: left;
     display: flex;
     align-items: flex-start;
     gap: 1rem;
+    cursor: inherit;
+    /* کرسر را از پرنت می‌گیرد */
+}
+
+.titleWrapper {
+    width: 100%;
+    cursor: pointer;
 }
 
 .index {
@@ -51,16 +87,17 @@
 /* State Switch: Stroke Effect */
 .titleMuted {
     color: transparent;
-    -webkit-text-stroke: 1px currentColor;
-    opacity: 0.3;
+    -webkit-text-stroke: 4px currentColor;
+    opacity: 1;
+    z-index: 5;
+
 }
 
 .titleActive {
     color: currentColor;
     -webkit-text-stroke: 0px transparent;
     transform: translateX(20px);
-    /* Hardware accelerated move */
-    transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1);
+    /* Transition از اینجا حذف شد چون در .title قرار گرفت */
 }
 
 /* Description & Glitchy/Split text */
@@ -68,7 +105,6 @@
     display: flex;
     align-items: center;
     min-height: 200px;
-    /* Prevent layout shift */
 }
 
 .description {
@@ -78,7 +114,6 @@
     margin: 0;
     max-width: 600px;
     perspective: 1000px;
-    /* 3D context for GSAP rotateX */
 }
 
 .wordWrapper {
@@ -91,4 +126,47 @@
     display: inline-block;
     transform-origin: 0% 50% -50px;
     will-change: transform, opacity;
+}
+
+/* =========================================
+   Mobile Responsiveness (Reverted to standard)
+   ========================================= */
+@media (max-width: 992px) {
+    .container {
+        padding: 5rem 5vw;
+        align-items: flex-start;
+    }
+
+    .content {
+        display: flex;
+        flex-direction: column;
+        gap: 2rem;
+        align-items: flex-start;
+    }
+
+    .titlesList {
+        width: 100%;
+    }
+
+    .title {
+        font-size: clamp(3.5rem, 15vw, 6rem);
+        width: 100%;
+        text-align: left;
+        justify-content: flex-start;
+    }
+
+    .titleActive {
+        transform: translateX(10px);
+    }
+
+    .descriptionContainer {
+        width: 100%;
+        min-height: auto;
+        margin-top: 1rem;
+    }
+
+    .description {
+        font-size: 1.25rem;
+        max-width: 100%;
+    }
 }
