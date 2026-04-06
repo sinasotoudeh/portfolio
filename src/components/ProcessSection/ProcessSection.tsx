@@ -8,43 +8,32 @@ import { processNodes } from '../../data/processData';
 import styles from './ProcessSection.module.css';
 import clsx from 'clsx';
 
-// ثبت پلاگین اسکرول ترایگر
 if (typeof window !== 'undefined') {
     gsap.registerPlugin(ScrollTrigger);
 }
 
 export default function ProcessSection() {
-    // استیت‌ها
     const [scrollIndex, setScrollIndex] = useState<number | null>(null);
     const [hoverIndex, setHoverIndex] = useState<number | null>(null);
     const [windowWidth, setWindowWidth] = useState<number>(0);
 
-    // رفرنس‌ها
     const sectionRef = useRef<HTMLElement>(null);
     const wrapperRef = useRef<HTMLDivElement>(null);
     const imagesRef = useRef<(HTMLImageElement | null)[]>([]);
 
-    // منطق نمایش: اولویت با هاور است
     const displayIndex = hoverIndex !== null ? hoverIndex : scrollIndex;
     const activeNode = displayIndex !== null ? processNodes[displayIndex] : null;
 
-    // مدیریت Resize و به‌روزرسانی ابعاد
     useEffect(() => {
         let timeoutId: NodeJS.Timeout;
-
         const handleResize = () => {
             setWindowWidth(window.innerWidth);
-
-            // استفاده از Debounce برای آپدیت کردن محاسبات GSAP
             clearTimeout(timeoutId);
             timeoutId = setTimeout(() => {
                 ScrollTrigger.refresh();
             }, 150);
         };
-
-        // مقداردهی اولیه
         handleResize();
-
         window.addEventListener('resize', handleResize);
         return () => {
             window.removeEventListener('resize', handleResize);
@@ -65,10 +54,8 @@ export default function ProcessSection() {
         });
     }, [activeNode, windowWidth, isMobile, isTablet]);
 
-    // پاکسازی آرایه رفرنس تصاویر قبل از رندر جدید برای جلوگیری از انباشت رفرنس‌های قدیمی
     imagesRef.current = imagesRef.current.slice(0, visibleImages.length);
 
-    // منطق ScrollTrigger با Context
     useEffect(() => {
         if (!sectionRef.current || !wrapperRef.current) return;
 
@@ -96,28 +83,36 @@ export default function ProcessSection() {
             });
         }, wrapperRef);
 
-        return () => {
-            ctx.revert();
-        };
-    }, []); // عدم وابستگی به متغیرهای رندر برای جلوگیری از ایجاد مجدد pin-spacer
+        return () => ctx.revert();
+    }, []);
 
-    // منطق انیمیشن‌های متن و تصویر
     useEffect(() => {
         if (!sectionRef.current) return;
 
         const ctx = gsap.context(() => {
+            // انیمیشن آکاردیونی کانتینر توضیحات (بدون تغییر ارتفاع واقعی)
+            const descWrapper = sectionRef.current?.querySelector(`.${styles.absoluteDescription}`);
+            if (descWrapper && displayIndex !== null) {
+                gsap.fromTo(descWrapper,
+                    { clipPath: 'inset(0% 0% 100% 0%)' },
+                    { clipPath: 'inset(0% 0% 0% 0%)', duration: 0.8, ease: 'power4.out', overwrite: true }
+                );
+            }
+
+            // انیمیشن کلمات توضیحات
             const descriptionElements = sectionRef.current?.querySelectorAll(`.${styles.word}`);
-            if (descriptionElements && displayIndex !== null) {
+            if (descriptionElements && descriptionElements.length > 0 && displayIndex !== null) {
                 gsap.fromTo(
                     descriptionElements,
                     { y: 30, opacity: 0, rotateX: -60 },
                     {
                         y: 0, opacity: 1, rotateX: 0,
-                        duration: 0.6, stagger: 0.02, ease: 'power3.out', overwrite: true
+                        duration: 0.6, stagger: 0.015, ease: 'power3.out', overwrite: true, delay: 0.1
                     }
                 );
             }
 
+            // انیمیشن تصاویر
             const validImages = imagesRef.current.filter(Boolean);
             if (displayIndex !== null && validImages.length > 0 && activeNode) {
                 validImages.forEach((img, i) => {
@@ -149,7 +144,6 @@ export default function ProcessSection() {
         return () => ctx.revert();
     }, [displayIndex, activeNode, visibleImages, isMobile]);
 
-    // توابع کمکی و هندلرها
     const splitText = useCallback((text: string) => {
         return text.split(' ').map((word, index) => (
             <span key={index} className={styles.wordWrapper}>
@@ -226,17 +220,18 @@ export default function ProcessSection() {
                                         <span className={styles.index}>{node.id}</span>
                                         {node.title}
                                     </h2>
+
+                                    {/* نمایش توضیحات به صورت ابسولوت فقط برای آیتم فعال */}
+                                    {isActive && (
+                                        <div className={styles.absoluteDescription}>
+                                            <p className={styles.description}>
+                                                {splitText(node.description)}
+                                            </p>
+                                        </div>
+                                    )}
                                 </div>
                             );
                         })}
-                    </div>
-
-                    <div className={styles.descriptionContainer}>
-                        {activeNode && (
-                            <p className={styles.description}>
-                                {splitText(activeNode.description)}
-                            </p>
-                        )}
                     </div>
                 </div>
             </section>
