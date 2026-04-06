@@ -1,14 +1,20 @@
 /* components/ProcessSection/ProcessSection.module.css */
 
+.wrapper {
+    position: relative;
+    width: 100%;
+}
+
 .container {
     position: relative;
-    min-height: 100vh;
+    height: 100vh;
+    /* الزام ارتفاع دقیق اسکرین */
     display: flex;
     align-items: center;
     padding: 0 5vw;
-    transition: background-color 0.1s ease, color 0.1s ease;
+    transition: background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.6s ease;
     overflow: hidden;
-    /* بسیار مهم برای جلوگیری از بیرون زدن تصویر */
+    will-change: transform;
 }
 
 /* =========================================
@@ -22,38 +28,67 @@
     background-repeat: no-repeat;
     pointer-events: none;
     opacity: 0.5;
-    /* کمی شفافیت را بیشتر کنید تا افکت بهتر دیده شود */
     z-index: 0;
-
-    /* حاشیه تیز + سایه سخت (Hard Shadow) بروتالیستی */
     filter:
-        /* ایجاد خط دور (Stroke) سفید */
-        drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(-1px -1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(1px -1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(-1px 1px 0 rgba(255, 255, 255, 0.8))
-        /* سایه سخت و رنگی با فاصله زیاد (رنگ نئونی مثل بنفش یا سبز فسفری) */
-        drop-shadow(20px 20px 0 rgba(138, 43, 226, 0.9));
-
-    transition: filter 0.5s cubic-bezier(0.16, 1, 0.3, 1);
+        drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(-1px -1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(1px -1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(-1px 1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(20px 20px 0 rgba(138, 43, 226, 0.9));
+    transition: opacity 0.6s ease, transform 0.6s ease, filter 0.5s ease;
+    transform: scale(1);
 }
 
+.bgImageHidden {
+    opacity: 0;
+    transform: scale(1.05);
+}
 
+/* =========================================
+   Fixed/Animated Images Layer
+   ========================================= */
+.imagesContainer {
+    position: absolute;
+    inset: 0;
+    pointer-events: none;
+    z-index: 1;
+    overflow: hidden;
+    width: 100%;
+    height: 100%;
+}
 
+.fixedImage {
+    position: absolute;
+    height: 15vh;
+    min-height: 80px;
+    max-height: 200px;
+    width: auto;
+    object-fit: contain;
+    will-change: transform, opacity;
+    transform-origin: center center;
+    filter: drop-shadow(8px 20px 24px rgba(0, 0, 0, 0.25)) drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.2));
+}
+
+/* =========================================
+   Content & Typography
+   ========================================= */
 .content {
     position: relative;
-    z-index: 1;
-    /* قرارگیری محتوا روی تصویر */
+    z-index: 2;
     display: grid;
     grid-template-columns: 1fr 1fr;
     gap: 4rem;
     width: 100%;
     align-items: center;
+    pointer-events: none;
+    padding-top: 7vh;
 }
 
-
-
-/* Brutalist Typography */
 .titlesList {
     display: flex;
     flex-direction: column;
+    pointer-events: auto;
+}
+
+.titleWrapper {
+    width: 100%;
+    cursor: pointer;
 }
 
 .title {
@@ -63,19 +98,12 @@
     line-height: 0.9;
     margin: 0;
     padding: 10px 0;
-    /* Transition آپدیت شد: transform به اینجا منتقل شد تا برگشت هم نرم باشد */
     transition: transform 0.4s cubic-bezier(0.16, 1, 0.3, 1), opacity 0.3s ease, -webkit-text-stroke 0.3s ease, color 0.3s ease;
     transform-origin: left;
     display: flex;
     align-items: flex-start;
     gap: 1rem;
     cursor: inherit;
-    /* کرسر را از پرنت می‌گیرد */
-}
-
-.titleWrapper {
-    width: 100%;
-    cursor: pointer;
 }
 
 .index {
@@ -84,27 +112,31 @@
     margin-top: 1rem;
 }
 
-/* State Switch: Stroke Effect */
 .titleMuted {
     color: transparent;
-    -webkit-text-stroke: 4px currentColor;
-    opacity: 1;
-    z-index: 5;
-
+    -webkit-text-stroke: 3px currentColor;
+    opacity: 0.4;
 }
 
 .titleActive {
     color: currentColor;
     -webkit-text-stroke: 0px transparent;
-    transform: translateX(20px);
-    /* Transition از اینجا حذف شد چون در .title قرار گرفت */
+    transform: translateX(30px);
 }
 
-/* Description & Glitchy/Split text */
+/* کلاس جدید برای وضعیت هاور روی آیتم غیر اسکرول شده */
+.titleHollow {
+    color: transparent;
+    -webkit-text-stroke: 2px black;
+    transform: translateX(30px);
+    opacity: 1;
+}
+
 .descriptionContainer {
     display: flex;
     align-items: center;
     min-height: 200px;
+    pointer-events: auto;
 }
 
 .description {
@@ -114,6 +146,7 @@
     margin: 0;
     max-width: 600px;
     perspective: 1000px;
+    text-shadow: 0px 4px 20px rgba(0, 0, 0, 0.4);
 }
 
 .wordWrapper {
@@ -124,12 +157,12 @@
 
 .word {
     display: inline-block;
-    transform-origin: 0% 50% -50px;
+    transform-origin: 0% 100%;
     will-change: transform, opacity;
 }
 
 /* =========================================
-   Mobile Responsiveness (Reverted to standard)
+   Mobile Responsiveness
    ========================================= */
 @media (max-width: 992px) {
     .container {
@@ -155,8 +188,9 @@
         justify-content: flex-start;
     }
 
-    .titleActive {
-        transform: translateX(10px);
+    .titleActive,
+    .titleHollow {
+        transform: translateX(15px);
     }
 
     .descriptionContainer {
@@ -168,5 +202,6 @@
     .description {
         font-size: 1.25rem;
         max-width: 100%;
+        text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.6);
     }
 }
