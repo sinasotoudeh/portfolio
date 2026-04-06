@@ -213,3 +213,20 @@
         text-shadow: 0px 2px 10px rgba(0, 0, 0, 0.6);
     }
 }
+
+/* =========================================
+   Desktop Specific Overrides
+   ========================================= */
+@media (min-width: 993px) {
+
+    /* انتقال توضیحات آیتم آخر به بالای تایتل */
+    .descriptionTop {
+        top: auto;
+        bottom: 100%;
+        /* قرارگیری دقیقاً بالای تایتل */
+        padding-top: 0;
+        padding-bottom: 1rem;
+        /* تغییر پدینگ از بالا به پایین برای حفظ فاصله */
+        transform-origin: bottom left;
+    }
+}

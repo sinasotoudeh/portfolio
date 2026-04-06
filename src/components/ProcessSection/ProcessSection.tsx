@@ -90,7 +90,6 @@ export default function ProcessSection() {
         if (!sectionRef.current) return;
 
         const ctx = gsap.context(() => {
-            // انیمیشن آکاردیونی کانتینر توضیحات (بدون تغییر ارتفاع واقعی)
             const descWrapper = sectionRef.current?.querySelector(`.${styles.absoluteDescription}`);
             if (descWrapper && displayIndex !== null) {
                 gsap.fromTo(descWrapper,
@@ -99,7 +98,6 @@ export default function ProcessSection() {
                 );
             }
 
-            // انیمیشن کلمات توضیحات
             const descriptionElements = sectionRef.current?.querySelectorAll(`.${styles.word}`);
             if (descriptionElements && descriptionElements.length > 0 && displayIndex !== null) {
                 gsap.fromTo(
@@ -112,7 +110,6 @@ export default function ProcessSection() {
                 );
             }
 
-            // انیمیشن تصاویر
             const validImages = imagesRef.current.filter(Boolean);
             if (displayIndex !== null && validImages.length > 0 && activeNode) {
                 validImages.forEach((img, i) => {
@@ -208,6 +205,7 @@ export default function ProcessSection() {
                             const isHoveredNotScrolled = displayIndex === index && hoverIndex !== null && hoverIndex !== scrollIndex;
                             const isActive = displayIndex === index;
                             const isMuted = displayIndex !== null && !isActive;
+                            const isLastItem = index === processNodes.length - 1;
 
                             return (
                                 <div key={node.id} className={styles.titleWrapper} onMouseEnter={() => handleMouseEnter(index)}>
@@ -220,10 +218,11 @@ export default function ProcessSection() {
                                         <span className={styles.index}>{node.id}</span>
                                         {node.title}
                                     </h2>
-
-                                    {/* نمایش توضیحات به صورت ابسولوت فقط برای آیتم فعال */}
                                     {isActive && (
-                                        <div className={styles.absoluteDescription}>
+                                        <div className={clsx(
+                                            styles.absoluteDescription,
+                                            isLastItem && styles.descriptionTop
+                                        )}>
                                             <p className={styles.description}>
                                                 {splitText(node.description)}
                                             </p>
