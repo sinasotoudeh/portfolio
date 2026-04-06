@@ -191,7 +191,7 @@ export default function ProcessSection() {
                                 style={{
                                     top: `${finalTop}%`,
                                     right: `${finalRight}%`,
-                                    zIndex: Math.floor(cfg.scale * 10)
+                                    zIndex: cfg.zIndex !== undefined ? cfg.zIndex : Math.floor(cfg.scale * 10)
                                 }}
                                 loading="lazy"
                             />
