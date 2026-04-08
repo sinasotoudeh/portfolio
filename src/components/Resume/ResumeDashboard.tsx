@@ -46,6 +46,7 @@ export default function ResumeDashboard() {
 
     return (
         <section
+            id='cv'
             ref={sectionRef}
             onClick={handleSectionClick}
             className={styles.root}

@@ -8,7 +8,7 @@ const NAV_LINKS = [
     { label: 'Manifesto', href: '#manifesto' },
     { label: 'Work', href: '#work' },
     { label: 'Process', href: '#process' },
-    { label: 'Team', href: '#team' },
+    { label: 'About Me!', href: '#cv' },
     { label: 'Contact', href: '#contact' },
 ];
 
