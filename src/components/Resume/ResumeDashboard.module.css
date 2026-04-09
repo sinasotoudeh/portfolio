@@ -43,18 +43,67 @@
     padding: 0;
 }
 
-.mainTitle {
+/* ── Intro Section Styles ── */
+.introSection {
+    display: flex;
+    justify-content: space-between;
+    align-items: flex;
+    /* تراز شدن از پایین برای ظاهر ژورنالی و حرفه‌ای */
     width: min(1400px, 100%);
-    font-size: clamp(2rem, 5vw, 3.5rem);
+    margin-bottom: clamp(24px, 4vw, 40px);
+    padding: 0 clamp(8px, 1vw, 16px);
+    gap: clamp(10px, 3vw, 24px);
+}
+
+.introLeft {
+    display: flex;
+    flex-direction: column;
+    text-align: left;
+    white-space: nowrap;
+    /* جلوگیری از شکستن خودکار خطوط */
+}
+
+.introRight {
+    display: flex;
+    flex-direction: column;
+    text-align: right;
+    gap: clamp(10px, 1.5vw, 20px);
+    padding-top: 2vw;
+    /* فاصله بین دو پاراگراف */
+    /* white-space: nowrap; */
+    /* جلوگیری از شکستن خودکار خطوط */
+}
+
+/* تایپوگرافی سیال برای تغییر سایز بی‌نقص در هر عرضی */
+.mainTitle {
+    font-size: clamp(1.2rem, 7vw, 7rem);
     font-weight: 800;
     color: var(--c-text1);
-    margin-bottom: 24px;
-    text-align: left;
+    margin-bottom: clamp(12px, 2vw, 24px);
     letter-spacing: -0.02em;
     background: linear-gradient(90deg, #fff, var(--c-text2));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
 }
+
+.subTitle {
+    font-size: clamp(0.7rem, 4vw, 4rem);
+    font-weight: 600;
+    color: var(--c-text1);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+}
+
+.introText {
+    font-size: clamp(0.6rem, 1.5vw, 1.5rem);
+    font-weight: 400;
+    color: #ff9d00;
+    /* رنگ باید حتماً سفید خالص باشد */
+    mix-blend-mode: difference;
+    /* اعمال افکت ترکیب رنگ */
+    line-height: 1.6;
+}
+
 
 /* ── Window ── */
 .window {

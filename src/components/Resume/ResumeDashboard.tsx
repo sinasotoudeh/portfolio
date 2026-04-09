@@ -42,6 +42,7 @@ export default function ResumeDashboard() {
     const currentTab = resumeData.find(t => t.id === activeTab)!;
     const currentSection = currentTab?.subSections.find(s => s.id === activeSection) ?? currentTab?.subSections[0];
     const hasSubSections = currentTab.subSections.length > 1;
+    const bgColor = '#fbecc3ff';
 
     return (
         <section
@@ -50,15 +51,46 @@ export default function ResumeDashboard() {
             onClick={handleSectionClick}
             className={styles.root}
             style={{
-                backgroundImage: "url('/images/cv/bg.png')",
-                backgroundSize: 'cover',
-                backgroundPosition: 'center'
+                backgroundImage: `linear-gradient(to top, ${bgColor} 5%, transparent 20%), url('/images/cv/bg.png')`,
+                backgroundSize: '100% 68vw, 100% auto',
+                backgroundRepeat: 'no-repeat',
+                backgroundPosition: 'top center', // یا 'center center' بسته به نیاز شما
+                backgroundColor: bgColor,
+
             }}
 
         >
-            {/* عنوان بخش اضافه شده به بالای ماک */}
-            <h1 className={styles.mainTitle}>All About Me!</h1>
+            {/* ── Intro Section ── */}
+            <div className={styles.introSection}>
 
+                {/* بخش سمت چپ: عنوان بزرگ و جمله ابتدایی */}
+                <div className={styles.introLeft}>
+                    <h1 className={styles.mainTitle}>All About Me!</h1>
+                    <h2 className={styles.subTitle}>
+                        Before we dive into<br />
+                        the technical jargon<br />
+                        and tech stacks…<br />
+                        Hi, I’m Sina.<span className={styles.emoji} role="img" aria-label="wave">👋</span>
+                    </h2>
+                </div>
+
+                {/* بخش سمت راست: پاراگراف‌های راست‌چین */}
+                <div className={styles.introRight}>
+                    <p className={styles.introText}>
+                        Behind the code, the UI components, and the occasional debugging headaches,
+                        I’m just someone who truly enjoys learning something new every single day.<br />
+                        I might not have all the answers, but what I do have
+                        is a genuine passion for building things that live on the internet.<br />
+                    </p>
+                    <p className={styles.introText}>
+                        I love turning complex problems into
+                        beautiful, functional, and user-friendly web experiences.<br />
+                        I’m so glad you’re here—<br />
+                        let me share a bit of my story with you.
+                    </p>
+                </div>
+
+            </div>
             {/* ── Window ── */}
             <div className={styles.window}>
                 {/* Title Bar */}
