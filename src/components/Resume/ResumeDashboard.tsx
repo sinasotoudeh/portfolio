@@ -21,10 +21,35 @@ export default function ResumeDashboard() {
 
     const contentRef = useRef<HTMLDivElement>(null);
     const sectionRef = useRef<HTMLElement>(null);
+    // رفرنس جدید برای تشخیص موقعیت دقیق پنجره ماک‌آپ
+    const windowRef = useRef<HTMLDivElement>(null);
 
-    const handleSectionClick = () => {
-        if (sectionRef.current) {
-            sectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
+    const handleSectionClick = (e: React.MouseEvent<HTMLElement>) => {
+        if (!sectionRef.current || !windowRef.current) return;
+
+        // دریافت موقعیت المان‌ها نسبت به ویوپورت
+        const windowRect = windowRef.current.getBoundingClientRect();
+        const sectionRect = sectionRef.current.getBoundingClientRect();
+
+        // آفست مورد نظر شما برای نرفتن زیر Navbar (50 پیکسل)
+        const navbarOffset = 80;
+
+        // بررسی اینکه آیا کاربر بالاتر از پنجره ماک‌آپ کلیک کرده است یا روی/پایین آن
+        // e.clientY مختصات کلیک کاربر در ویوپورت را برمی‌گرداند
+        if (e.clientY < windowRect.top) {
+            // کلیک در ناحیه Intro (بالای ماک‌آپ) انجام شده است
+            // اسکرول به بالای کل سکشن با احتساب آفست
+            window.scrollTo({
+                top: window.scrollY + sectionRect.top - navbarOffset,
+                behavior: 'smooth'
+            });
+        } else {
+            // کلیک در هر نقطه‌ای از ماک‌آپ یا پایین‌تر از آن (از title bar به پایین) انجام شده است
+            // اسکرول به بالای پنجره ماک‌آپ با احتساب آفست
+            window.scrollTo({
+                top: window.scrollY + windowRect.top - navbarOffset,
+                behavior: 'smooth'
+            });
         }
     };
 
@@ -54,15 +79,12 @@ export default function ResumeDashboard() {
                 backgroundImage: `linear-gradient(to top, ${bgColor} 5%, transparent 20%), url('/images/cv/bg.png')`,
                 backgroundSize: '100% 68vw, 100% auto',
                 backgroundRepeat: 'no-repeat',
-                backgroundPosition: 'top center', // یا 'center center' بسته به نیاز شما
+                backgroundPosition: 'top center',
                 backgroundColor: bgColor,
-
             }}
-
         >
             {/* ── Intro Section ── */}
             <div className={styles.introSection}>
-
                 {/* بخش سمت چپ: عنوان بزرگ و جمله ابتدایی */}
                 <div className={styles.introLeft}>
                     <h1 className={styles.mainTitle}>All About Me!</h1>
@@ -89,10 +111,10 @@ export default function ResumeDashboard() {
                         let me share a bit of my story with you.
                     </p>
                 </div>
-
             </div>
+
             {/* ── Window ── */}
-            <div className={styles.window}>
+            <div ref={windowRef} className={styles.window}>
                 {/* Title Bar */}
                 <div className={styles.titleBar}>
                     <div className={styles.trafficLights}>
@@ -109,7 +131,9 @@ export default function ResumeDashboard() {
                     {resumeData.map(tab => (
                         <button
                             key={tab.id}
-                            onClick={(e) => { e.stopPropagation(); setActiveTab(tab.id); }}
+                            // onClick={(e) => { e.stopPropagation(); setActiveTab(tab.id); }}
+                            onClick={() => setActiveTab(tab.id)}
+
                             className={`${styles.tabBtn} ${activeTab === tab.id ? styles.tabBtnActive : ''}`}
                         >
                             <span className={styles.tabIcon}>{TAB_ICONS[tab.id]}</span>
@@ -141,7 +165,9 @@ export default function ResumeDashboard() {
                                 {currentTab.subSections.map(sub => (
                                     <button
                                         key={sub.id}
-                                        onClick={(e) => { e.stopPropagation(); setActiveSection(sub.id); }}
+                                        // onClick={(e) => { e.stopPropagation(); setActiveSection(sub.id); }}
+                                        onClick={() => setActiveSection(sub.id)}
+
                                         className={`${styles.sideItem} ${activeSection === sub.id ? styles.sideItemActive : ''}`}
                                     >
                                         {activeSection === sub.id && (
@@ -162,13 +188,15 @@ export default function ResumeDashboard() {
                     <div
                         ref={contentRef}
                         className={styles.content}
+                        onWheel={(e) => e.stopPropagation()}
+                        // 2. اگر از Lenis استفاده می‌کنید این اتریبیوت الزامی است
+                        data-lenis-prevent="true"
                         style={{
                             backgroundImage: currentSection?.background ? `linear-gradient(rgba(17, 19, 24, 0.85), rgba(17, 19, 24, 0.95)), ${currentSection.background}` : 'none',
                             backgroundSize: 'cover',
                             backgroundPosition: 'center'
                         }}
                     >
-                        {/* عنوان بزرگ ریسپانسیو */}
                         {!currentSection.hideTitle && (
                             <h3 className={styles.sectionTitle}>
                                 {currentSection.title}
@@ -184,22 +212,22 @@ export default function ResumeDashboard() {
                                     transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
                                     className={styles.contentInner}
                                 >
-
-
-
                                     <SectionContent section={currentSection} />
                                 </motion.div>
                             )}
                         </AnimatePresence>
                     </div>
                 </div>
+
                 {/* ── Mobile: Sub-section Pill Bar ── */}
                 {hasSubSections && (
                     <div className={styles.mobilePillBar}>
                         {currentTab.subSections.map(sub => (
                             <button
                                 key={sub.id}
-                                onClick={(e) => { e.stopPropagation(); setActiveSection(sub.id); }}
+                                // onClick={(e) => { e.stopPropagation(); setActiveSection(sub.id); }}
+                                onClick={() => setActiveSection(sub.id)}
+
                                 className={`${styles.mobilePill} ${activeSection === sub.id ? styles.mobilePillActive : ''}`}
                             >
                                 {sub.mobileTitle || sub.title}
@@ -207,12 +235,14 @@ export default function ResumeDashboard() {
                         ))}
                     </div>
                 )}
-                {/* ── Mobile: Bottom Nav (اکنون درون window قرار دارد) ── */}
+                {/* ── Mobile: Bottom Nav ── */}
                 <nav className={styles.mobileNav}>
                     {resumeData.map(tab => (
                         <button
                             key={tab.id}
-                            onClick={(e) => { e.stopPropagation(); setActiveTab(tab.id); }}
+                            // onClick={(e) => { e.stopPropagation(); setActiveTab(tab.id); }}
+                            onClick={() => setActiveTab(tab.id)}
+
                             className={`${styles.mobileNavBtn} ${activeTab === tab.id ? styles.mobileNavBtnActive : ''}`}
                         >
                             <span className={styles.mobileNavIcon}>{TAB_ICONS[tab.id]}</span>
@@ -226,8 +256,6 @@ export default function ResumeDashboard() {
                         </button>
                     ))}
                 </nav>
-
-
             </div>
         </section>
     );
