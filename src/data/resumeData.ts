@@ -34,7 +34,7 @@ export const resumeData: TabData[] = [
             {
                 id: "summary",
                 title: "Professional Summary",
-                background: "url('/images/Process/build/mechanical-gear.png')",
+                background: "url('/images/cv/content.png')",
 
                 content: {
                     name: "Sina Sotoudeh",
@@ -55,6 +55,8 @@ export const resumeData: TabData[] = [
                 id: "core",
                 title: "Core Technologies & Languages",
                 mobileTitle: "Core Tech",
+                background: "url('/images/cv/profile.png')",
+
                 content: [
                     { title: "JavaScript (ES6+)", badge: "Expert", desc: "Deep understanding of core mechanisms including Asynchronous Programming (Promises, Async/Await, Event Loop), Closures, Hoisting, Prototypal Inheritance, DOM manipulation and JS engine execution contexts (V8)." },
                     { title: "TypeScript", badge: "Expert", desc: "Advanced static typing, Interfaces, Generics, Utility Types, and ensuring type safety across large-scale applications." },

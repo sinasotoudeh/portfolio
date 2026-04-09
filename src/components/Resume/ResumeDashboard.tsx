@@ -192,9 +192,12 @@ export default function ResumeDashboard() {
                         // 2. اگر از Lenis استفاده می‌کنید این اتریبیوت الزامی است
                         data-lenis-prevent="true"
                         style={{
-                            backgroundImage: currentSection?.background ? `linear-gradient(rgba(17, 19, 24, 0.85), rgba(17, 19, 24, 0.95)), ${currentSection.background}` : 'none',
+                            backgroundImage: `linear-gradient(rgba(17, 19, 24, 0), rgba(17, 19, 24, 0)), url('/images/cv/content.png')`,
+                            // backgroundImage: currentSection?.background ? `linear-gradient(rgba(17, 19, 24, 0.5), rgba(17, 19, 24, 0.5)), ${currentSection.background}` : 'none',
                             backgroundSize: 'cover',
-                            backgroundPosition: 'center'
+                            backgroundPosition: 'top center',
+                            backgroundRepeat: 'no-repeat',
+
                         }}
                     >
                         {!currentSection.hideTitle && (
