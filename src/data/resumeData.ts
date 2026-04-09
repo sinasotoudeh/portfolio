@@ -1,11 +1,21 @@
 // src/data/resumeData.ts
 import React from "react";
 
+export type CardContent = {
+    title: string;
+    desc: string;
+    icon?: React.ReactNode | string;
+    badge?: string;
+};
+
 export type SubSection = {
     id: string;
     title: string;
     content: React.ReactNode | any;
     background?: string;
+    mobileTitle?: string;
+    hideTitle?: boolean;
+
 
 };
 
@@ -32,7 +42,7 @@ export const resumeData: TabData[] = [
                     contacts: ["s.sotudeh1@gmail.com", "+989027405145", "Tehran, Iran"],
                     links: ["linkedin.com/in/sina-sotoudeh", "Github.com/sinso", "Sinso.ir"],
                     text: "Product-minded Front-End Developer with 3+ years of experience translating sophisticated UI/UX designs into high-performance, interactive web applications. Armed with deep expertise in core web technologies (JavaScript, HTML/CSS) and modern frameworks (React, Next.js, TypeScript), alongside a rare, advanced background in Technical SEO. I specialize in building dynamic e-commerce solutions and advanced admin dashboards, ensuring products are functionally robust, visually compelling, and architecturally optimized for search engines.",
-                    quote: "I don’t just optimize for search engines—I architect systems where exceptional user experience and search visibility emerge as natural byproducts of quality engineering."
+                    // quote: "I don’t just optimize for search engines—I architect systems where exceptional user experience and search visibility emerge as natural byproducts of quality engineering."
                 }
             }
         ]
@@ -44,24 +54,27 @@ export const resumeData: TabData[] = [
             {
                 id: "core",
                 title: "Core Technologies & Languages",
+                mobileTitle: "Core Tech",
                 content: [
-                    { title: "JavaScript (ES6+)", desc: "Deep understanding of core mechanisms including Asynchronous Programming (Promises, Async/Await, Event Loop), Closures, Hoisting, Prototypal Inheritance, DOM manipulation and JS engine execution contexts (V8)." },
-                    { title: "TypeScript", desc: "Advanced static typing, Interfaces, Generics, Utility Types, and ensuring type safety across large-scale applications." },
-                    { title: "HTML5 & CSS3", desc: "Semantic HTML, Web Accessibility (A11y/WCAG guidelines), Technical SEO fundamentals, CSS Variables, Flexbox, and CSS Grid architecture." }
+                    { title: "JavaScript (ES6+)", badge: "Expert", desc: "Deep understanding of core mechanisms including Asynchronous Programming (Promises, Async/Await, Event Loop), Closures, Hoisting, Prototypal Inheritance, DOM manipulation and JS engine execution contexts (V8)." },
+                    { title: "TypeScript", badge: "Expert", desc: "Advanced static typing, Interfaces, Generics, Utility Types, and ensuring type safety across large-scale applications." },
+                    { title: "HTML5 & CSS3", badge: "Expert", desc: "Semantic HTML, Web Accessibility (A11y/WCAG guidelines), Technical SEO fundamentals, CSS Variables, Flexbox, and CSS Grid architecture." }
                 ]
             },
             {
                 id: "frameworks",
                 title: "Frontend Frameworks & Libraries",
+                mobileTitle: "Frontend Tools",
                 content: [
-                    { title: "React.js (Primary Expert)", desc: "Advanced component architecture, React Hooks (Custom Hooks, useMemo, useCallback), Component Lifecycle, Context API, Higher-Order Components (HOCs), and performance optimization techniques (Code Splitting, Lazy Loading)." },
-                    { title: "Next.js (SSR / SSG)", desc: "Proficient in Server-Side Rendering, Static Site Generation, Incremental Static Regeneration (ISR), App/Pages Router, and API routes for scalable web applications." },
-                    { title: "Vue.js (Secondary)", desc: "Working knowledge of Vue 3, Composition API, Nuxt.js fundamentals, and state management using Pinia." }
+                    { title: "React.js", badge: "Primary Expert", desc: "Advanced component architecture, React Hooks (Custom Hooks, useMemo, useCallback), Component Lifecycle, Context API, Higher-Order Components (HOCs), and performance optimization techniques (Code Splitting, Lazy Loading)." },
+                    { title: "Next.js", badge: "SSR / SSG", desc: "Proficient in Server-Side Rendering, Static Site Generation, Incremental Static Regeneration (ISR), App/Pages Router, and API routes for scalable web applications." },
+                    { title: "Vue.js", badge: "Secondary", desc: "Working knowledge of Vue 3, Composition API, Nuxt.js fundamentals, and state management using Pinia." }
                 ]
             },
             {
                 id: "state_data",
                 title: "State Management & Data Fetching",
+                mobileTitle: "State Management",
                 content: [
                     { title: "Client State", desc: "Zustand (Highly proficient), Redux / Redux Toolkit (practical experience)." },
                     { title: "Server State", desc: "React Query (TanStack Query) for efficient data fetching, caching, and synchronization. Familiar with SWR and Apollo GraphQL." },
@@ -71,15 +84,17 @@ export const resumeData: TabData[] = [
             {
                 id: "styling_ui",
                 title: "Styling, UI/UX & Design Systems",
+                mobileTitle: "UI/UX",
                 content: [
-                    { title: "CSS Frameworks", desc: "Mastery of Tailwind CSS as the primary utility-first framework, alongside solid experience with CSS preprocessors like SCSS/Sass." },
-                    { title: "UI Libraries", desc: "Familiar with Material UI (MUI), Ant Design, Radix UI, Storybook (for documenting reusable component libraries)." },
-                    { title: "UI/UX Implementation", desc: "Pixel-perfect and Mobile-First responsive design, precise Figma-to-Code translation, and implementation of complex UI animations (using Framer Motion / GSAP)." }
+                    { title: "CSS Frameworks", badge: "Expert", desc: "Mastery of Tailwind CSS as the primary utility-first framework, alongside solid experience with CSS preprocessors like SCSS/Sass." },
+                    { title: "UI Libraries", badge: "Proficient", desc: "Familiar with Material UI (MUI), Ant Design, Radix UI, Storybook (for documenting reusable component libraries)." },
+                    { title: "UI/UX Implementation", badge: "Expert", desc: "Pixel-perfect and Mobile-First responsive design, precise Figma-to-Code translation, and implementation of complex UI animations (using Framer Motion / GSAP)." }
                 ]
             },
             {
                 id: "architecture_perf",
-                title: "Architecture, Performance & Web Security",
+                title: "Architecture, Performance & Security",
+                mobileTitle: "Architecture",
                 content: [
                     { title: "Software Architecture", desc: "Clean Code principles, SOLID, DRY, YAGNI, Component-Driven Development (CDD), and awareness of Micro-frontends and Monorepo architectures (Nx / Turborepo)." },
                     { title: "Performance Optimization", desc: "Monitoring and improving Core Web Vitals (LCP, FID, CLS), utilizing Lighthouse, efficient bundle size management, and caching strategies." },
@@ -89,6 +104,7 @@ export const resumeData: TabData[] = [
             {
                 id: "testing_tools",
                 title: "Testing, Build Tools & Version Control",
+                mobileTitle: "Dev Tools",
                 content: [
                     { title: "Quality Assurance (E2E & Unit Testing)", desc: "Jest, React Testing Library (RTL), Vitest, and familiarity with Cypress/Playwright." },
                     { title: "Build Tools & Bundlers", desc: "Vite, Webpack, Babel, and ESLint/Prettier configuration." },
@@ -97,12 +113,13 @@ export const resumeData: TabData[] = [
             },
             {
                 id: "cross_functional",
-                title: "Cross-Functional & Complementary Expertise",
+                title: "Cross-Functional & Complementary",
+                mobileTitle: "Complementary",
                 content: [
-                    { title: "Technical SEO & Search Systems", desc: "Deep understanding of Googlebot behavior, crawl budget, log file analysis, SSR/CSR rendering strategies, complex Hreflang architecture, and dynamic JSON-LD schema generation." },
-                    { title: "CMS & Platform Architecture", desc: "Implementation of Headless CMS architectures, deep expertise in WordPress (core optimization, custom development), URL rewrite engineering, and secure platform migrations." },
-                    { title: "Advanced AI & Automation", desc: "High-level expertise in LLM prompt orchestration (GPT, Claude, Gemini) for debugging, refactoring, large-scale intent clustering, entity normalization pipelines, and automated SEO QA." },
-                    { title: "Backend & Data", desc: "Data modeling (MySQL, PostgreSQL, MongoDB), Docker containerization, CDN configurations, and building automated data pipelines/scraping with Puppeteer/Playwright and n8n." }
+                    { title: "Technical SEO & Search Systems", badge: "Expert", desc: "Deep understanding of Googlebot behavior, crawl budget, log file analysis, SSR/CSR rendering strategies, complex Hreflang architecture, and dynamic JSON-LD schema generation." },
+                    { title: "CMS & Platform Architecture", badge: "Expert", desc: "Implementation of Headless CMS architectures, deep expertise in WordPress (core optimization, custom development), URL rewrite engineering, and secure platform migrations." },
+                    { title: "Advanced AI & Automation", badge: "Expert", desc: "High-level expertise in LLM prompt orchestration (GPT, Claude, Gemini) for debugging, refactoring, large-scale intent clustering, entity normalization pipelines, and automated SEO QA." },
+                    { title: "Backend & Data", badge: "Personal Perojects", desc: "Data modeling (MySQL, PostgreSQL, MongoDB), Docker containerization, CDN configurations, and building automated data pipelines/scraping with Puppeteer/Playwright and n8n." }
                 ]
             }
         ]
@@ -114,6 +131,7 @@ export const resumeData: TabData[] = [
             {
                 id: "sadr",
                 title: "Sadr Andishan Novin",
+                hideTitle: true,
                 content: {
                     name: "Sadr Andishan Novin",
                     role: "Senior Technical SEO Engineer",
@@ -128,6 +146,8 @@ export const resumeData: TabData[] = [
             {
                 id: "atajoy",
                 title: "Atajoy",
+                hideTitle: true,
+
                 content: {
                     name: "Atajoy",
                     role: "Technical SEO Engineer",
@@ -143,6 +163,8 @@ export const resumeData: TabData[] = [
             {
                 id: "steel_center",
                 title: "Steel Center",
+                hideTitle: true,
+
                 content: {
                     name: "Steel Center",
                     role: "Technical SEO Specialist & Web Developer",
@@ -163,6 +185,8 @@ export const resumeData: TabData[] = [
             {
                 id: "ai_seo_workflow",
                 title: "AI-Powered SEO System",
+                hideTitle: true,
+
                 content: {
                     name: "AI-Powered SEO Workflow System",
                     role: "Personal Project",
@@ -172,6 +196,8 @@ export const resumeData: TabData[] = [
             {
                 id: "latam_thesis",
                 title: "Data Platform Architecture",
+                hideTitle: true,
+
                 content: {
                     name: "Latin American Literature Bibliography Research Platform",
                     role: "Thesis Project",
@@ -181,6 +207,8 @@ export const resumeData: TabData[] = [
             {
                 id: "mapping_system",
                 title: "Cross-Platform Mapping",
+                hideTitle: true,
+
                 content: {
                     name: "Cross-Platform Mapping & Localization System",
                     role: "Personal Project (Baidu → Open Maps)",

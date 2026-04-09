@@ -20,9 +20,8 @@ export default function ResumeDashboard() {
     const [sheetOpen, setSheetOpen] = useState(false);
 
     const contentRef = useRef<HTMLDivElement>(null);
-    const sectionRef = useRef<HTMLElement>(null); // رفرنس برای کل سکشن
+    const sectionRef = useRef<HTMLElement>(null);
 
-    // اسکرول نرم به داخل اسکرین هنگام کلیک روی سکشن
     const handleSectionClick = () => {
         if (sectionRef.current) {
             sectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'center' });
@@ -50,11 +49,18 @@ export default function ResumeDashboard() {
             ref={sectionRef}
             onClick={handleSectionClick}
             className={styles.root}
-            style={{ position: 'relative', height: '100vh', overflow: 'hidden' }} // تنظیم ارتفاع دقیق برابر با ویوپورت
-        >
-            {/* ── Desktop: macOS Window ── */}
-            <div className={styles.window}>
+            style={{
+                backgroundImage: "url('/images/cv/bg.png')",
+                backgroundSize: 'cover',
+                backgroundPosition: 'center'
+            }}
 
+        >
+            {/* عنوان بخش اضافه شده به بالای ماک */}
+            <h1 className={styles.mainTitle}>All About Me!</h1>
+
+            {/* ── Window ── */}
+            <div className={styles.window}>
                 {/* Title Bar */}
                 <div className={styles.titleBar}>
                     <div className={styles.trafficLights}>
@@ -121,7 +127,21 @@ export default function ResumeDashboard() {
                     </AnimatePresence>
 
                     {/* Content */}
-                    <div ref={contentRef} className={styles.content}>
+                    <div
+                        ref={contentRef}
+                        className={styles.content}
+                        style={{
+                            backgroundImage: currentSection?.background ? `linear-gradient(rgba(17, 19, 24, 0.85), rgba(17, 19, 24, 0.95)), ${currentSection.background}` : 'none',
+                            backgroundSize: 'cover',
+                            backgroundPosition: 'center'
+                        }}
+                    >
+                        {/* عنوان بزرگ ریسپانسیو */}
+                        {!currentSection.hideTitle && (
+                            <h3 className={styles.sectionTitle}>
+                                {currentSection.title}
+                            </h3>
+                        )}
                         <AnimatePresence mode="wait">
                             {currentSection && (
                                 <motion.div
@@ -132,10 +152,8 @@ export default function ResumeDashboard() {
                                     transition={{ duration: 0.22, ease: [0.25, 0.46, 0.45, 0.94] }}
                                     className={styles.contentInner}
                                 >
-                                    {/* عنوان گزینه در بالای محتوا */}
-                                    <h3 style={{ marginBottom: '1.5rem', fontSize: '1.25rem', fontWeight: 'bold' }}>
-                                        {currentSection.title}
-                                    </h3>
+
+
 
                                     <SectionContent section={currentSection} />
                                 </motion.div>
@@ -143,45 +161,42 @@ export default function ResumeDashboard() {
                         </AnimatePresence>
                     </div>
                 </div>
-            </div>
-
-            {/* ── Mobile: Bottom Nav ── */}
-            <nav
-                className={styles.mobileNav}
-                style={{ position: 'absolute', bottom: 0, left: 0, right: 0, width: '100%' }} // چسبیدن به پایین سکشن نه ویوپورت
-            >
-                {resumeData.map(tab => (
-                    <button
-                        key={tab.id}
-                        onClick={(e) => { e.stopPropagation(); setActiveTab(tab.id); }}
-                        className={`${styles.mobileNavBtn} ${activeTab === tab.id ? styles.mobileNavBtnActive : ''}`}
-                    >
-                        <span className={styles.mobileNavIcon}>{TAB_ICONS[tab.id]}</span>
-                        <span className={styles.mobileNavLabel}>{tab.title}</span>{activeTab === tab.id && (
-                            <motion.span
-                                layoutId="mobileNavDot"
-                                className={styles.mobileNavDot}
-                                transition={{ type: 'spring', stiffness: 500, damping: 40 }}
-                            />
-                        )}
-                    </button>
-                ))}
-            </nav>
-
-            {/* ── Mobile: Sub-section Pill Bar ── */}
-            {hasSubSections && (
-                <div className={styles.mobilePillBar}>
-                    {currentTab.subSections.map(sub => (
+                {/* ── Mobile: Sub-section Pill Bar ── */}
+                {hasSubSections && (
+                    <div className={styles.mobilePillBar}>
+                        {currentTab.subSections.map(sub => (
+                            <button
+                                key={sub.id}
+                                onClick={(e) => { e.stopPropagation(); setActiveSection(sub.id); }}
+                                className={`${styles.mobilePill} ${activeSection === sub.id ? styles.mobilePillActive : ''}`}
+                            >
+                                {sub.mobileTitle || sub.title}
+                            </button>
+                        ))}
+                    </div>
+                )}
+                {/* ── Mobile: Bottom Nav (اکنون درون window قرار دارد) ── */}
+                <nav className={styles.mobileNav}>
+                    {resumeData.map(tab => (
                         <button
-                            key={sub.id}
-                            onClick={(e) => { e.stopPropagation(); setActiveSection(sub.id); }}
-                            className={`${styles.mobilePill} ${activeSection === sub.id ? styles.mobilePillActive : ''}`}
+                            key={tab.id}
+                            onClick={(e) => { e.stopPropagation(); setActiveTab(tab.id); }}
+                            className={`${styles.mobileNavBtn} ${activeTab === tab.id ? styles.mobileNavBtnActive : ''}`}
                         >
-                            {sub.title}
+                            <span className={styles.mobileNavIcon}>{TAB_ICONS[tab.id]}</span>
+                            <span className={styles.mobileNavLabel}>{tab.title}</span>{activeTab === tab.id && (
+                                <motion.span
+                                    layoutId="mobileNavDot"
+                                    className={styles.mobileNavDot}
+                                    transition={{ type: 'spring', stiffness: 500, damping: 40 }}
+                                />
+                            )}
                         </button>
                     ))}
-                </div>
-            )}
+                </nav>
+
+
+            </div>
         </section>
     );
 }
@@ -201,7 +216,11 @@ function SectionContent({ section }: { section: any }) {
                         animate={{ opacity: 1, y: 0 }}
                         transition={{ delay: i * 0.06, duration: 0.3 }}
                     >
-                        <h4 className={styles.cardTitle}>{item.title}</h4>
+                        <div className={styles.cardHeader}>
+                            {item.icon && <span className={styles.cardIcon}>{item.icon}</span>}
+                            <h4 className={styles.cardTitle}>{item.title}</h4>
+                            {item.badge && <span className={styles.cardBadge}>{item.badge}</span>}
+                        </div>
                         <p className={styles.cardDesc}>{item.desc}</p>
                     </motion.div>
                 ))}

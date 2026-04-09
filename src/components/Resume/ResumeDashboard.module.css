@@ -1,6 +1,5 @@
-/* ResumeDashboard.module.css — fully self-contained, zero global deps */
+/* ResumeDashboard.module.css */
 
-/* ── Design Tokens ── */
 .root {
     --c-bg: #0a0b0f;
     --c-surface: #111318;
@@ -21,24 +20,16 @@
     --radius-lg: 18px;
     --radius-xl: 24px;
 
-    /* Isolation & Positioning */
     position: relative;
     width: 100%;
-    height: 100vh;
-    /* Exactly viewport height */
-    max-width: 100vw;
-    overflow: hidden;
-    /* Prevent leaking scroll/content */
+    min-height: 100vh;
+    padding: 24px 16px;
     background: var(--c-bg);
     color: var(--c-text1);
-
-    /* Layout */
     display: flex;
     flex-direction: column;
     align-items: center;
     justify-content: center;
-
-    /* Typography base */
     font-family: 'Inter', 'SF Pro Display', system-ui, sans-serif;
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
@@ -52,48 +43,55 @@
     padding: 0;
 }
 
-/* ── Window (Desktop) ── */
+.mainTitle {
+    width: min(1400px, 100%);
+    font-size: clamp(2rem, 5vw, 3.5rem);
+    font-weight: 800;
+    color: var(--c-text1);
+    margin-bottom: 24px;
+    text-align: left;
+    letter-spacing: -0.02em;
+    background: linear-gradient(90deg, #fff, var(--c-text2));
+    -webkit-background-clip: text;
+    -webkit-text-fill-color: transparent;
+}
+
+/* ── Window ── */
 .window {
     width: min(1400px, 100%);
-    height: 100%;
-    /* Adapts to .root */
+    height: 85vh;
     display: flex;
     flex-direction: column;
     background: var(--c-surface);
     border: 1px solid var(--c-border2);
+    border-radius: var(--radius-lg);
+    /* ریسپانسیو دسکتاپ و موبایل */
     overflow: hidden;
+    position: relative;
+    box-shadow: 0 16px 40px rgba(0, 0, 0, 0.5), 0 0 80px rgba(124, 106, 247, 0.04);
 }
 
 @media (min-width: 768px) {
     .window {
-        width: min(1400px, calc(100% - 48px));
-        height: calc(100% - 48px);
+        height: calc(100vh - 140px);
         border-radius: var(--radius-xl);
-        box-shadow:
-            0 0 0 1px var(--c-border),
-            0 32px 80px rgba(0, 0, 0, 0.7),
-            0 0 120px rgba(124, 106, 247, 0.06);
+        box-shadow: 0 0 0 1px var(--c-border), 0 32px 80px rgba(0, 0, 0, 0.7), 0 0 120px rgba(124, 106, 247, 0.06);
     }
 }
 
 /* ── Title Bar ── */
 .titleBar {
-    display: none;
+    display: flex;
+    align-items: center;
+    height: 44px;
+    padding: 0 16px;
+    background: var(--c-surface);
+    border-bottom: 1px solid var(--c-border);
+    flex-shrink: 0;
+    position: relative;
+    user-select: none;
 }
 
-@media (min-width: 768px) {
-    .titleBar {
-        display: flex;
-        align-items: center;
-        height: 44px;
-        padding: 0 16px;
-        background: var(--c-surface);
-        border-bottom: 1px solid var(--c-border);
-        flex-shrink: 0;
-        position: relative;
-        user-select: none;
-    }
-}
 
 .trafficLights {
     display: flex;
@@ -127,7 +125,7 @@
     left: 50%;
     transform: translateX(-50%);
     font-size: 11px;
-    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-family: 'SF Mono', monospace;
     letter-spacing: 0.12em;
     color: var(--c-text3);
 }
@@ -201,8 +199,8 @@
     display: flex;
     flex: 1;
     overflow: hidden;
-    /* Mobile: leave room for mobile nav and pill bar */
-    height: calc(100% - 64px - 52px);
+    /* height: calc(100% - 64px - 60px); */
+    /* Adjust for mobile wrapping navigation */
 }
 
 @media (min-width: 768px) {
@@ -220,7 +218,7 @@
     .sidebar {
         display: flex;
         flex-direction: column;
-        width: 220px;
+        width: 290px;
         flex-shrink: 0;
         border-right: 1px solid var(--c-border);
         background: rgba(10, 11, 15, 0.4);
@@ -254,8 +252,8 @@
     color: var(--c-text2);
     transition: color 0.15s, background 0.15s;
     text-align: left;
-    font-family: inherit;
     width: 100%;
+    font-family: inherit;
 }
 
 .sideItem:hover {
@@ -289,20 +287,22 @@
 .content {
     flex: 1;
     overflow-y: auto;
-    padding: 28px 24px;
     scrollbar-width: thin;
     scrollbar-color: var(--c-border2) transparent;
+    transition: background 0.3s ease;
+    padding: 20px 12px;
+
 }
 
 @media (min-width: 768px) {
     .content {
-        padding: 36px 40px;
+        padding: 28px 24px;
     }
 }
 
 @media (min-width: 1024px) {
     .content {
-        padding: 44px 56px;
+        padding: 28px 20px;
     }
 }
 
@@ -320,24 +320,29 @@
 }
 
 .contentInner {
-    max-width: 860px;
+    margin: 0 auto;
+}
+
+/* عنوان بزرگ داخل هر تب */
+.sectionTitle {
+    font-size: clamp(1.5rem, 3vw, 2.5rem);
+    font-weight: 700;
+    margin-bottom: 24px;
+    color: var(--c-text1);
+    letter-spacing: -0.01em;
 }
 
 /* ── Card Grid ── */
 .cardGrid {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 14px;
-}
-
-@media (min-width: 640px) {
-    .cardGrid {
-        grid-template-columns: 1fr 1fr;
-    }
+    /* یکپارچه‌سازی و تک‌ستونی شدن کامل مطابق درخواست */
+    gap: 16px;
 }
 
 .card {
-    background: var(--c-surface2);
+    background: rgba(24, 27, 34, 0.7);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--c-border);
     border-radius: var(--radius-md);
     padding: 20px;
@@ -349,23 +354,47 @@
     transform: translateY(-2px);
 }
 
+.cardHeader {
+    display: flex;
+    align-items: center;
+    gap: 10px;
+    margin-bottom: 12px;
+}
+
+.cardIcon {
+    font-size: 20px;
+    color: var(--c-accent);
+}
+
 .cardTitle {
-    font-size: 14px;
+    font-size: 15px;
     font-weight: 600;
     color: var(--c-text1);
-    margin-bottom: 8px;
     line-height: 1.4;
+    flex: 1;
+}
+
+.cardBadge {
+    font-size: 11px;
+    padding: 4px 8px;
+    background: rgba(124, 106, 247, 0.15);
+    color: var(--c-accent2);
+    border-radius: 12px;
+    font-weight: 600;
+    letter-spacing: 0.05em;
+    text-transform: uppercase;
 }
 
 .cardDesc {
-    font-size: 13px;
+    font-size: 14px;
     color: var(--c-text2);
     line-height: 1.7;
 }
 
 /* ── Profile Card ── */
 .profileCard {
-    background: var(--c-surface2);
+    background: rgba(24, 27, 34, 0.7);
+    backdrop-filter: blur(8px);
     border: 1px solid var(--c-border);
     border-radius: var(--radius-lg);
     padding: 28px;
@@ -409,7 +438,7 @@
     font-size: 12px;
     color: var(--c-text3);
     margin-top: 6px;
-    font-family: 'SF Mono', 'Fira Code', monospace;
+    font-family: 'SF Mono', monospace;
     letter-spacing: 0.04em;
 }
 
@@ -468,19 +497,16 @@
 
 /* ── Mobile Bottom Nav ── */
 .mobileNav {
-    position: absolute;
-    bottom: 0;
-    left: 0;
     width: 100%;
     display: flex;
     height: 64px;
-    background: rgba(17, 19, 24, 0.92);
+    flex-shrink: 0;
+    background: rgba(17, 19, 24, 0.95);
     backdrop-filter: blur(20px) saturate(180%);
-    -webkit-backdrop-filter: blur(20px) saturate(180%);
-    border-top: 1px solid var(--c-border);
+    /* این خط جداکننده پایه است که تب فعال روی آن قرار می‌گیرد */
+    border-top: 1px solid var(--c-accent2);
     z-index: 100;
-    padding: 0 4px;
-    padding-bottom: env(safe-area-inset-bottom);
+    padding: 0 0px;
 }
 
 @media (min-width: 768px) {
@@ -496,13 +522,15 @@
     align-items: center;
     justify-content: center;
     gap: 3px;
-    background: none;
+    /* حالت عادی فاقد پس‌زمینه است */
+    background: transparent;
     border: none;
     cursor: pointer;
     position: relative;
     padding: 8px 4px;
     font-family: inherit;
     -webkit-tap-highlight-color: transparent;
+    transition: background 0.3s, border-radius 0.3s;
 }
 
 .mobileNavIcon {
@@ -520,6 +548,25 @@
     letter-spacing: 0.04em;
     transition: color 0.2s;
     white-space: nowrap;
+}
+
+/* ── استایل اتصال تب فعال به Pill Bar (افکت کروم) ── */
+.mobileNavBtnActive {
+    /* رنگ پس‌زمینه دقیقا مشابه mobilePillBar */
+    background: rgb(30, 30, 50);
+    /* رادیوس بالا برای ایجاد شکل تب متصل */
+    border-radius: 0px 0px 16px 16px;
+    /* این ۱ پیکسل مارجین منفی باعث می‌شود تب فعال روی بردرِ mobileNav بیاید و خط را قطع کند */
+    margin-top: -1px;
+    padding-top: 9px;
+    /* جبران ۱ پیکسل مارجین منفی */
+    /* افزودن بردرهای ملایم برای مشخص شدن لبه‌های تب */
+    border-top: none;
+    border-left: 1px solid var(--c-accent2);
+    border-right: 1px solid var(--c-accent2);
+    border-bottom: 1px solid var(--c-accent2);
+    z-index: 101;
+    /* اطمینان از قرارگیری روی بردرهای اطراف */
 }
 
 .mobileNavBtnActive .mobileNavIcon,
@@ -544,26 +591,28 @@
 
 /* ── Mobile Pill Bar ── */
 .mobilePillBar {
-    position: absolute;
-    bottom: 64px;
-    left: 0;
     width: 100%;
     display: flex;
-    height: 52px;
+    flex-shrink: 0;
+    flex-wrap: wrap;
+    min-height: 52px;
+    max-height: 120px;
     align-items: center;
+    justify-content: center;
     gap: 8px;
-    padding: 0 16px;
-    overflow-x: auto;
-    background: rgba(10, 11, 15, 0.85);
-    backdrop-filter: blur(16px);
-    -webkit-backdrop-filter: blur(16px);
-    border-top: 1px solid var(--c-border);
-    z-index: 99;
-    scrollbar-width: none;
-}
+    padding: 10px 16px;
+    overflow-y: auto;
+    /* این پس‌زمینه دقیقاً با پس‌زمینه mobileNavBtnActive یکی است تا اتصال نامرئی شود */
+    background: rgb(30, 30, 50);
+    border-radius: 0px 0px 0px 0px;
 
-.mobilePillBar::-webkit-scrollbar {
-    display: none;
+    border-top: 1px solid var(--c-accent2);
+    border-left: 1px solid var(--c-accent2);
+    border-right: 1px solid var(--c-accent2);
+    border-bottom: none;
+    /* حذف بردر پایین تا مانع اتصال نشود */
+    backdrop-filter: blur(16px);
+    z-index: 99;
 }
 
 @media (min-width: 768px) {
@@ -583,19 +632,18 @@
     color: var(--c-text2);
     cursor: pointer;
     transition: all 0.18s;
-    white-space: nowrap;
     font-family: inherit;
     -webkit-tap-highlight-color: transparent;
 }
 
 .mobilePill:hover {
-    border-color: var(--c-border2);
+    border-color: var(--c-accent-glow);
     color: var(--c-text1);
 }
 
 .mobilePillActive {
-    background: rgba(124, 106, 247, 0.15) !important;
+    background: rgba(124, 106, 247, 0.25) !important;
     border-color: var(--c-accent) !important;
-    color: var(--c-accent2) !important;
-    box-shadow: 0 0 12px rgba(124, 106, 247, 0.2);
+    color: #fff !important;
+    box-shadow: 0 0 16px rgba(124, 106, 247, 0.25);
 }
