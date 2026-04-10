@@ -18,7 +18,7 @@ interface FormErrors {
     message?: string;
 }
 
-const BUDGET_OPTIONS = ['<50k', '50-150k', '150-500k', '500k+'];
+const BUDGET_OPTIONS = ['<50k', '50-150k', '150k+'];
 
 // --- Magnetic Button Component ---
 const MagneticButton = ({
@@ -99,7 +99,7 @@ const MagneticButton = ({
 export default function ContactSection() {
     const sectionRef = useRef<HTMLElement>(null);
     const [formData, setFormData] = useState<FormData>({ name: '', email: '', company: '', message: '' });
-    const [budget, setBudget] = useState<string>('500k+');
+    const [budget, setBudget] = useState<string>('150k+');
     const [errors, setErrors] = useState<FormErrors>({});
     const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
@@ -269,16 +269,19 @@ export default function ContactSection() {
                                     {opt}
                                 </button>
                             ))}
+
                         </div>
+                        <div className={styles.submitWrapper}>
+                            <MagneticButton status={status}>
+                                {status === 'idle' && 'Send Message'}
+                                {status === 'submitting' && 'Sending...'}
+                                {status === 'success' && '✓ Message Sent!'}
+                            </MagneticButton>
+                        </div>
+
                     </div>
 
-                    <div className={styles.submitWrapper}>
-                        <MagneticButton status={status}>
-                            {status === 'idle' && 'Send Message'}
-                            {status === 'submitting' && 'Sending...'}
-                            {status === 'success' && '✓ Message Sent!'}
-                        </MagneticButton>
-                    </div>
+
                 </form>
             </div>
         </section>

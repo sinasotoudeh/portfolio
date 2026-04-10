@@ -24,9 +24,11 @@
     width: 100vw;
     min-height: 100dvh;
     display: flex;
-    align-items: center;
+    align-items: start;
     justify-content: center;
-    padding: 3rem 1.5rem;
+    padding-top: 4rem;
+    padding-right: 1.5rem;
+    padding-left: 1.5rem;
     box-sizing: border-box;
 }
 
@@ -85,7 +87,7 @@
 .layout {
     display: grid;
     grid-template-columns: 1fr;
-    gap: 3rem;
+    gap: 0;
     width: 100%;
     max-width: 1200px;
     margin: 0 auto;
@@ -230,22 +232,26 @@
 /* Budget Section */
 .budgetSection {
     display: flex;
-    flex-direction: column;
-    gap: 1rem;
+    flex-wrap: wrap;
+    row-gap: 1rem;
+    column-gap: 2.3rem;
     margin-bottom: 2rem;
 }
 
 .budgetLabel {
+    width: 100%;
     font-size: 0.75rem;
     text-transform: uppercase;
     letter-spacing: 0.1em;
     color: var(--text-muted);
+
 }
 
 .budgetPills {
     display: flex;
     flex-wrap: wrap;
     gap: 0.5rem;
+
 }
 
 .budgetPill {
@@ -259,6 +265,7 @@
     transition: all 0.3s ease;
     flex: 1 1 auto;
     text-align: center;
+
 }
 
 .budgetPill:hover {
@@ -275,7 +282,6 @@
 
 /* Button & Ripple */
 .submitWrapper {
-    margin-top: 1rem;
     display: flex;
     justify-content: flex-start;
 }
@@ -315,6 +321,14 @@
 
 /* --- Media Queries --- */
 @media (min-width: 640px) {
+    .contactSection {
+        padding-top: 5rem;
+        padding-right: 2rem;
+        padding-left: 2rem;
+        height: 100dvh;
+
+    }
+
     .magneticBtn {
         width: auto;
         padding: 1rem 2.5rem;
@@ -324,15 +338,21 @@
         flex: 0 0 auto;
     }
 
-    .infoBlock {
-        display: flex;
-    }
+
 }
+
+@media (min-width: 1024px) {}
 
 @media (min-width: 1024px) {
     .contactSection {
-        padding: 6.5rem 2rem;
+        padding-top: 5rem;
+        padding-right: 2rem;
+        padding-left: 2rem;
+        height: 100dvh;
+
     }
+
+
 
     .layout {
         grid-template-columns: 1fr 1.2fr;
@@ -341,6 +361,8 @@
 
     .infoBlock {
         margin-top: 4rem;
+        display: flex;
+
     }
 
     .infoValue {
