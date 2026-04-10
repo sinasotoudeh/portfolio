@@ -52,6 +52,21 @@ export default function ResumeDashboard() {
             });
         }
     };
+    const handleCVButtonClick = (e: React.MouseEvent<HTMLButtonElement>) => {
+        // جلوگیری از اجرای تابع handleSectionClick والد
+        e.stopPropagation();
+
+        if (!windowRef.current) return;
+
+        const windowRect = windowRef.current.getBoundingClientRect();
+        const navbarOffset = 80;
+
+        // اسکرول مستقیم به بالای پنجره ماک‌آپ
+        window.scrollTo({
+            top: window.scrollY + windowRect.top - navbarOffset,
+            behavior: 'smooth'
+        });
+    };
 
     useEffect(() => {
         const tab = resumeData.find(t => t.id === activeTab);
@@ -85,19 +100,34 @@ export default function ResumeDashboard() {
         >
             {/* ── Intro Section ── */}
             <div className={styles.introSection}>
-                {/* بخش سمت چپ: عنوان بزرگ و جمله ابتدایی */}
-                <div className={styles.introLeft}>
+                {/* بخش سمت چپ: ورود از چپ (مقدار اولیه $x = -100$) */}
+                <motion.div
+                    className={styles.introLeft}
+                    initial={{ opacity: 0, x: -100 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.8, type: "spring", bounce: 0.4, delay: 0.4 }}
+                >
                     <h1 className={styles.mainTitle}>All About Me!</h1>
                     <h2 className={styles.subTitle}>
                         Before we dive into<br />
                         the technical jargon<br />
                         and tech stacks…<br />
-                        Hi, I’m Sina.<span className={styles.emoji} role="img" aria-label="wave">👋</span>
+                        Hi, I’m Sina.<span className={styles.emoji} role="img" aria-label="wave">👋</span><br /></h2>
+                    <h2 className={styles.subTitleLast}>
+                        Grab a virtual coffee<br />
+                        and welcome!☕<br />
                     </h2>
-                </div>
+                </motion.div>
 
-                {/* بخش سمت راست: پاراگراف‌های راست‌چین */}
-                <div className={styles.introRight}>
+                {/* بخش سمت راست: ورود از راست (مقدار اولیه $x = 100$) */}
+                <motion.div
+                    className={styles.introRight}
+                    initial={{ opacity: 0, x: 100 }}
+                    whileInView={{ opacity: 1, x: 0 }}
+                    viewport={{ once: true, margin: "-50px" }}
+                    transition={{ duration: 0.8, type: "spring", bounce: 0.4, delay: 0.5 }}
+                >
                     <p className={styles.introText}>
                         Behind the code, the UI components, and the occasional debugging headaches,
                         I’m just someone who truly enjoys learning something new every single day.<br />
@@ -110,7 +140,17 @@ export default function ResumeDashboard() {
                         I’m so glad you’re here—<br />
                         let me share a bit of my story with you.
                     </p>
-                </div>
+                    {/* ── دکمه نئونی دسکتاپ ── */}
+                    <button
+                        className={styles.neonCvButton}
+                        onClick={handleCVButtonClick}
+                        aria-label="Take a look at my CV"
+                    >
+                        Take a look at my CV!
+                        <span className={styles.neonArrow}>↓</span>
+                    </button>
+                </motion.div>
+
             </div>
 
             {/* ── Window ── */}

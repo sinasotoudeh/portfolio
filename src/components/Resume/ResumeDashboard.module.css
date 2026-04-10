@@ -50,7 +50,7 @@
     align-items: flex;
     /* تراز شدن از پایین برای ظاهر ژورنالی و حرفه‌ای */
     width: min(1400px, 100%);
-    margin-bottom: clamp(24px, 4vw, 40px);
+    margin-bottom: clamp(24px, 2vw, 40px);
     padding: 0 clamp(8px, 1vw, 16px);
     gap: clamp(10px, 3vw, 24px);
 }
@@ -88,6 +88,14 @@
 
 .subTitle {
     font-size: clamp(0.7rem, 4vw, 4rem);
+    font-weight: 600;
+    color: var(--c-text1);
+    line-height: 1.4;
+    letter-spacing: -0.01em;
+}
+
+.subTitleLast {
+    font-size: clamp(0.7rem, 3vw, 3rem);
     font-weight: 600;
     color: var(--c-text1);
     line-height: 1.4;
@@ -696,4 +704,82 @@
     border-color: var(--c-accent) !important;
     color: #fff !important;
     box-shadow: 0 0 16px rgba(124, 106, 247, 0.25);
+}
+
+/* ── Neon CV Button (Desktop Only) ── */
+.neonCvButton {
+    display: none;
+    /* مخفی در موبایل */
+}
+
+@media (min-width: 768px) {
+    .neonCvButton {
+        display: inline-flex;
+        align-items: center;
+        justify-content: center;
+        gap: 12px;
+        margin-top: 24px;
+        align-self: flex-end;
+        /* هم‌تراز کردن با راست‌چین بودن متن‌ها */
+        padding: 14px 28px;
+        background: rgba(63, 22, 94, 0.374);
+        color: #FFFFFF;
+        font-size: 1.1rem;
+        font-weight: 700;
+        font-family: inherit;
+        text-transform: uppercase;
+        letter-spacing: 0.05em;
+        border: 2px solid var(--c-accent);
+        border-radius: var(--radius-md);
+        cursor: pointer;
+
+        /* افکت‌های نئونی پایه */
+        box-shadow: 0 0 10px var(--c-accent-glow),
+            inset 0 0 10px var(--c-accent-glow);
+        text-shadow: 0 0 8px var(--c-accent2);
+
+        /* انیمیشن چشمک‌زن نئونی */
+        animation: neonPulse 1.5s infinite alternate ease-in-out;
+        transition: transform 0.2s ease, box-shadow 0.2s ease;
+    }
+
+    .neonCvButton:hover {
+        transform: scale(1.05);
+        animation: none;
+        /* توقف چشمک‌زدن هنگام هاور */
+        box-shadow: 0 0 20px var(--c-accent),
+            inset 0 0 15px var(--c-accent);
+        text-shadow: 0 0 12px #fff;
+    }
+
+    .neonArrow {
+        display: inline-block;
+        font-size: 1.3rem;
+        font-weight: bold;
+        /* انیمیشن حرکت فلش به سمت پایین */
+        animation: arrowBounce 1s infinite alternate ease-in-out;
+    }
+}
+
+/* ── Keyframes for Animations ── */
+@keyframes neonPulse {
+    0% {
+        opacity: 0.8;
+        box-shadow: 0 0 8px var(--c-accent-glow), inset 0 0 5px var(--c-accent-glow);
+    }
+
+    100% {
+        opacity: 1;
+        box-shadow: 0 0 18px var(--c-accent), inset 0 0 12px var(--c-accent-glow);
+    }
+}
+
+@keyframes arrowBounce {
+    0% {
+        transform: translateY(-4px);
+    }
+
+    100% {
+        transform: translateY(4px);
+    }
 }
