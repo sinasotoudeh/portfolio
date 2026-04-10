@@ -5,6 +5,8 @@ import CapabilitiesSection from "@/components/Capability/CapabilitiesSection";
 // import OrbitalProcess from "@/components/Process/OrbitalProcess";
 import ProcessSection from '@/components/ProcessSection/ProcessSection';
 import ResumeDashboard from '@/components/Resume/ResumeDashboard';
+import Contact from '@/components/contact/Contact';
+
 
 
 export default function Home() {
@@ -17,6 +19,8 @@ export default function Home() {
       {/* <OrbitalProcess /> */}
       <ProcessSection />
       <ResumeDashboard />
+      <Contact />
+
       <div style={{ height: '100vh', background: '#111', color: 'white', display: 'flex', alignItems: 'center', justifyContent: 'center' }}>
         <h2>بخش بعدی سایت (پس از پایان هیرو)</h2>
       </div>
