@@ -8,16 +8,34 @@ export type CardContent = {
     badge?: string;
 };
 
+// ۱. تعریف تایپ برای محتوای پروفایل و تجربیات (آبجکت تکی)
+export type ProfileContent = {
+    name: string;
+    role: string;
+    date?: string;
+    text?: string;
+    points?: string[];
+    contacts?: string[];
+    links?: string[];
+};
+
+// ۲. تعریف تایپ برای لیست مهارت‌ها و تحصیلات (آیتم‌های داخل آرایه)
+export type ListContentItem = {
+    title: string;
+    desc: string;
+    badge?: string;
+};
+
 export type SubSection = {
     id: string;
     title: string;
-    content: React.ReactNode | any;
+    // ۳. جایگزینی any با یک Union Type دقیق و ساختاریافته
+    content: React.ReactNode | ProfileContent | ListContentItem[];
     background?: string;
     mobileTitle?: string;
     hideTitle?: boolean;
-
-
 };
+
 
 export type TabData = {
     id: string;
