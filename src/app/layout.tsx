@@ -25,20 +25,17 @@ export default function RootLayout({
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">
-        {/* کامپوننت‌های سراسری (Global Components) */}
         <CustomCursor />
 
-        {/* اضافه کردن نوار ناوبری (منو) */}
         <Navigation />
-
-        {/* محتوای اصلی صفحات */}
         <main className="flex-1 flex flex-col">
           <LenisProvider>
             {children}
           </LenisProvider>
         </main>
+        <Footer/>
       </body>
-      <Footer/>
+
     </html>
   );
 }
