@@ -132,7 +132,7 @@ export default function Navigation() {
 
                 {/* بخش فوتر برای منوی موبایل */}
                 <div className={styles.mobileFooter}>
-                    <span>Let's Connect</span>
+                    <span>Let&apos;s Connect</span>
                     <div className={styles.mobileSocials}>
                         <a href="#" data-cursor="hover">Instagram</a>
                         <a href="#" data-cursor="hover">Twitter</a>

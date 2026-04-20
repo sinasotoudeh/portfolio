@@ -349,7 +349,7 @@ export default function Hero() {
                     <div className={styles.connectBackdropBlur}></div>
                     <p className={styles.connectSub}>Ready to begin?</p>
                     <h2 className={styles.connectHeadline}>
-                        Let's build<br />something <em>inevitable</em>.
+                        Let&apos;s build<br />something <em>inevitable</em>.
                     </h2>
                     <div className={styles.magneticWrap}>
                         <a href="#contact" className={styles.ctaPremium}>
