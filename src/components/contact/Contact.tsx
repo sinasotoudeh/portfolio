@@ -4,7 +4,6 @@ import React, { useState, useRef, FormEvent, MouseEvent as ReactMouseEvent } fro
 import { motion, AnimatePresence } from 'framer-motion';
 import styles from './Contact.module.css';
 
-// --- Types ---
 interface FormData {
     name: string;
     email: string;
@@ -20,7 +19,6 @@ interface FormErrors {
 
 const BUDGET_OPTIONS = ['<50k', '50-150k', '150k+'];
 
-// --- Magnetic Button Component ---
 const MagneticButton = ({
     children,
     status
@@ -95,7 +93,6 @@ const MagneticButton = ({
     );
 };
 
-// --- Main Contact Component ---
 export default function ContactSection() {
     const sectionRef = useRef<HTMLElement>(null);
     const [formData, setFormData] = useState<FormData>({ name: '', email: '', company: '', message: '' });
@@ -103,7 +100,6 @@ export default function ContactSection() {
     const [errors, setErrors] = useState<FormErrors>({});
     const [status, setStatus] = useState<'idle' | 'submitting' | 'success'>('idle');
 
-    // اسکرول خودکار به مرکز ویوپورت هنگام تعامل
     const handleSectionInteraction = () => {
         if (sectionRef.current) {
             sectionRef.current.scrollIntoView({ behavior: 'smooth', block: 'start' });
@@ -160,117 +156,118 @@ export default function ContactSection() {
                 <div className={`${styles.blob} ${styles.blob2}`} />
             </div>
 
-            <div className={styles.layout}>
-                {/* Left Column */}
-                <div className={styles.leftCol}>
-                    <div className={styles.headerBlock}>
-                        {/* <span className={styles.sectionNumber}>07</span> */}
-                        <h2 className={styles.title}>
-                            Let&apos;s Build<br />
-                            <em className={styles.titleItalic}>Something</em><br />
-                            <strong className={styles.titleBold}>Inevitable.</strong>
-                        </h2>
-                    </div>
-
-                    <div className={styles.infoBlock}>
-                        {[
-                            { label: 'Email', value: 'hello@nonato.design' },
-                            { label: 'Based in', value: 'Worldwide' },
-                            { label: 'Available for', value: 'Q3 2026' }
-                        ].map((info, i) => (
-                            <div key={i} className={styles.infoItem}>
-                                <span className={styles.infoLabel}>{info.label}</span>
-                                <span className={styles.infoValue}>{info.value}</span>
-                            </div>
-                        ))}
-                    </div>
-                </div>
-
-                {/* Right Column (Form) */}
-                <form onSubmit={handleSubmit} noValidate className={styles.form}>
-                    <div className={styles.formGroup}>
-                        <input
-                            type="text"
-                            id="name"
-                            name="name"
-                            className={styles.input}
-                            placeholder=" "
-                            value={formData.name}
-                            onChange={handleChange}
-                            aria-invalid={!!errors.name}
-                        />
-                        <label htmlFor="name" className={styles.label}>Your Name</label>
-                        <div className={styles.fieldLine}><div className={styles.fieldLineFill} /></div>
-                        <AnimatePresence>
-                            {errors.name && <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={styles.errorText}>{errors.name}</motion.p>}
-                        </AnimatePresence>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <input
-                            type="email"
-                            id="email"
-                            name="email"
-                            className={styles.input}
-                            placeholder=" "
-                            value={formData.email}
-                            onChange={handleChange}
-                            aria-invalid={!!errors.email}
-                        />
-                        <label htmlFor="email" className={styles.label}>Email Address</label>
-                        <div className={styles.fieldLine}><div className={styles.fieldLineFill} /></div>
-                        <AnimatePresence>
-                            {errors.email && <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={styles.errorText}>{errors.email}</motion.p>}
-                        </AnimatePresence>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <input
-                            type="text"
-                            id="company"
-                            name="company"
-                            className={styles.input}
-                            placeholder=" "
-                            value={formData.company}
-                            onChange={handleChange}
-                        />
-                        <label htmlFor="company" className={styles.label}>Company / Project (Optional)</label>
-                        <div className={styles.fieldLine}><div className={styles.fieldLineFill} /></div>
-                    </div>
-
-                    <div className={styles.formGroup}>
-                        <textarea
-                            id="message"
-                            name="message"
-                            className={styles.input}
-                            placeholder=" "
-                            rows={3}
-                            value={formData.message}
-                            onChange={handleChange}
-                            aria-invalid={!!errors.message}
-                        />
-                        <label htmlFor="message" className={styles.label}>Tell us about your vision</label>
-                        <div className={styles.fieldLine}><div className={styles.fieldLineFill} /></div>
-                        <AnimatePresence>
-                            {errors.message && <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={styles.errorText}>{errors.message}</motion.p>}
-                        </AnimatePresence>
-                    </div>
-
-                    <div className={styles.budgetSection}>
-                        <span className={styles.budgetLabel}>Project Budget</span>
-                        <div className={styles.budgetPills}>
-                            {BUDGET_OPTIONS.map((opt) => (
-                                <button
-                                    key={opt}
-                                    type="button"
-                                    onClick={() => setBudget(opt)}
-                                    className={`${styles.budgetPill} ${budget === opt ? styles.budgetPillActive : ''}`}
-                                >
-                                    {opt}
-                                </button>
-                            ))}
-
+            <div className={styles.container}>
+                <div className={styles.layout}>
+                    <div className={styles.leftCol}>
+                        <div className={styles.headerBlock}>
+                            <h2 className={styles.title}>
+                                <span className={styles.titleLine}>Let&apos;s Build</span>
+                                <span className={styles.titleLine}>
+                                    <em className={styles.titleItalic}>Something</em>{' '}
+                                    <strong className={styles.titleBold}>Inevitable.</strong>
+                                </span>
+                            </h2>
                         </div>
+
+                        <div className={styles.infoBlock}>
+                            {[
+                                { label: 'Email', value: 'hello@nonato.design' },
+                                { label: 'Based in', value: 'Worldwide' },
+                                { label: 'Available for', value: 'Q3 2026' }
+                            ].map((info, i) => (
+                                <div key={i} className={styles.infoItem}>
+                                    <span className={styles.infoLabel}>{info.label}</span>
+                                    <span className={styles.infoValue}>{info.value}</span>
+                                </div>
+                            ))}
+                        </div>
+                    </div>
+
+                    <form onSubmit={handleSubmit} noValidate className={styles.form}>
+                        <div className={styles.formGroup}>
+                            <input
+                                type="text"
+                                id="name"
+                                name="name"
+                                className={styles.input}
+                                placeholder=" "
+                                value={formData.name}
+                                onChange={handleChange}
+                                aria-invalid={!!errors.name}
+                            />
+                            <label htmlFor="name" className={styles.label}>Your Name</label>
+                            <div className={styles.fieldLine}><div className={styles.fieldLineFill} /></div>
+                            <AnimatePresence>
+                                {errors.name && <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={styles.errorText}>{errors.name}</motion.p>}
+                            </AnimatePresence>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <input
+                                type="email"
+                                id="email"
+                                name="email"
+                                className={styles.input}
+                                placeholder=" "
+                                value={formData.email}
+                                onChange={handleChange}
+                                aria-invalid={!!errors.email}
+                            />
+                            <label htmlFor="email" className={styles.label}>Email Address</label>
+                            <div className={styles.fieldLine}><div className={styles.fieldLineFill} /></div>
+                            <AnimatePresence>
+                                {errors.email && <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={styles.errorText}>{errors.email}</motion.p>}
+                            </AnimatePresence>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <input
+                                type="text"
+                                id="company"
+                                name="company"
+                                className={styles.input}
+                                placeholder=" "
+                                value={formData.company}
+                                onChange={handleChange}
+                            />
+                            <label htmlFor="company" className={styles.label}>Company / Project (Optional)</label>
+                            <div className={styles.fieldLine}><div className={styles.fieldLineFill} /></div>
+                        </div>
+
+                        <div className={styles.formGroup}>
+                            <textarea
+                                id="message"
+                                name="message"
+                                className={styles.input}
+                                placeholder=" "
+                                rows={3}
+                                value={formData.message}
+                                onChange={handleChange}
+                                aria-invalid={!!errors.message}
+                            />
+                            <label htmlFor="message" className={styles.label}>Tell us about your vision</label>
+                            <div className={styles.fieldLine}><div className={styles.fieldLineFill} /></div>
+                            <AnimatePresence>
+                                {errors.message && <motion.p initial={{ opacity: 0, y: -5 }} animate={{ opacity: 1, y: 0 }} exit={{ opacity: 0 }} className={styles.errorText}>{errors.message}</motion.p>}
+                            </AnimatePresence>
+                        </div>
+
+                        <div className={styles.budgetSection}>
+                            <span className={styles.budgetLabel}>Project Budget</span>
+                            <div className={styles.budgetPills}>
+                                {BUDGET_OPTIONS.map((opt) => (
+                                    <button
+                                        key={opt}
+                                        type="button"
+                                        onClick={() => setBudget(opt)}
+                                        className={`${styles.budgetPill} ${budget === opt ? styles.budgetPillActive : ''}`}
+                                    >
+                                        {opt}
+                                    </button>
+                                ))}
+                            </div>
+                        </div>
+
                         <div className={styles.submitWrapper}>
                             <MagneticButton status={status}>
                                 {status === 'idle' && 'Send Message'}
@@ -278,11 +275,8 @@ export default function ContactSection() {
                                 {status === 'success' && '✓ Message Sent!'}
                             </MagneticButton>
                         </div>
-
-                    </div>
-
-
-                </form>
+                    </form>
+                </div>
             </div>
         </section>
     );
