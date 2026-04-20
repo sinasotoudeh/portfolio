@@ -54,7 +54,9 @@ export default function ProcessSection() {
         });
     }, [activeNode, windowWidth, isMobile, isTablet]);
 
+  useEffect(() => {
     imagesRef.current = imagesRef.current.slice(0, visibleImages.length);
+}, [visibleImages]);
 
     useEffect(() => {
         if (!sectionRef.current || !wrapperRef.current) return;
@@ -180,6 +182,7 @@ export default function ProcessSection() {
                         const finalRight = (isMobile && cfg.mobileOverride?.right !== undefined) ? cfg.mobileOverride.right : cfg.right;
 
                         return (
+                            /* eslint-disable-next-line @next/next/no-img-element */
                             <img
                                 key={`${activeNode?.id}-img-${index}`}
                                 ref={(el) => {
