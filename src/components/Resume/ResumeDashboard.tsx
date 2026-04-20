@@ -1,9 +1,9 @@
 // ResumeDashboard.tsx
 'use client';
 
-import React, { useState, useEffect, useRef } from 'react';
+import React, { useState, useRef } from 'react';
 import { motion, AnimatePresence } from 'framer-motion';
-import { resumeData } from "@/data/resumeData";
+import { resumeData, SubSection, ProfileContent } from "@/data/resumeData";
 import styles from './ResumeDashboard.module.css';
 
 const TAB_ICONS: Record<string, string> = {
@@ -17,8 +17,8 @@ const TAB_ICONS: Record<string, string> = {
 export default function ResumeDashboard() {
     const [activeTab, setActiveTab] = useState(resumeData[0].id);
     const [activeSection, setActiveSection] = useState(resumeData[0].subSections[0].id);
-    const [sheetOpen, setSheetOpen] = useState(false);
-
+    // خط زیر به طور کامل حذف شد (رفع هشدار unused-vars)
+    // const [sheetOpen, setSheetOpen] = useState(false);
     const contentRef = useRef<HTMLDivElement>(null);
     const sectionRef = useRef<HTMLElement>(null);
     // رفرنس جدید برای تشخیص موقعیت دقیق پنجره ماک‌آپ
@@ -68,6 +68,22 @@ export default function ResumeDashboard() {
         });
     };
 
+// -- اضافه کردن این دو تابع جدید برای مدیریت تب‌ها و سکشن‌ها (جایگزین useEffectها) --
+    const handleTabChange = (tabId: string) => {
+        setActiveTab(tabId);
+        const tab = resumeData.find(t => t.id === tabId);
+        if (tab) {
+            setActiveSection(tab.subSections[0].id);
+        }
+    };
+
+    const handleSectionChange = (sectionId: string) => {
+        setActiveSection(sectionId);
+        contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
+    };
+
+    // این دو useEffect به طور کامل حذف شوند (رفع خطاهای set-state-in-effect)
+    /*
     useEffect(() => {
         const tab = resumeData.find(t => t.id === activeTab);
         if (tab) setActiveSection(tab.subSections[0].id);
@@ -78,6 +94,7 @@ export default function ResumeDashboard() {
         contentRef.current?.scrollTo({ top: 0, behavior: 'smooth' });
         setSheetOpen(false);
     }, [activeSection]);
+    */
 
     const currentTab = resumeData.find(t => t.id === activeTab)!;
     const currentSection = currentTab?.subSections.find(s => s.id === activeSection) ?? currentTab?.subSections[0];
@@ -172,8 +189,9 @@ export default function ResumeDashboard() {
                         <button
                             key={tab.id}
                             // onClick={(e) => { e.stopPropagation(); setActiveTab(tab.id); }}
-                            onClick={() => setActiveTab(tab.id)}
-
+                            // onClick={() => setActiveTab(tab.id)}
+                            // جایگزین شود با:
+                            onClick={() => handleTabChange(tab.id)}
                             className={`${styles.tabBtn} ${activeTab === tab.id ? styles.tabBtnActive : ''}`}
                         >
                             <span className={styles.tabIcon}>{TAB_ICONS[tab.id]}</span>
@@ -206,8 +224,9 @@ export default function ResumeDashboard() {
                                     <button
                                         key={sub.id}
                                         // onClick={(e) => { e.stopPropagation(); setActiveSection(sub.id); }}
-                                        onClick={() => setActiveSection(sub.id)}
-
+                                        // onClick={() => setActiveSection(sub.id)}
+                                        // جایگزین شود با:
+                                        onClick={() => handleSectionChange(sub.id)}
                                         className={`${styles.sideItem} ${activeSection === sub.id ? styles.sideItemActive : ''}`}
                                     >
                                         {activeSection === sub.id && (
@@ -269,8 +288,9 @@ export default function ResumeDashboard() {
                             <button
                                 key={sub.id}
                                 // onClick={(e) => { e.stopPropagation(); setActiveSection(sub.id); }}
-                                onClick={() => setActiveSection(sub.id)}
-
+                                // onClick={() => setActiveSection(sub.id)}
+                                // جایگزین شود با:
+                                onClick={() => handleSectionChange(sub.id)}
                                 className={`${styles.mobilePill} ${activeSection === sub.id ? styles.mobilePillActive : ''}`}
                             >
                                 {sub.mobileTitle || sub.title}
@@ -284,8 +304,9 @@ export default function ResumeDashboard() {
                         <button
                             key={tab.id}
                             // onClick={(e) => { e.stopPropagation(); setActiveTab(tab.id); }}
-                            onClick={() => setActiveTab(tab.id)}
-
+                            // onClick={() => setActiveTab(tab.id)}
+                            // جایگزین شود با:
+                            onClick={() => handleTabChange(tab.id)}
                             className={`${styles.mobileNavBtn} ${activeTab === tab.id ? styles.mobileNavBtnActive : ''}`}
                         >
                             <span className={styles.mobileNavIcon}>{TAB_ICONS[tab.id]}</span>
@@ -305,13 +326,25 @@ export default function ResumeDashboard() {
 }
 
 /* ─── Section Content Renderer ─── */
-function SectionContent({ section }: { section: any }) {
+type CardItemType = {
+    title?: string;
+    desc?: string;
+    icon?: React.ReactNode | string;
+    badge?: string;
+};
+
+// توسعه تایپ پروفایل برای پشتیبانی از پراپ‌های احتمالی مثل quote
+type ExtendedProfileContent = ProfileContent & { quote?: string };
+
+export function SectionContent({ section }: { section: SubSection }) {
     const { content } = section;
+
+    // ۱. رندر محتوای آرایه‌ای (کارت‌ها)
 
     if (Array.isArray(content)) {
         return (
             <div className={styles.cardGrid}>
-                {content.map((item: any, i: number) => (
+                {content.map((item: CardItemType, i: number) => (
                     <motion.div
                         key={i}
                         className={styles.card}
@@ -320,8 +353,8 @@ function SectionContent({ section }: { section: any }) {
                         transition={{ delay: i * 0.06, duration: 0.3 }}
                     >
                         <div className={styles.cardHeader}>
-                            {item.icon && <span className={styles.cardIcon}>{item.icon}</span>}
-                            <h4 className={styles.cardTitle}>{item.title}</h4>
+                            {item.icon && <span className={styles.cardIcon}>{item.icon as React.ReactNode}</span>}
+                            {item.title && <h4 className={styles.cardTitle}>{item.title}</h4>}
                             {item.badge && <span className={styles.cardBadge}>{item.badge}</span>}
                         </div>
                         <p className={styles.cardDesc}>{item.desc}</p>
@@ -330,16 +363,17 @@ function SectionContent({ section }: { section: any }) {
             </div>
         );
     }
+    const profile = content as ExtendedProfileContent;
 
     return (
         <div className={styles.profileCard}>
-            {content.name && <h2 className={styles.profileName}>{content.name}</h2>}
-            {content.role && <p className={styles.profileRole}>{content.role}</p>}
-            {content.date && <p className={styles.profileDate}>{content.date}</p>}
-            {content.text && <p className={styles.profileText}>{content.text}</p>}
-            {content.points && (
+            {profile.name && <h2 className={styles.profileName}>{profile.name}</h2>}
+            {profile.role && <p className={styles.profileRole}>{profile.role}</p>}
+            {profile.date && <p className={styles.profileDate}>{profile.date}</p>}
+            {profile.text && <p className={styles.profileText}>{profile.text}</p>}
+            {profile.points && (
                 <ul className={styles.pointsList}>
-                    {content.points.map((pt: string, i: number) => (
+                    {profile.points.map((pt: string, i: number) => (
                         <motion.li
                             key={i}
                             className={styles.pointItem}
@@ -353,11 +387,11 @@ function SectionContent({ section }: { section: any }) {
                     ))}
                 </ul>
             )}
-            {content.quote && (
+            {profile.quote && (
                 <blockquote className={styles.quote}>
-                    <span className={styles.quoteMarks}>"</span>
-                    {content.quote}
-                    <span className={styles.quoteMarks}>"</span>
+                    <span className={styles.quoteMarks}>&quot;</span>
+                    {profile.quote}
+                    <span className={styles.quoteMarks}>&quot;</span>
                 </blockquote>
             )}
         </div>
