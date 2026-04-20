@@ -4,6 +4,8 @@ import "./globals.css";
 // ایمپورت کامپوننت‌های اختصاصی
 import CustomCursor from '@/components/cursor/CustomCursor';
 import Navigation from '@/components/navigation/Navigation'; // اضافه شدن ایمپورت منو
+import Footer from '@/components/footer/Footer'; // اضافه شدن ایمپورت منو
+
 import LenisProvider from '@/components/providers/LenisProvider'; // مسیر را بر اساس ساختار پروژه خود تنظیم کنید
 
 export const metadata: Metadata = {
@@ -36,6 +38,7 @@ export default function RootLayout({
           </LenisProvider>
         </main>
       </body>
+      <Footer/>
     </html>
   );
 }
