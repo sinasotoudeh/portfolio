@@ -109,13 +109,13 @@ export default function CapabilitiesSection() {
                         transition={{ duration: 0.8 }}
                         className="pointer-events-auto"
                     >
-                        <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black mb-4 lg:mb-6 tracking-tighter bg-clip-text text-transparent bg-gradient-to-r from-white to-white/40">
+                        <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black mb-4 lg:mb-6 tracking-tighter bg-clip-text text-transparent bg-linear-to-r from-white to-white/40">
                             What We Master.
                         </h2>
                         <p className="text-base sm:text-lg lg:text-xl text-white/60 leading-relaxed font-light mb-6 lg:mb-8">
                             We blend engineering precision with artistic vision. Scroll or drag the cylinder to explore our core competencies and discover how we build the future.
                         </p>
-                        <div className="w-16 lg:w-24 h-1 bg-gradient-to-r from-white to-transparent rounded-full" />
+                        <div className="w-16 lg:w-24 h-1 bg-linear-to-r from-white to-transparent rounded-full" />
                     </motion.div>
                 </div>
 
