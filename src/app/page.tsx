@@ -16,7 +16,6 @@ export default function Home() {
       <Manifesto />
       <WorkMinimal />
       <CapabilitiesSection />
-      {/* <OrbitalProcess /> */}
       <ProcessSection />
       <ResumeDashboard />
       <Contact />
