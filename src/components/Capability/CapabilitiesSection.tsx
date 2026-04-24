@@ -110,10 +110,10 @@ export default function CapabilitiesSection() {
                         className="pointer-events-auto"
                     >
                         <h2 className="text-4xl sm:text-5xl lg:text-7xl font-black mb-4 lg:mb-6 tracking-tighter bg-clip-text text-transparent bg-linear-to-r from-white to-white/40">
-                            What We Master.
+                            Core Expertise.
                         </h2>
                         <p className="text-base sm:text-lg lg:text-xl text-white/60 leading-relaxed font-light mb-6 lg:mb-8">
-                            We blend engineering precision with artistic vision. Scroll or drag the cylinder to explore our core competencies and discover how we build the future.
+                            I blend engineering precision with artistic vision. Scroll or drag the cylinder to explore my capabilities and discover how we can build your next digital product.
                         </p>
                         <div className="w-16 lg:w-24 h-1 bg-linear-to-r from-white to-transparent rounded-full" />
                     </motion.div>
