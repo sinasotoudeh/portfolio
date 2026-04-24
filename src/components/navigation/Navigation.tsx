@@ -70,14 +70,14 @@ export default function Navigation() {
 <Link href="/" className={styles.logo} data-cursor="hover">
     <div className={styles.logoContainer}>
         <div className={styles.logoLine}>
-            <span className={styles.logoBold}>S</span><span className={styles.logoAccent}>in</span>
+            <span className={styles.logoBold}><span className={styles.logoAccent}>Sin</span></span>
             a
         </div>
         <div className={styles.logoLine}>
             <span className={styles.logoBold}>
-                S
-            </span><span className={styles.logoAccent}>o</span>
-            toudeh
+                
+            <span className={styles.logoAccent}>SO</span></span>
+        toudeh
         </div>
     </div>
 </Link>

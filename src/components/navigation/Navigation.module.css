@@ -59,8 +59,17 @@
 
 /* رنگ متفاوت برای حرف o */
 .logoAccent {
-    color: #a737c3; /* کد رنگ دلخواه خود را جایگزین کنید */
-}
+        /* ۱. تعریف گرادیان به عنوان پس‌زمینه */
+    background: linear-gradient(135deg, var(--color-accent-primary, #a78bfa), var(--color-accent-secondary, #ec4899));
+    
+    /* ۲. برش دادن پس‌زمینه به شکل متن */
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    /* ۳. شفاف کردن رنگ اصلی متن تا گرادیانِ زیر آن دیده شود */
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    transition: color 0.8s ease, transform 1s cubic-bezier(0.19, 1, 0.22, 1);}
 
 
 /* ── Desktop Links ── */
