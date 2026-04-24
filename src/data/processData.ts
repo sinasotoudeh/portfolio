@@ -34,7 +34,7 @@ export const processNodes: ProcessNode[] = [
     {
         id: '01',
         title: 'Discover',
-        description: 'We immerse in your world — stakeholder interviews, competitive landscape, cultural context — until we see what others miss.',
+        description: `Great products start with understanding.  I immerce in your world, aligning user needs with your business goals to find what others might miss.`,
         bgColor: '#FF3366',
         textColor: '#000000',
         images: [
@@ -64,7 +64,7 @@ export const processNodes: ProcessNode[] = [
     {
         id: '02',
         title: 'Define',
-        description: 'From chaos, we extract clarity. We define the north star — the single truth that will guide every decision forward.',
+        description: 'From chaos, I extract clarity. Together, We define the north star — the single truth that will guide every decision forward.',
         bgColor: '#00FFCC',
         textColor: '#000000',
         images: [
@@ -93,7 +93,7 @@ export const processNodes: ProcessNode[] = [
     {
         id: '03',
         title: 'Design',
-        description: 'This is where intuition meets craft. We prototype at the speed of thought — 3D, motion, typography, colour.',
+        description: 'This is where your vision takes visual shape. I prototype at the speed of thought — 3D, motion, typography, colour.',
         bgColor: '#E6FF00',
         textColor: '#000000',
         images: [
@@ -127,7 +127,7 @@ export const processNodes: ProcessNode[] = [
     {
         id: '04',
         title: 'Build',
-        description: 'We engineer our designs with the same obsession as we design them. Every animation frame. Every breakpoint.',
+        description: 'I engineer my designs with the same obsession as I design them. Every interaction. Every breakpoint.',
         bgColor: '#FF3300',
         textColor: '#FFFFFF',
         images: [
@@ -159,7 +159,7 @@ export const processNodes: ProcessNode[] = [
     {
         id: '05',
         title: 'Launch',
-        description: 'We don’t hand off. We launch together, measure obsessively, and iterate until the work exceeds the vision.',
+        description: 'Deployment is just a milestone, not the end. We launch together, measure obsessively, and iterate until the work exceeds the vision.',
         bgColor: '#CC00FF',
         textColor: '#FFFFFF',
         images: [
