@@ -6,7 +6,7 @@ import styles from './Navigation.module.css';
 
 const NAV_LINKS = [
     { label: 'Manifesto', href: '#manifesto' },
-    { label: 'Work', href: '#work' },
+    { label: 'Works', href: '#work' },
     { label: 'Process', href: '#process' },
     { label: 'About', href: '#cv' },
     { label: 'Contact', href: '#contact' },
