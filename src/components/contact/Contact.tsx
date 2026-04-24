@@ -171,7 +171,7 @@ export default function ContactSection() {
 
                         <div className={styles.infoBlock}>
                             {[
-                                { label: 'Email', value: 'hello@nonato.design' },
+                                { label: 'Email', value: 'hello@sinasotoudeh.ir' },
                                 { label: 'Based in', value: 'Worldwide' },
                                 { label: 'Available for', value: 'Q3 2026' }
                             ].map((info, i) => (
