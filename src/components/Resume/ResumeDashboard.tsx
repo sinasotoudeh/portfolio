@@ -127,13 +127,11 @@ export default function ResumeDashboard() {
                 >
                     <h1 className={styles.mainTitle}>All About Me!</h1>
                     <h2 className={styles.subTitle}>
-                        Before we dive into<br />
-                        the technical jargon<br />
-                        and tech stacks…<br />
                         Hi, I’m Sina.<span className={styles.emoji} role="img" aria-label="wave">👋</span><br /></h2>
                     <h2 className={styles.subTitleLast}>
+                        I’m so glad you’re here,<br />
                         Grab a virtual coffee<br />
-                        and welcome!☕<br />
+                        And, welcome!☕<br />
                     </h2>
                 </motion.div>
 
@@ -146,17 +144,20 @@ export default function ResumeDashboard() {
                     transition={{ duration: 0.8, type: "spring", bounce: 0.4, delay: 0.5 }}
                 >
                     <p className={styles.introText}>
-                        Behind the code, the UI components, and the occasional debugging headaches,
-                        I’m just someone who truly enjoys learning something new every single day.<br />
-                        I might not have all the answers, but what I do have
-                        is a genuine passion for building things that live on the internet.<br />
+                        Behind the code, 
+                        the UI components, <br />
+                        and the occasional debugging headaches,<br />
+                        I’m just someone <br />
+                        who truly enjoys learning something new <br />
+                        every single day.<br />
+                        <br />
+                        I might not have all the answers,
+                        <br /> but what I do have
+                        is a genuine passion <br />for turning complex problems<br />
+                         into
+                        beautiful, functional, and user-friendly <br />web experiences.<br />
                     </p>
-                    <p className={styles.introText}>
-                        I love turning complex problems into
-                        beautiful, functional, and user-friendly web experiences.<br />
-                        I’m so glad you’re here—<br />
-                        let me share a bit of my story with you.
-                    </p>
+
                     {/* ── دکمه نئونی دسکتاپ ── */}
                     <button
                         className={styles.neonCvButton}
