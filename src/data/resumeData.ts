@@ -17,6 +17,8 @@ export type ProfileContent = {
     points?: string[];
     contacts?: string[];
     links?: string[];
+    githublink?: string; // اضافه شده
+    techStack?: string[]; // اضافه شده
 };
 
 // ۲. تعریف تایپ برای لیست مهارت‌ها و تحصیلات (آیتم‌های داخل آرایه)
@@ -52,13 +54,15 @@ export const resumeData: TabData[] = [
             {
                 id: "summary",
                 title: "Professional Summary",
+                                hideTitle: true,
+
                 background: "url('/images/cv/content.png')",
 
                 content: {
                     name: "Sina Sotoudeh",
                     role: "Front-End Developer & Technical SEO Engineer",
                     contacts: ["s.sotudeh1@gmail.com", "+989027405145", "Tehran, Iran"],
-                    links: ["linkedin.com/in/sina-sotoudeh", "Github.com/sinso", "Sinso.ir"],
+                    links: ["linkedin.com/in/sinasotoudeh", "Github.com/sinasotoudeh", "sinasotoudeh.ir"],
                     text: "Product-minded Front-End Developer with 3+ years of experience translating sophisticated UI/UX designs into high-performance, interactive web applications. Armed with deep expertise in core web technologies (JavaScript, HTML/CSS) and modern frameworks (React, Next.js, TypeScript), alongside a rare, advanced background in Technical SEO. I specialize in building dynamic e-commerce solutions and advanced admin dashboards, ensuring products are functionally robust, visually compelling, and architecturally optimized for search engines.",
                     // quote: "I don’t just optimize for search engines—I architect systems where exceptional user experience and search visibility emerge as natural byproducts of quality engineering."
                 }
@@ -149,35 +153,42 @@ export const resumeData: TabData[] = [
         title: "Experience",
         subSections: [
             {
-                id: "sadr",
-                title: "Sadr Andishan Novin",
-                hideTitle: true,
-                content: {
-                    name: "Sadr Andishan Novin",
-                    role: "Senior Technical SEO Engineer",
-                    date: "2024 - Present | Tehran, Iran",
-                    text: "Led technical SEO for enterprise marketplace and headless e-commerce migration platform.",
-                    points: [
-                        "Architected SEO infrastructure for marketplace with 200K+ products across 500+ merchants; built automated schema generation system for 50K+ pages.",
-                        "Developed Edge SEO solution using Cloudflare Workers improving TTFB by ~400ms; created real-time monitoring dashboard reducing incident response from 36 hours to 15 minutes."
-                    ]
-                }
-            },
-            {
                 id: "atajoy",
                 title: "Atajoy",
                 hideTitle: true,
+                content: {
+                    name: "Atajoy.com",
+                    role: "Front-End Developer",
+                    date: "2025 - Present | Tehran, Iran",
+                    githublink: "Github.com/sinasotoudeh/autodm", // لینک گیت‌هاب
+                    text: "Engineered the client-side architecture for an Instagram automation SaaS, delivering a high-performance dashboard for automated DM/comment workflows and product management.",
+                    points: [
+                        "**Complex UI & State Architecture:** Built a dynamic, multi-step rule builder (Trigger-Action) and custom form generator. Managed deeply nested states using Zustand, drastically reducing unnecessary re-renders and optimizing UI thread performance.",
+                        "**Hybrid Rendering (Next.js):** Strategically leveraged CSR for complex dashboard interactions alongside SSR/ISR for public-facing product showcases, perfectly balancing dynamic user experience with Technical SEO requirements.",
+                        "**Server-State & Caching:** Integrated React Query (TanStack) for efficient data fetching, aggressive caching, and seamless synchronization of user automation rules via RESTful APIs.",
+                        "**Scalable Design System:** Developed a responsive, pixel-perfect UI using Tailwind CSS and Headless components, ensuring an accessible, SPA-like experience with smooth micro-interactions."
+                    ],
+                    techStack: ["Next.js", "TypeScript", "React.js", "Tailwind CSS", "Zustand", "React Query"] // تک‌استک
+
+                }
+            },
+            {
+                id: "sadr",
+                title: "Sadr",
+                hideTitle: true,
 
                 content: {
-                    name: "Atajoy",
-                    role: "Technical SEO Engineer",
-                    date: "2023 - 2024 | Tehran, Iran",
+                    name: "Sadrhub.com",
+                    role: "Front-End Engineer",
+                    date: "2024 - 2025 | Tehran, Iran",
+                    githublink: "Github.com/sinasotoudeh/sadrhub", // لینک گیت‌هاب
+                    text: "Developed a high-performance SaaS landing page and user portal, utilizing WordPress strictly as a secure middleware routing layer.",
                     points: [
-                        "Managed technical SEO for 15+ WooCommerce stores generating 800K+ monthly sessions.",
-                        "Built Python/Screaming Frog automation pipeline identifying and resolving 1,800+ critical errors; engineered a BigQuery-based log analysis system that reduced wasted crawls by 51% by identifying low-value and duplicate URL patterns.",
-                        "Created custom WordPress plugin framework automating technical SEO across portfolio; implemented performance optimization reducing load time by 2.4s and improving Core Web Vitals pass rate from 23% to 78%.",
-                        "Established monitoring system integrating GSC API, GA4, and crawl metrics; competitive analysis system tracking 5K+ keywords generated 95K+ incremental sessions."
-                    ]
+                        "**Authentication Flow:** Engineered a secure passwordless OTP authentication flow utilizing a Backend-for-Frontend (BFF) cookie proxy to seamlessly bridge external APIs.",
+                        "**Scalable UI Foundation:** Architected a scalable, breakpoint-free CSS foundation using HSL design tokens and GPU-accelerated animations to ensure smooth 60FPS UI performance.",
+                        "**Complex State Management:** Implemented a modular, dependency-free JavaScript architecture to build a responsive, multi-step asynchronous store creation wizard with debounced network requests."
+                    ],
+                    techStack: ["WordPress (Middleware Layer)", "PHP", "Vanilla JavaScript (ES6+)", "Modern CSS3", "REST API Integration"]
                 }
             },
             {
@@ -186,14 +197,18 @@ export const resumeData: TabData[] = [
                 hideTitle: true,
 
                 content: {
-                    name: "Steel Center",
-                    role: "Technical SEO Specialist & Web Developer",
-                    date: "2022 - 2023 | Tehran, Iran",
-                    text: "Full-stack Developer & Technical SEO Engineer — owning the entire digital platform.",
+                    name: "Foladmarket.com",
+                    role: "Full-Stack Web Developer",
+                    date: "2023 - 2024 | Tehran, Iran",
+                    githublink: "Github.com/sinasotoudeh/foladmarket",
+                    text: "Developed a high-performance, Elementor-free WordPress theme and a suite of custom B2B e-commerce plugins for the steel industry.",
                     points: [
-                        "Architected custom web platform with SEO-first SSR architecture and comprehensive structured data implementation.",
-                        "Implemented performance engineering achieving 90th percentile Core Web Vitals; developed faceted navigation with SEO-friendly canonicals improving crawl efficiency by 62%."
-                    ]
+                        "**Advanced Plugin Architecture:** Engineered over 15 OOP-based custom plugins, featuring complex multi-stage pricing calculators and a session-based B2B cart utilizing O(1)queries.",
+                        "**Core Web Vitals Optimization:** Architected a blazing-fast theme relying on native PHP templates, critical CSS routing, and transient-based caching instead of heavy page builders.",
+                        "**Technical SEO & Routing Security:** Implemented transient-based JSON-LD schema caching and engineered a custom query interceptor that sanitizes malicious URL parameters to prevent SERP index bloat"
+
+                    ],
+                    techStack: ["Custom WordPress Development (Themes & Plugins)", "PHP (OOP)", "Vanilla JavaScript (ES6+)", "Modern CSS3", "REST API"]
                 }
             }
         ]
@@ -203,36 +218,41 @@ export const resumeData: TabData[] = [
         title: "Projects",
         subSections: [
             {
-                id: "ai_seo_workflow",
-                title: "AI-Powered SEO System",
+                id: "portfolio",
+                title: "Portfolio",
                 hideTitle: true,
 
                 content: {
-                    name: "AI-Powered SEO Workflow System",
-                    role: "Personal Project",
-                    text: "Designed multi-agent AI system orchestrating Claude 4.5 Sonnet, GPT-5, and Gemini 3 for automated SEO research, content analysis, and schema generation. Built Python orchestration layer with human-in-the-loop validation workflow, reducing manual research time by 70% across keyword analysis, competitor research, and structured data implementation."
+                    name: "Sinasotoudeh.ir",
+                    role: "Interactive Developer Portfolio ",
+                    githublink: "Github.com/sinasotoudeh/portfolio",
+                    text: "Designed and engineered a fully custom, high-performance portfolio application to demonstrate deep expertise in modern React ecosystems, advanced UI/UX principles, and complex web animations.",
+                    points: [
+                        "**Modern Architecture:** Architected a scalable front-end utilizing Next.js, TypeScript, and Tailwind CSS, strictly adhering to Component-Driven Development (CDD) and type safety.",
+                        "**Advanced UI & Animations:** Engineered complex, hardware-accelerated micro-interactions, page transitions, and scroll-linked animations (using Framer Motion / GSAP), maintaining a flawless 60FPS rendering performance across all breakpoints.",
+                        "**Performance & Technical SEO:** Optimized Core Web Vitals through aggressive image/font optimization, dynamic rendering, and automated JSON-LD structured data, achieving a near-perfect 100/100 Lighthouse score."
+
+                    ],
+                    techStack: ["Next.js", "React", "TypeScript", "Tailwind CSS", "Framer Motion/GSAP", "Technical SEO"]
                 }
             },
             {
-                id: "latam_thesis",
-                title: "Data Platform Architecture",
+                id: "bibliograph",
+                title: "BiblioGraph AI",
                 hideTitle: true,
 
                 content: {
-                    name: "Latin American Literature Bibliography Research Platform",
-                    role: "Thesis Project",
-                    text: "Designed and owned a microservices-based data platform with distributed scraping, API-driven ingestion, and multi-stage processing pipelines. Implemented scalable async workflows using Celery, RabbitMQ, Redis, and Docker (Linux & Windows), with monitoring via Prometheus and Grafana. Built a Go-based authentication layer and documented relational APIs (Prisma, Swagger), enabling secure, extensible data access and analysis."
-                }
-            },
-            {
-                id: "mapping_system",
-                title: "Cross-Platform Mapping",
-                hideTitle: true,
+                    name: "BiblioGraph AI",
+                    role: "Distributed Bibliographic Platform",
+                    githublink: "Github.com/sinasotoudeh/bibliograph",
+                    text: "A scalable microservices monorepo designed for scraping, normalizing, and serving Persian bibliographic data.",
+                    points: [
+                        "**Polyglot Architecture & Messaging:** Orchestrated a Turborepo monorepo containing a stateless Auth Service (Go) and an asynchronous scraping pipeline (Python/FastAPI) powered by Celery and RabbitMQ.",
+                        "**Data Strategy & Observability:** Engineered a multi-database architecture (PostgreSQL, MongoDB, Elasticsearch) and implemented a complete observability stack from scratch using Prometheus, Grafana, and Loki.",
+                        "**DevOps & Security:** Containerized the infrastructure using Docker Compose with multi-stage builds, implementing JWT-based RBAC and strict network isolation."
 
-                content: {
-                    name: "Cross-Platform Mapping & Localization System",
-                    role: "Personal Project (Baidu → Open Maps)",
-                    text: "Built a Dockerized Playwright-based web system to extract and rank nearby locations from Baidu Maps using user location and keyword inputs. Implemented coordinate transformation logic to convert Baidu map data into Google Maps and OpenStreetMap-compatible formats. Delivered an English-language web application with translated location data, allowing map usage without reliance on Chinese platforms."
+                    ],
+                    techStack: ["Go", "Python (FastAPI, Celery)", "PostgreSQL", "MongoDB", "Redis", "RabbitMQ", "Docker", "Prometheus", "Microservices Architecture"]
                 }
             }
         ]
