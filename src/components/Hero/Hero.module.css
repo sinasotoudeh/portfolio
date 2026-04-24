@@ -56,26 +56,60 @@
 
 .wmGroup {
     display: flex;
+    flex-direction: row; /* حالت پیشفرض یک خطی */
     align-items: center;
     font-family: var(--font-display, sans-serif);
     font-size: clamp(5rem, 14vw, 12rem);
     font-weight: 900;
     letter-spacing: -0.04em;
     line-height: 1;
-    color: var(--text-primary, #f0f0f8);
     position: absolute;
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
     transition: all 1.2s cubic-bezier(0.19, 1, 0.22, 1);
-    will-change: transform, font-size, top, left;
+    will-change: transform, font-size, top, left, flex-direction;
+}
+
+.wmWordRow {
+    display: flex;
+    align-items: center;
+    white-space: nowrap;
+}
+
+.wmColor1 {
+    color: var(--text-primary, #f0f0f8);
+    transition: color 0.8s ease;
+}
+
+.wmLetterS {
+        /* ۱. تعریف گرادیان به عنوان پس‌زمینه */
+    background: linear-gradient(135deg, var(--color-accent-primary, #a78bfa), var(--color-accent-secondary, #ec4899));
+    
+    /* ۲. برش دادن پس‌زمینه به شکل متن */
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    /* ۳. شفاف کردن رنگ اصلی متن تا گرادیانِ زیر آن دیده شود */
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    transition: color 0.8s ease, transform 1s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .wmLetterO {
     display: inline-block;
     width: 0.8em;
     text-align: center;
-    transition: opacity 0.8s ease, color 0.8s ease;
+    transition: opacity 0.8s ease, color 0.8s ease, transform 1s cubic-bezier(0.19, 1, 0.22, 1);
+}
+
+.wmExpand {
+    display: inline-block;
+    max-width: 0;
+    opacity: 0;
+    overflow: hidden;
+    color: var(--text-primary, #f0f0f8);
+    transition: max-width 1.2s cubic-bezier(0.19, 1, 0.22, 1), opacity 1s ease 0.2s;
 }
 
 /* Wordmark States */
@@ -83,11 +117,13 @@
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
-    font-size: clamp(5rem, 14vw, 12rem);
+    font-size: clamp(4rem, 11vw, 10rem);
+    flex-direction: row;
+    gap: 0;
 }
 
 .state0 .wmLetterO {
-    opacity: 0;
+    opacity: 0; /* در این حالت کره جای آن را می‌گیرد */
 }
 
 .state1 .wmGroup {
@@ -95,30 +131,92 @@
     left: 6vw;
     transform: translate(0, 0);
     font-size: clamp(3.5rem, 7vw, 6rem);
+    flex-direction: column; /* دو خطی شدن */
+    align-items: flex-start;
+}
+
+.state1 .wmColor1 {
+        /* ۱. تعریف گرادیان به عنوان پس‌زمینه */
+    background: linear-gradient(135deg, var(--color-accent-primary, #a78bfa), var(--color-accent-secondary, #ec4899));
+    
+    /* ۲. برش دادن پس‌زمینه به شکل متن */
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    /* ۳. شفاف کردن رنگ اصلی متن تا گرادیانِ زیر آن دیده شود */
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+}
+
+.state1 .wmLetterS {
+    /* در جایگاه جدید کلمه دوم است */
+        /* ۱. تعریف گرادیان به عنوان پس‌زمینه */
+    background: var(--color-accent-primary, #a78bfa);
+    
+    /* ۲. برش دادن پس‌زمینه به شکل متن */
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    /* ۳. شفاف کردن رنگ اصلی متن تا گرادیانِ زیر آن دیده شود */
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    transition: color 0.8s ease, transform 1s cubic-bezier(0.19, 1, 0.22, 1);
 }
 
 .state1 .wmLetterO {
     opacity: 1;
-    color: var(--color-accent-primary, #a78bfa);
+        /* ۱. تعریف گرادیان به عنوان پس‌زمینه */
+    background: linear-gradient(135deg, var(--color-accent-primary, #a78bfa), var(--color-accent-secondary, #ec4899));
+    
+    /* ۲. برش دادن پس‌زمینه به شکل متن */
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    /* ۳. شفاف کردن رنگ اصلی متن تا گرادیانِ زیر آن دیده شود */
+    -webkit-text-fill-color: transparent;
+    color: transparent;
+    transform: translateX(0);
+}
+
+.state1 .wmExpand {
+    max-width: 500px; /* فضای کافی برای باز شدن کشویی حروف */
+    opacity: 1;
 }
 
 .state2 .wmGroup {
     top: 12vh;
     left: 6vw;
     transform: translate(0, 0);
-    font-size: clamp(2.5rem, 5vw, 4rem);
+    font-size: clamp(1.5rem, 4vw, 3rem);
     opacity: 0.4;
+    flex-direction: column;
+    align-items: flex-start;
 }
 
-.state2 .wmLetterO {
+.state2 .wmColor1,
+.state2 .wmLetterS,
+.state2 .wmLetterO,
+.state2 .wmExpand {
+    background:  #ffffff;
+    
+    /* ۲. برش دادن پس‌زمینه به شکل متن */
+    -webkit-background-clip: text;
+    background-clip: text;
+    
+    /* ۳. شفاف کردن رنگ اصلی متن تا گرادیانِ زیر آن دیده شود */
+    -webkit-text-fill-color: transparent;
+    color: transparent;}
+
+.state2 .wmExpand {
+    max-width: 500px;
     opacity: 1;
-    color: var(--text-primary, #f0f0f8);
 }
 
 .state3 .wmGroup {
     top: -20%;
     opacity: 0;
 }
+
 
 /* Tagline & Hint */
 .heroTagline {

@@ -18,11 +18,11 @@ interface ParticleStates {
 
 // --- Constants & Config ---
 const CONFIG = {
-    particleOffsetX: -180,
+    particleOffsetX: 250, // تنظیم شده برای هماهنگی با جایگاه جدید O در انتهای SinSO
     particleOffsetY: 0,
 };
-const NUM_PARTICLES = 850;
-const FOCAL_LENGTH = 450;
+const NUM_PARTICLES = 250;
+const FOCAL_LENGTH = 1000;
 
 const STATES = {
     0: { threshold: 0.00 },
@@ -92,11 +92,9 @@ class Particle {
 }
 
 export default function Hero() {
-    // Refs for DOM and Canvas with strict typing
     const containerRef = useRef<HTMLElement>(null);
     const canvasRef = useRef<HTMLCanvasElement>(null);
 
-    // Refs for Animation Loop
     const particlesRef = useRef<Particle[]>([]);
     const mouseRef = useRef({ x: 0, y: 0 });
     const centerRef = useRef({ cx: 0, cy: 0 });
@@ -110,13 +108,13 @@ export default function Hero() {
         let cachedContainerTop = 0;
 
         const canvas = canvasRef.current;
-        if (!canvas) return; // Null check for canvas
+        if (!canvas) return; 
 
         const ctx = canvas.getContext('2d', { alpha: true });
-        if (!ctx) return; // Null check for context
+        if (!ctx) return; 
 
         const container = containerRef.current;
-        if (!container) return; // Null check for container
+        if (!container) return; 
 
         const initEngine = () => {
             dimensionsRef.current.w = canvas.offsetWidth;
@@ -127,10 +125,9 @@ export default function Hero() {
 
             const isMobile = dimensionsRef.current.w < 768;
             centerRef.current = {
-                cx: dimensionsRef.current.w / 2 + (isMobile ? -60 : CONFIG.particleOffsetX),
+                cx: dimensionsRef.current.w / 2 + (isMobile ? 0 : CONFIG.particleOffsetX),
                 cy: dimensionsRef.current.h / 2,
             };
-
 
             particlesRef.current = Array.from(
                 { length: NUM_PARTICLES },
@@ -138,22 +135,20 @@ export default function Hero() {
             );
         };
 
-        let resizeTimeout: ReturnType<typeof setTimeout>; // تعریف تایمر
+        let resizeTimeout: ReturnType<typeof setTimeout>; 
 
         const handleResize = () => {
             if (!canvasRef.current) return;
             const w = canvasRef.current.offsetWidth;
             const h = canvasRef.current.offsetHeight;
 
-            // ۱. آپدیت فوری ابعاد بوم (برای جلوگیری از به هم ریختگی بصری)
             dimensionsRef.current.w = w;
             dimensionsRef.current.h = h;
             canvasRef.current.width = w;
             canvasRef.current.height = h;
 
-            cachedContainerTop = container.offsetTop; // آپدیت کش اسکرول
+            cachedContainerTop = container.offsetTop; 
 
-            // ۲. به تعویق انداختن محاسبات سنگین ریاضی (Debounce)
             clearTimeout(resizeTimeout);
             resizeTimeout = setTimeout(() => {
                 particlesRef.current.forEach(p => {
@@ -163,7 +158,7 @@ export default function Hero() {
                         fluid: p.getFluidCoords(w, h),
                     };
                 });
-            }, 100); // ۲۵۰ میلی‌ثانیه پس از توقف کاربر، محاسبات انجام می‌شود
+            }, 100); 
         };
 
         const handleMouseMove = (e: MouseEvent) => {
@@ -174,12 +169,10 @@ export default function Hero() {
             const { w, h } = dimensionsRef.current;
             ctx.clearRect(0, 0, w, h);
 
-            // Scroll Progress
             const pinDuration = container.offsetHeight - window.innerHeight;
             const scrollInPin = window.scrollY - cachedContainerTop;
             const rawProgress = pinDuration > 0 ? clamp(scrollInPin / pinDuration, 0, 1) : 0;
 
-            // Determine State
             let currentState = 0;
             if (rawProgress >= STATES[3].threshold) currentState = 3;
             else if (rawProgress >= STATES[2].threshold) currentState = 2;
@@ -190,19 +183,17 @@ export default function Hero() {
                 setUiState(currentState);
             }
 
-            // Center Logic
             let targetCX = w / 2;
             let targetCY = h / 2;
             if (rawProgress < STATES[1].threshold) {
                 const isMobile = w < 768;
-                targetCX = w / 2 + (isMobile ? -60 : CONFIG.particleOffsetX);
+                targetCX = w / 2 + (isMobile ? 0 : CONFIG.particleOffsetX);
                 targetCY = h / 2 + CONFIG.particleOffsetY;
             }
 
             centerRef.current.cx = lerp(centerRef.current.cx, targetCX, 0.04);
             centerRef.current.cy = lerp(centerRef.current.cy, targetCY, 0.04);
 
-            // Rotation Math
             const time = Date.now() * 0.0003;
             const mouseOffsetX = (mouseRef.current.x - w / 2) * 0.0008;
             const mouseOffsetY = (mouseRef.current.y - h / 2) * 0.0008;
@@ -212,7 +203,6 @@ export default function Hero() {
             const cosY = Math.cos(rotY), sinY = Math.sin(rotY);
             const cosX = Math.cos(rotX), sinX = Math.sin(rotX);
 
-            // Draw Particles
             particlesRef.current.forEach((p) => {
                 let targetX: number, targetY: number, targetZ: number;
 
@@ -283,7 +273,6 @@ export default function Hero() {
 
     return (
         <section ref={containerRef} className={styles.heroPinContainer}>
-            {/* بقیه JSX دقیقاً مشابه نسخه قبلی است، فقط Cast کردن متغیر CSS اضافه شده */}
             <section className={styles.heroPanel}>
                 <div className={styles.canvasContainer}>
                     <canvas ref={canvasRef} className={styles.mainCanvas}></canvas>
@@ -292,12 +281,21 @@ export default function Hero() {
 
                 <div className={`${styles.heroWordmark} ${styles[`state${uiState}`] || ''}`}>
                     <div className={styles.wmGroup}>
-                        <span className={styles.wmPart}>N</span>
-                        <span className={styles.wmLetterO}>O</span>
-                        <span className={styles.wmPart}>NATO</span>
+                        <div className={styles.wmWordRow}>
+                            <span className={styles.wmLetterS}>S</span>
+                            <span className={styles.wmColor1}>in</span>
+                            <span className={styles.wmExpand}>a</span>
+                        </div>
+                        <div className={`${styles.wmWordRow} ${styles.wmSecondWord}`}>
+                            {/* جایجایی ساختاری S برای افکت بازشدن و جدا شدن منطقی */}
+                            <span className={styles.wmLetterS}>S</span>
+                            <span className={styles.wmLetterO}>o</span>
+                            <span className={styles.wmExpand}>toudeh</span>
+                        </div>
                     </div>
                 </div>
 
+                {/* بقیه المان‌ها کاملا مثل قبل */}
                 <div className={`${styles.heroTagline} ${uiState !== 0 ? styles.hidden : ''}`}>
                     <p>We craft digital experiences<br />that leave a <span>mark</span>.</p>
                 </div>
@@ -333,7 +331,7 @@ export default function Hero() {
                         <div
                             key={i}
                             className={styles.fluidWorkItem}
-                            style={{ '--index': i } as React.CSSProperties} // <--- رفع ارور استایل متغیر CSS
+                            style={{ '--index': i } as React.CSSProperties}
                         >
                             <div className={styles.fwMeta}>
                                 <span className={styles.fwNum}>0{i + 1}</span>
