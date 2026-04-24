@@ -36,37 +36,32 @@
 }
 
 /* ── Logo ── */
-.logo {
+/* کانتینر اصلی لوگو برای نمایش دو خطی */
+.logoContainer {
     display: flex;
-    align-items: center;
-    font-family: var(--font-display);
-    font-size: 1.25rem;
-    font-weight: 800;
-    letter-spacing: -0.04em;
-    user-select: none;
-    position: relative;
-    text-decoration: none;
-    text-shadow: 0 2px 10px rgba(0, 0, 0, 0.3);
+    flex-direction: column;
+    justify-content: center;
+    line-height: 1.1; /* فاصله بین دو خط را تنظیم می‌کند */
+    text-transform: capitalize; 
 }
 
-.logoN {
-    color: var(--color-accent-primary);
+/* تنظیمات هر خط */
+.logoLine {
+    font-size: 1.2rem; /* سایز فونت دلخواه خود را وارد کنید */
+    font-weight: 400; /* وزن فونت برای بخش‌های معمولی (a و toudeh) */
 }
 
-.logoRest {
-    color: var(--color-text-primary);
+/* بخش‌های متمایز و بولد (Sin و S) */
+.logoBold {
+    font-weight: 800; /* وزن بیشتر برای برجسته شدن */
+    letter-spacing: 1px;
 }
 
-.logoDot {
-    position: absolute;
-    bottom: 2px;
-    right: -8px;
-    width: 5px;
-    height: 5px;
-    border-radius: 50%;
-    background: var(--color-accent-gold);
-    box-shadow: 0 0 8px var(--color-accent-gold);
+/* رنگ متفاوت برای حرف o */
+.logoAccent {
+    color: #a737c3; /* کد رنگ دلخواه خود را جایگزین کنید */
 }
+
 
 /* ── Desktop Links ── */
 .linksList {

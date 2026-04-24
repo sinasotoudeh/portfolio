@@ -67,11 +67,21 @@ export default function Navigation() {
                 aria-label="Main navigation"
             >
                 {/* Logo */}
-                <Link href="/" className={styles.logo} data-cursor="hover">
-                    <span className={styles.logoN}>N</span>
-                    <span className={styles.logoRest}>onato</span>
-                    <div className={styles.logoDot} />
-                </Link>
+<Link href="/" className={styles.logo} data-cursor="hover">
+    <div className={styles.logoContainer}>
+        <div className={styles.logoLine}>
+            <span className={styles.logoBold}>S</span><span className={styles.logoAccent}>in</span>
+            a
+        </div>
+        <div className={styles.logoLine}>
+            <span className={styles.logoBold}>
+                S
+            </span><span className={styles.logoAccent}>o</span>
+            toudeh
+        </div>
+    </div>
+</Link>
+
 
                 {/* Desktop Links */}
                 <ul className={styles.linksList} role="list">
