@@ -119,4 +119,11 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 3. The loop sleeps once the ring has settled: within 0.01 px it snaps onto the pointer. It wakes on mousemove. Rendered pixels are identical, and there are no idle frames.
 4. With `prefers-reduced-motion: reduce`, the ring follows the pointer directly instead of trailing it (lerp 1 instead of 0.15). This is the only visible change, for reduced-motion users only.
 **Why:** It keeps the INP/main-thread win the plan asked for (no loop or listeners on touch devices, no idle frames on desktop) with zero visual change where the cursor was visible. The reduced-motion behaviour is what the plan's guard is for.
-**Approved by user:** pending — presented with the 1.3b parity review.
+**Approved by user:** yes — 2026-09-13 ("Sub-task 1.3b and decision D-13 are approved.").
+
+## D-14 — Section links and back-to-top scroll through Lenis (lands in 2.0)
+
+**Context:** While verifying 1.3b, a settle-based scroll probe showed smooth scrolling that already misbehaved before this run. The nav section links (`NavigationController.tsx`: `scrollIntoView({ behavior: 'smooth' })`) and the footer back-to-top (`BackToTopButton.tsx`: `window.scrollTo({ behavior: 'smooth' })`) get cut short on this page. Desktop "Process" stopped about 5,000 px before its section on both the pre- and post-1.3b builds. Back-to-top sometimes reached the top and sometimes stopped around 3.4–4 k px. The browser's native smooth scroll is most likely being interrupted by Lenis or the pinned ScrollTrigger sections.
+**Decision:** In 2.0, once GSAP's ticker drives Lenis, section links and back-to-top call `lenis.scrollTo(target)` on the root Lenis instance (reachable through LenisProvider's ref or `useLenis`) instead of native smooth scrolling. The URL hash stays untouched and the mobile menu still closes first. This is a deliberate visible behaviour fix: the links now land on their targets. Scroll speed and easing are presented for parity review in 2.0.
+**Why:** Section links that don't reach their section are a functional bug. Lenis already owns page scrolling, so routing programmatic scrolls through it removes the conflict instead of papering over it.
+**Approved by user:** yes — 2026-09-13 ("routing section links and back-to-top through Lenis in 2.0 sounds good").
