@@ -30,7 +30,7 @@ Gate: `verify-portfolio.mjs crlf casing assets` — crlf+casing clean, assets ch
 Sources: `postcss.config.mjs`, `verify-portfolio.mjs deps` output.
 Steps: `pnpm remove @react-three/postprocessing lucide-react tailwind-merge` (+ `autoprefixer` only if `postcss.config.mjs` doesn't reference it). Do **not** touch `three`/`fiber`/`drei`/`use-gesture`/`framer-motion` (their consumers still compile — removal is 2.8) nor `@gsap/react` (becomes used in 2.0). Write the audit delta into STATE.md: everything found this phase that `references/audit-baseline.md` missed or got wrong.
 Gate: build green; deps check shows no *newly* dead packages. Commit: `chore(deps): 0.4 prune dead dependencies`.
-**⛔ PHASE GATE (hard stop):** present baseline numbers, audit delta, and the Phase 1–6 plan for re-confirmation.
+**⛔ PHASE GATE (hard stop):** present baseline numbers, audit delta, and the Phase 1–6 plan for re-confirmation. Before 1.1 starts, capture the visual baseline against a production build — `screenshot.mjs --label phase0-baseline --every 1vh` (desktop + mobile) — the reference every later parity review is compared with (D-10).
 
 ---
 
@@ -51,13 +51,13 @@ Gate: build + all sections render. Commit: `perf(assets): 1.2 enable Vercel imag
 Sources: `layout.tsx`, `Navigation.tsx` + module CSS, `Footer.tsx` + module CSS, `CustomCursor.tsx`, `LenisProvider.tsx`; installed Metadata guide.
 Steps: real base metadata (title/description drafted per `references/seo-blueprint.md`, flagged for Phase 3 sign-off; `metadataBase` via `src/lib/site.ts`). Convert Footer to a section shell if its interactivity allows (read it first); split Navigation into server markup + client menu leaf; CustomCursor stays a client leaf but gains `(pointer: fine)` + `prefers-reduced-motion` guards (skip mounting on touch devices — INP win, no visual change on desktop). LenisProvider gains `autoRaf: false` + ref shape ready for 2.0's ticker wiring (keep behavior identical this sub-task).
 Gate: build; census check (`verify-portfolio.mjs client`) shows Footer/Navigation shells server-side; parity review of chrome on desktop + touch. Commit: `refactor(rsc): 1.3 semantic chrome, server nav/footer shells`.
-**⛔ PHASE GATE:** user parity approval of typography + chrome before any section is rebuilt.
+**⛔ PHASE GATE:** user parity approval of typography + chrome before any section is rebuilt, presented with before/after screenshot pairs (phase0 baseline vs current).
 
 ---
 
 ## Phase 2 — Section Rebuilds (one section = one sub-task = one parity review)
 
-Shared contract for 2.1–2.7 — every sub-task: (a) read the component + its `.module.css` fully, write its **motion inventory** (every animated property, trigger, duration, ease/spring) and its **interaction inventory** into the sub-task's STATE section plan *before* editing; (b) split into section shell + minimal client leaves; (c) port motion per the GSAP contract in `references/cwv-invariants.md`; (d) apply F-1 props to every image; (e) fix the section's heading level/semantics per `references/seo-blueprint.md`; (f) `prefers-reduced-motion` degradation; (g) update the client-leaf allowlist (`docs/optimization-state/client-allowlist.json`); (h) gates: build + full `verify-portfolio.mjs` + **user parity approval against a running dev server** (list exactly what to look at, state by state). One commit per section: `refactor(rsc)+perf(motion): 2.x <Section>`.
+Shared contract for 2.1–2.7 — every sub-task: (a) read the component + its `.module.css` fully, write its **motion inventory** (every animated property, trigger, duration, ease/spring) and its **interaction inventory** into the sub-task's STATE section plan *before* editing; (b) split into section shell + minimal client leaves; (c) port motion per the GSAP contract in `references/cwv-invariants.md`; (d) apply F-1 props to every image; (e) fix the section's heading level/semantics per `references/seo-blueprint.md`; (f) `prefers-reduced-motion` degradation; (g) update the client-leaf allowlist (`docs/optimization-state/client-allowlist.json`); (h) gates: build + full `verify-portfolio.mjs` + before/after `screenshot.mjs` sets for every inventoried state (read them and fix visible regressions before asking) + **user parity approval against a running dev server** (list exactly what to look at, state by state). One commit per section: `refactor(rsc)+perf(motion): 2.x <Section>`.
 
 **2.0 Motion foundation.** Create `src/lib/motion/` (gsap registration + ScrollTrigger, ease/duration constants, `useSectionReveal`-style shared helpers as they emerge); wire Lenis↔ScrollTrigger ticker per the recipe. Gate: ProcessSection (the existing GSAP consumer) behaves identically. Commit: `perf(motion): 2.0 single-engine foundation (gsap ticker drives lenis)`.
 
@@ -113,7 +113,7 @@ Gate: both tests demonstrated; build; parity of the form's visual states. Commit
 
 ## Phase 6 — Verification & the Engineering Manual
 
-**6.1 Full verification.** `verify-portfolio.mjs --all`; final build + budget table vs BASELINE; Lighthouse per the procedure in `references/cwv-invariants.md` (3× median, numbers pasted); deploy preview → PSI mobile+desktop. Anything short of 100/green: fix-loop as sub-sub-tasks (6.1a…), each with its own commit, before proceeding. **The run's success criterion lives here — no declaring victory from local runs alone.**
+**6.1 Full verification.** `verify-portfolio.mjs --all`; final build + budget table vs BASELINE; Lighthouse per the procedure in `references/cwv-invariants.md` (3× median, numbers pasted, Chromium via `CHROME_PATH` from the D-10 tools dir); deploy preview → PSI mobile+desktop. Anything short of 100/green: fix-loop as sub-sub-tasks (6.1a…), each with its own commit, before proceeding. **The run's success criterion lives here — no declaring victory from local runs alone.**
 **6.2 Tier A manual.** `docs/portfolio-internals/core/architecture.md` then `core/performance.md`, per `references/doc-standards.md` (coverage: every checklist item in that file's tree description; gates G1–G5). One commit per file.
 **6.3 Tier B playbook.** `playbook/seo.md`, `playbook/case-studies.md`, then `README.md` router. Same discipline.
 **6.4 Close-out.** LOG completeness pass; STATE marked run-complete; handoff summary in-chat: Vercel env vars to set (INTAKE-1/2/3), domain wiring steps, PSI re-check cadence, where the manuals live. Final commit: `docs(internals): 6.4 run complete`.

@@ -39,3 +39,6 @@ yarn-error.log*
 # typescript
 *.tsbuildinfo
 next-env.d.ts
+
+# visual verification captures (screenshot.mjs, D-10) — regenerable, never committed
+/.visual/

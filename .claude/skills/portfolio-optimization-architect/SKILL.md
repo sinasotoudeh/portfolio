@@ -22,6 +22,7 @@ The run is executed once, for this repository only. Precision beats reusability 
 - `references/seo-blueprint.md` — metadata contract, the unified JSON-LD `@graph`, sitemap/robots shape, semantic-HTML contract, the verified Atajoy fact sheet, and the INTAKE register of user-owned values. Read before Phases 3–5.
 - `references/doc-standards.md` — the Tier A/B manual contract for `docs/portfolio-internals/` (adapted from the sibling repo's documenter skill): tree, audience tests, gates G1–G5. Read before Phase 6.
 - `scripts/verify-portfolio.mjs` — the mechanical gate runner. From the repo root: `node .claude/skills/portfolio-optimization-architect/scripts/verify-portfolio.mjs [--all | crlf casing img client placeholders assets deps docs budget]`.
+- `scripts/screenshot.mjs` — real-Chromium screenshots of a running server at chosen scroll positions and viewports, plus a report of console errors, failed requests and HTTP ≥ 400 responses. See *Visual verification tooling* below.
 
 ## Locked decisions — settled 2026-07-11, cited not re-argued
 
@@ -94,7 +95,17 @@ Last Commit: <short-hash + message>
 
 **Approval Mode** (STATE.md line, default `per-task`): `per-task` stops after every sub-task's gates pass and it's committed; `per-phase` advances within a phase automatically. **Hard stops regardless of mode:** every ⛔ PHASE GATE in the plan; anything visual awaiting parity approval; anything needing a DECISIONS entry; gates failing twice on the same sub-task (present findings instead of thrashing); any temptation to touch history, push, or work outside the plan.
 
-**Visual-parity protocol.** For every touched section: keep the dev server runnable, tell the user exactly what to look at (states, timings, hover/drag feel — from the inventory), list every intended visible difference explicitly (e.g. "Inter now actually loads; retina canvas is sharper"), and record approval in STATE.md before the sub-task closes. The user's eyes are the gate; never self-certify parity.
+**Visual-parity protocol.** For every touched section: keep the dev server runnable, tell the user exactly what to look at (states, timings, hover/drag feel — from the inventory), list every intended visible difference explicitly (e.g. "Inter now actually loads; retina canvas is sharper"), and record approval in STATE.md before the sub-task closes. The user's eyes are the gate; never self-certify parity. Before asking, capture before/after screenshot sets of the inventoried states with `scripts/screenshot.mjs`, read them yourself, and fix any regression you can already see — screenshots make the request concrete and save the owner's attention; they never replace the owner's approval.
+
+## Visual verification tooling (D-10)
+
+Use it whenever the visual state matters: capture *before* a section is touched and *after* it changes, when diagnosing (the report lists 404s and console/page errors), and at every phase gate.
+
+- **Installed on this box, outside the repo.** Playwright 1.63.0 lives in its own tools dir `~/.local/share/portfolio-visual-tools` (own `package.json` — never add Playwright to the portfolio's `package.json`); Chrome for Testing 153 (Playwright `chromium` v1243) lives in `~/.cache/ms-playwright/`. System libraries and fonts are a one-time owner step (needs sudo): `sudo env "PATH=$PATH" ~/.local/share/portfolio-visual-tools/node_modules/.bin/playwright install-deps chromium`. If the tools dir is missing, `screenshot.mjs` prints the full reinstall commands.
+- **Capture against a production build:** `pnpm build`, then `pnpm next start -p <free port>` (dev mode adds overlays and dev-only timing), then e.g. `node .claude/skills/portfolio-optimization-architect/scripts/screenshot.mjs --url http://localhost:<port> --label 2.1-hero-before --every 1vh` (defaults: desktop 1440×900 + mobile 390×844@3). `--at top,2vh,50%`, `--selector`, `--full`, `--reduced-motion` are available. Output goes to `.visual/` (gitignored); read the PNGs with the Read tool.
+- **Past states:** render an older commit in a separate worktree — `git worktree add ../portfolio-at-<hash> <hash>`, `pnpm install --frozen-lockfile`, build, start on another port — never check out old commits in the main tree.
+- **Limits:** the box renders with its own fonts — until `fonts-liberation` is installed (part of install-deps) and Inter is self-hosted (1.1), `'Helvetica Neue', Arial` fall back to DejaVu Sans, so judge layout, state and assets, not glyph rendering. The hero particles and cursor are time-varying: compare visually, never by pixel diff.
+- **Process hygiene:** this box also runs the owner's own servers (their `next dev`, the Shop Platform's `next-server`s). Start test servers on a free port, confirm the PID's cwd is this repo, and stop only that PID when done — never `pkill`/`killall` by name or pattern.
 
 ## Gates — a sub-task is complete only when these run green
 

@@ -3,9 +3,9 @@ Updated: 2026-09-13T22:30:00Z
 Approval Mode: per-task
 Phase: 0 — Environment, Continuity & Re-Audit
 Sub-task: 0.3 — WSL scrub
-In Flight: — (0.3 committed; parity note awaiting owner review)
-Status: done-awaiting-approval
-Waiting on User Approval: yes — parity note (ProcessSection default background now loads) + "Continue" starts 0.4
+In Flight: — (0.3 closed; parity approved)
+Status: done
+Waiting on User Approval: no
 Plan for the sub-task in flight:
   [x] `verify-portfolio.mjs crlf casing assets` → crlf FAIL 30 files, casing pass, assets 2 space-named files
   [x] Finding: all 30 CRLF files are `i/lf w/crlf` — git already stores LF (core.autocrlf=input); CRLF exists only in the WSL working tree
@@ -20,8 +20,9 @@ Plan for the sub-task in flight:
   [x] Evidence (next start on :3123, before fix): `/images/process/default.png` 404, `/images/Process/default.png` 200. After fix: lowercase 404 (unreferenced), fixed path 200 and present in prerendered HTML; both renamed assets 200; old space-named URL 404 (unreferenced)
   [x] Gates: `pnpm build` green; `pnpm lint` exit 0; `verify-portfolio.mjs crlf casing assets` → 3 passed, 0 failed, 15 warnings (all >300KB source-size warnings, handled by Phase 1.2/2 image work); `--all` → 8 passed, 1 failed (img, ProcessSection.tsx:186 — scheduled 2.5), 20 warnings
   [x] Commit `chore(env): 0.3 normalize line endings, asset names, add .gitattributes` — owner-only authorship (D-9)
-Parity notes pending user review:
-  - ProcessSection default background (0.3): `ProcessSection.tsx:175` referenced `/images/process/default.png`; disk is `public/images/Process/default.png`. Case-insensitive NTFS served it; Linux/Vercel 404 it, so the layer rendered empty on any Linux deployment and in WSL. With the fix the image loads: full-bleed `background-size: cover`, opacity 0.5, white 1px outline + purple 20px offset drop-shadow, dimming to 0.2 / scale 1.05 while a step is active (ProcessSection.module.css .bgImage/.bgImageHidden). This restores the authored design; owner confirms it is intended.
+Parity notes pending user review: —
+Parity approvals (recorded):
+  - 0.3 ProcessSection default background now loads (`/images/Process/default.png` casing fix) — approved by owner 2026-09-13 ("background verified").
 Open intake fields: all INTAKE fields unresolved (register in .claude/skills/portfolio-optimization-architect/references/seo-blueprint.md)
 Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 504.4 KB gz (verify-portfolio.mjs budget after the 0.3 build — no JS change)
   BASELINE detail (2026-09-13, Next 16.2.1 Turbopack):
@@ -52,6 +53,7 @@ Docs read this run (AGENTS.md gate), all under node_modules/next/dist/docs/01-ap
 Completed sub-tasks: 0.1, 0.2, 0.3
 Next Immediate Action: 0.4 — read `postcss.config.mjs`; `verify-portfolio.mjs deps`; `pnpm remove @react-three/postprocessing lucide-react tailwind-merge` (+ `autoprefixer` only if postcss.config.mjs doesn't reference it); `pnpm build`; finalize the audit delta below; commit `chore(deps): 0.4 prune dead dependencies`; then ⛔ PHASE 0 GATE (baseline numbers, audit delta, Phase 1–6 plan re-confirmation, open questions).
 Blockers / Open Questions:
+  - OWNER ACTION (D-10): install Chromium's system libraries + fonts once — `sudo env "PATH=$PATH" ~/.local/share/portfolio-visual-tools/node_modules/.bin/playwright install-deps chromium`. Until then `screenshot.mjs` only runs with the session-scratchpad libs (LD_LIBRARY_PATH) and DejaVu fonts. Then capture `phase0-baseline` before 1.1.
   - Stray `.env` at repo root (gitignored, never committed/deployed) is the Shop Platform's env template (Postgres/Redis/Meili/S3/SMTP/auth/payment keys, dated 2026-07-07). `next build` loads it ("Environments: .env"). Portfolio source reads no env vars today, so the baseline is unaffected, but Phase 1.3 introduces `NEXT_PUBLIC_SITE_URL` and Phase 5 `RESEND_API_KEY`/`CONTACT_TO_EMAIL`. Owner decision for the Phase 0 gate: delete/move it, or keep it. Not touched by the run.
 Audit delta (accumulating for 0.4):
   - WRONG: "no lockfile of any kind exists" — pnpm-lock.yaml (lockfileVersion 9.0) + pnpm-workspace.yaml are tracked and in sync → D-7 (audit-baseline.md corrected in place).
