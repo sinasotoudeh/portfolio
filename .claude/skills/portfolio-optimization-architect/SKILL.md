@@ -21,7 +21,7 @@ The run is executed once, for this repository only. Precision beats reusability 
 - `references/cwv-invariants.md` — invariants F-1/F-2/F-3 as concrete recipes for this codebase, the GSAP porting contract, the CSS-3D cylinder recipe, Hero hygiene rules, budgets, and the Lighthouse/PSI measurement procedure. Read before any Phase 1–2 sub-task.
 - `references/seo-blueprint.md` — metadata contract, the unified JSON-LD `@graph`, sitemap/robots shape, semantic-HTML contract, the verified Atajoy fact sheet, and the INTAKE register of user-owned values. Read before Phases 3–5.
 - `references/doc-standards.md` — the Tier A/B manual contract for `docs/portfolio-internals/` (adapted from the sibling repo's documenter skill): tree, audience tests, gates G1–G5. Read before Phase 6.
-- `scripts/verify-portfolio.mjs` — the mechanical gate runner. From the repo root: `node .claude/skills/portfolio-optimization-architect/scripts/verify-portfolio.mjs [--all | crlf casing img client placeholders assets deps docs budget]`.
+- `scripts/verify-portfolio.mjs` — the mechanical gate runner. From the repo root: `node .claude/skills/portfolio-optimization-architect/scripts/verify-portfolio.mjs [--all | crlf casing img client placeholders assets deps docs budget]`. `casing` covers imports *and* every public asset URL referenced from `src/` (D-11 — NTFS hid a `process`/`Process` 404 until 0.3).
 - `scripts/screenshot.mjs` — real-Chromium screenshots of a running server at chosen scroll positions and viewports, plus a report of console errors, failed requests and HTTP ≥ 400 responses. See *Visual verification tooling* below.
 
 ## Locked decisions — settled 2026-07-11, cited not re-argued

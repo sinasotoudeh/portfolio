@@ -44,7 +44,7 @@ Gate: build; CLS spot-check in dev (font swap invisible); parity notes list the 
 
 **1.2 Image pipeline config (Invariant F-1, config half).**
 Sources: installed `next/image` + config guides; `next.config.ts`.
-Steps: remove `unoptimized`, set `formats`; dev-render every page section and fix anything the config change breaks. Per-usage props are handled per-section in Phase 2.
+Steps: remove `unoptimized`, set `formats`; dev-render every page section and fix anything the config change breaks. `verify-portfolio.mjs casing` must stay green — it validates every public asset URL's exact casing (D-11), which matters doubly once `next/image` requests go through the optimizer. Per-usage props are handled per-section in Phase 2.
 Gate: build + all sections render. Commit: `perf(assets): 1.2 enable Vercel image optimization (AVIF/WebP)`.
 
 **1.3 Semantic shell & chrome.**

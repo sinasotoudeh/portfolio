@@ -88,3 +88,10 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 **Why:** The owner asked for it. It also catches visible regressions and broken assets before they cost review time, and makes each parity request concrete.
 **Verification:** with the three missing library packages extracted to the session scratchpad (`apt-get download` + `dpkg -x`, `LD_LIBRARY_PATH`, no root) as a temporary stand-in, `screenshot.mjs` captured 10 shots (desktop + mobile × top/1vh/25%/50%/bottom) of the 0.3 production build in 37 s with 0 reported issues. The permanent fix is the owner's install-deps run.
 **Approved by user:** yes — 2026-09-13, owner's own request.
+
+## D-11 — Case-sensitivity check for public asset URLs
+
+**Context:** The `casing` check in `verify-portfolio.mjs` only validated import specifiers. In 0.3 an ad-hoc scan found `src/components/ProcessSection/ProcessSection.tsx:175` requesting `/images/process/default.png` while the file is `public/images/Process/default.png`. NTFS served it; Linux and Vercel return 404, so the section's background layer was empty on every Linux deployment. No gate could have caught it. At the Phase 0 gate the owner approved adding the check.
+**Decision:** `casing` now also scans `src/**/*.{ts,tsx,js,jsx,mjs,css}` for root-relative asset URLs (images, fonts, video, pdf) in string literals and CSS `url()` — comments blanked with offsets preserved, `/_next/` and protocol-relative URLs skipped, `%xx` decoded. An exact file under `public/` passes; a case-insensitive match FAILs as a Linux/Vercel 404; no match in any casing warns (a heuristic scan cannot tell dead data from a live 404, e.g. `src/data/resumeData.ts:80`). The check runs everywhere `casing` already runs (0.3-style gates and `--all`).
+**Verification:** a temporary probe file produced FAIL for `url('/images/process/default.png')`, passed the correctly cased path, ignored a commented-out reference, and warned for the URL-encoded pre-0.3 filename; the real tree passes (87 references checked, 1 warning — the dead `profile.png`). Probe removed.
+**Approved by user:** yes — 2026-09-13, Phase 0 gate answer 4.

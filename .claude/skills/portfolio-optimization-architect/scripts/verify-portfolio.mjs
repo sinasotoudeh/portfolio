@@ -7,7 +7,8 @@
  *
  * Checks:
  *   crlf          no CRLF/CR line endings in tracked text sources
- *   casing        every relative/@-alias import resolves with exact character casing
+ *   casing        every relative/@-alias import resolves with exact character casing, and every
+ *                 public asset URL referenced from src/ matches public/ exactly (D-11)
  *   img           no raw <img> in src/ (Invariant F-1 — next/image only)
  *   client        'use client' census; fails on files missing from
  *                 docs/optimization-state/client-allowlist.json (info-only if absent)
@@ -132,7 +133,40 @@ function checkCasing() {
       else fails.push(`${rel(f)}: import "${spec}" — does not resolve to any file`);
     }
   }
-  return { fails, warns: [], info: [] };
+  // D-11 — public asset URLs referenced from src/ (string literals and CSS url()). NTFS served
+  // `/images/process/…` for `public/images/Process/…`; Linux and Vercel return 404. Case mismatch
+  // FAILs; a path with no file in any casing only warns (dead data is indistinguishable here).
+  const warns = []; const info = [];
+  const ASSET_EXT = 'png|jpe?g|webp|avif|gif|svg|ico|woff2?|ttf|otf|mp4|webm|pdf';
+  const literalRe = new RegExp(`(['"\`])(/(?!/|_next/)[^'"\`\\s$]*?\\.(?:${ASSET_EXT}))(?:[?#][^'"\`\\s]*)?\\1`, 'gi');
+  const cssUrlRe = new RegExp(`url\\(\\s*(['"]?)(/(?!/|_next/)[^)'"\\s]+?\\.(?:${ASSET_EXT}))(?:[?#][^)'"\\s]*)?\\1\\s*\\)`, 'gi');
+  let checked = 0;
+  for (const f of walk(SRC)) {
+    if (!['.ts', '.tsx', '.js', '.jsx', '.mjs', '.css'].includes(path.extname(f))) continue;
+    // Blank out comments while keeping offsets, so commented-out references are ignored and line numbers stay true.
+    const content = read(f)
+      .replace(/\/\*[\s\S]*?\*\//g, (m) => m.replace(/[^\n]/g, ' '))
+      .replace(/^[ \t]*\/\/.*$/gm, (m) => ' '.repeat(m.length));
+    const seen = new Set();
+    for (const re of [literalRe, cssUrlRe]) {
+      for (const m of content.matchAll(re)) {
+        const urlPath = m[2];
+        const line = content.slice(0, m.index).split('\n').length;
+        if (seen.has(`${line}:${urlPath}`)) continue;
+        seen.add(`${line}:${urlPath}`);
+        checked++;
+        let decoded;
+        try { decoded = decodeURIComponent(urlPath); } catch { decoded = urlPath; }
+        const onDisk = path.join(ROOT, 'public', decoded);
+        if (fs.existsSync(onDisk) && fs.statSync(onDisk).isFile()) continue;
+        const ci = ciResolve(onDisk);
+        if (ci && fs.statSync(ci).isFile()) fails.push(`${rel(f)}:${line} "${urlPath}" — case mismatch, disk has ${rel(ci)} (404 on Linux/Vercel)`);
+        else warns.push(`${rel(f)}:${line} "${urlPath}" — no file under public/ in any casing (dead reference or 404)`);
+      }
+    }
+  }
+  info.push(`${checked} public asset reference(s) checked`);
+  return { fails, warns, info };
 }
 
 function checkImg() {

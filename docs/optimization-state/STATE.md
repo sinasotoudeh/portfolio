@@ -1,18 +1,19 @@
 # OPTIMIZATION STATE
-Updated: 2026-09-13T23:10:00Z
+Updated: 2026-09-13T23:40:00Z
 Approval Mode: per-task
 Phase: 0 — Environment, Continuity & Re-Audit
-Sub-task: 0.4 — Safe dependency prune + audit delta
-In Flight: — (0.4 committed) → ⛔ PHASE 0 GATE
-Status: done-awaiting-approval
-Waiting on User Approval: yes — ⛔ PHASE 0 GATE: re-confirm Phase 1–6 plan + answer gate questions; owner runs install-deps (D-10)
+Sub-task: ⛔ Phase 0 gate — close-out (owner answers applied)
+In Flight: D-11 public-asset casing check; unused SVG removal; package.json name; phase0 visual baseline; STATE → Phase 1
+Status: in-progress
+Waiting on User Approval: no
 Plan for the sub-task in flight:
-  [x] Sources: postcss.config.mjs loads only `@tailwindcss/postcss` → autoprefixer unreferenced; `verify-portfolio.mjs deps` warns on @gsap/react, @react-three/postprocessing, lucide-react, tailwind-merge; `pnpm why` shows all four prune candidates are direct-only (no dependents)
-  [x] `pnpm remove @react-three/postprocessing lucide-react tailwind-merge autoprefixer` → package.json −4 entries, pnpm-lock.yaml −101 lines / +0 (no re-resolution of anything else)
-  [x] `pnpm install --frozen-lockfile` clean; `pnpm build` green (compile 4.6s, TS 3.2s); `pnpm lint` exit 0
-  [x] Gates: `deps` → only @gsap/react flagged (kept for 2.0); `--all` → 8 passed, 1 failed (img ProcessSection.tsx:186 → 2.5), 17 warnings (15 asset-size, deps @gsap/react, budget target); `budget` unchanged 504.4 KB gz
-  [x] Audit delta finalized (below)
-  [x] Commit `chore(deps): 0.4 prune dead dependencies` (owner-only authorship, D-9)
+  [x] Owner gate answers (2026-09-13): plan Phases 1–6 re-confirmed; delete stray .env; delete unused SVGs; add case-sensitivity check (D-11); Approval Mode per-task; package.json name → project name; install-deps done
+  [x] install-deps verified: chrome + chrome-headless-shell report 0 missing libs without LD_LIBRARY_PATH; Liberation Sans/Serif/Mono + Noto Color Emoji installed
+  [x] Stray .env: already absent from the repo root when checked (removed outside the run) — nothing to delete; no .env* files remain
+  [ ] D-11: extend `verify-portfolio.mjs casing` to public asset paths referenced from src (case mismatch FAIL, missing file WARN); probe-test that it catches `/images/process/default.png`; SKILL/phase-plan mention; DECISIONS D-11 → commit
+  [ ] `git rm` public/{file,globe,next,vercel,window}.svg (zero references); package.json name "nonato" → "personal-portfolio"; frozen install; build; lint; verify --all; D-6 re-confirmation + D-12 → commit
+  [ ] Visual baseline: production build on :3123 → `screenshot.mjs --label phase0-baseline --every 1vh` (desktop + mobile); review key frames incl. mobile hero overlap with real fallback fonts; stop own server PID only
+  [ ] STATE → Phase 1 / 1.1 Fonts, LOG line → commit; STOP (owner said stop before Phase 1)
 Parity notes pending user review: —
 Parity approvals (recorded):
   - 0.3 ProcessSection default background now loads (`/images/Process/default.png` casing fix) — approved by owner 2026-09-13 ("background verified").
