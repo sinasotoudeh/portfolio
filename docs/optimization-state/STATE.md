@@ -23,5 +23,6 @@ Continuity notes (0.1):
   - Local main is ahead of origin/main by 9 commits (unpushed owner commits). Run never pushes unless asked.
   - next.config.ts modification (drops `output: 'export'`) still uncommitted — committed as its own commit in 0.2.
   - .claude/settings.local.json is a per-machine settings file — deliberately left uncommitted.
+  - Instruction bundle files are CRLF in the working tree (committed LF via core.autocrlf=input in ~/.gitconfig) — add to 0.3's CRLF scrub; the audit's count of 20 CRLF files predates them.
   - .gitignore ignores `.env*` — Phase 5.1's `.env.example` needs a `!.env.example` negation.
-Last Commit: see `git log` — `chore(env): 0.1 bootstrap optimization state` + `chore(env): 0.1 record log entry`
+Last Commit: 3632d32 chore(env): 0.1 bootstrap optimization state (+ follow-up state commit recording the LOG line)
