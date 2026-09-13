@@ -16,11 +16,15 @@
  *   deps          dependencies with no import/reference anywhere (warn — heuristic)
  *   docs          G1 path-evidence, G2 zero-placeholder, G3 link/anchor integrity
  *                 for docs/portfolio-internals/ (skipped while that tree doesn't exist)
+ *   budget        first-load JS/CSS/HTML per prerendered route, read from the production
+ *                 build output (Next 16 removed First Load JS from `next build` — D-8).
+ *                 FAILs if there is no build output; warns over the 140 KB gz JS target.
  *
  * Exit code 1 if any check FAILs. Warnings never fail a gate but must be spoken to.
  */
 import fs from 'node:fs';
 import path from 'node:path';
+import zlib from 'node:zlib';
 import { fileURLToPath } from 'node:url';
 
 const __dirname = path.dirname(fileURLToPath(import.meta.url));
@@ -32,8 +36,11 @@ const ALLOWLIST = path.join(ROOT, 'docs', 'optimization-state', 'client-allowlis
 const TEXT_EXTS = new Set(['.ts', '.tsx', '.js', '.jsx', '.mjs', '.css', '.json', '.md', '.svg', '.txt', '.yml', '.yaml']);
 const CODE_EXTS = ['.ts', '.tsx', '.js', '.jsx', '.mjs', '.css', '.json'];
 const IGNORE_DIRS = new Set(['node_modules', '.next', '.git', 'out', '.vercel']);
-const ROOT_TEXT_FILES = ['package.json', 'tsconfig.json', 'next.config.ts', 'postcss.config.mjs', 'eslint.config.mjs', '.gitattributes', '.env.example', 'AGENTS.md', 'CLAUDE.md'];
-const KNOWN_ROOT_FILES = new Set([...ROOT_TEXT_FILES, 'package-lock.json', 'next-env.d.ts']);
+const ROOT_TEXT_FILES = ['package.json', 'tsconfig.json', 'next.config.ts', 'postcss.config.mjs', 'eslint.config.mjs', 'pnpm-workspace.yaml', '.gitattributes', '.env.example', 'AGENTS.md', 'CLAUDE.md'];
+// pnpm-lock.yaml is deliberately not a ROOT_TEXT_FILE: it names every dependency and would blind the deps check (D-7).
+const KNOWN_ROOT_FILES = new Set([...ROOT_TEXT_FILES, 'pnpm-lock.yaml', 'next-env.d.ts']);
+const BUILD_APP = path.join(ROOT, '.next', 'server', 'app');
+const BUDGET_JS_GZ_KB = 140; // cwv-invariants.md budget for the homepage, binding from Phase 2.8
 // Case-sensitive on the ALL-CAPS stub tokens so CSS ::placeholder / JSX placeholder= never match.
 const PLACEHOLDER_RES = [/\b(TODO|FIXME|TBD|HACK|XXX|PLACEHOLDER)\b|\?{3,}|<your[- ]/, /lorem ipsum/i];
 const hasPlaceholder = (line) => PLACEHOLDER_RES.some((re) => re.test(line));
@@ -196,7 +203,8 @@ function checkDeps() {
   const deps = Object.keys(JSON.parse(read(pkgPath)).dependencies ?? {});
   const haystack = [];
   for (const f of walk(SRC)) if (CODE_EXTS.includes(path.extname(f))) haystack.push(read(f));
-  for (const name of ROOT_TEXT_FILES) {
+  // package.json declares every dependency by name — scanning it would mark all of them as used.
+  for (const name of ROOT_TEXT_FILES.filter((n) => n !== 'package.json')) {
     const p = path.join(ROOT, name);
     if (fs.existsSync(p)) haystack.push(read(p));
   }
@@ -264,11 +272,51 @@ function checkDocs() {
   return { fails, warns, info };
 }
 
+function checkBudget() {
+  const fails = []; const warns = []; const info = [];
+  if (!fs.existsSync(BUILD_APP)) {
+    fails.push(`${rel(BUILD_APP)} not found — run \`pnpm build\` first (budget measures the production build output)`);
+    return { fails, warns, info };
+  }
+  const kb = (n) => (n / 1024).toFixed(1);
+  const sizes = (buf) => ({ raw: buf.length, gz: zlib.gzipSync(buf, { level: 9 }).length, br: zlib.brotliCompressSync(buf).length });
+  // Framework-internal prerenders (_not-found, _global-error) are not user routes.
+  const pages = [...walk(BUILD_APP)].filter((f) => f.endsWith('.html') && !path.basename(f).startsWith('_'));
+  if (!pages.length) fails.push(`no prerendered routes under ${rel(BUILD_APP)} — budget cannot measure dynamic-only output`);
+  for (const page of pages) {
+    const html = read(page);
+    const route = '/' + path.relative(BUILD_APP, page).replace(/\\/g, '/').replace(/(^|\/)index\.html$/, '').replace(/\.html$/, '');
+    // noModule scripts are legacy polyfills that modern browsers never download.
+    const legacy = new Set([...html.matchAll(/<script\b[^>]*>/g)]
+      .filter((m) => /\bnoModule\b/i.test(m[0]))
+      .map((m) => (m[0].match(/src="\/_next\/(static\/[^"]+)"/) ?? [])[1])
+      .filter(Boolean));
+    // Every chunk the document references — <script src>, <link rel=preload> and the inline RSC payload.
+    const jsFiles = [...new Set([...html.matchAll(/static\/chunks\/[\w.~-]+\.js/g)].map((m) => m[0]))].filter((f) => !legacy.has(f));
+    const cssFiles = [...new Set([...html.matchAll(/<link\b[^>]*rel="stylesheet"[^>]*href="\/_next\/(static\/[^"]+\.css)"/g)].map((m) => m[1]))];
+    const measure = (files) => files.map((f) => {
+      const p = path.join(ROOT, '.next', f);
+      if (!fs.existsSync(p)) { fails.push(`${route}: referenced asset ${f} missing from .next/ — stale or partial build`); return null; }
+      return { f, ...sizes(fs.readFileSync(p)) };
+    }).filter(Boolean);
+    const js = measure(jsFiles); const css = measure(cssFiles);
+    const sum = (rows, k) => rows.reduce((a, r) => a + r[k], 0);
+    const doc = sizes(Buffer.from(html));
+    info.push(`${route}  JS ${js.length} files: ${kb(sum(js, 'gz'))} KB gz / ${kb(sum(js, 'br'))} KB br / ${kb(sum(js, 'raw'))} KB raw | CSS ${css.length} files: ${kb(sum(css, 'gz'))} KB gz | HTML ${kb(doc.gz)} KB gz`);
+    for (const r of [...js].sort((a, b) => b.gz - a.gz).slice(0, 3)) info.push(`    ${kb(r.gz).padStart(6)} KB gz  ${r.f}`);
+    if (route === '/' && sum(js, 'gz') / 1024 > BUDGET_JS_GZ_KB) {
+      warns.push(`/ first-load JS ${kb(sum(js, 'gz'))} KB gz exceeds the ${BUDGET_JS_GZ_KB} KB gz target (binding from Phase 2.8)`);
+    }
+  }
+  return { fails, warns, info };
+}
+
 // ---------- runner ----------
 
 const CHECKS = {
   crlf: checkCrlf, casing: checkCasing, img: checkImg, client: checkClient,
   placeholders: checkPlaceholders, assets: checkAssets, deps: checkDeps, docs: checkDocs,
+  budget: checkBudget,
 };
 
 const args = process.argv.slice(2).filter((a) => a !== '--all');

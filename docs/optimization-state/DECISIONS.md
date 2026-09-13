@@ -47,3 +47,24 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 **Decision:** Fonts and image config land **before** section rebuilds (Phase 1 before Phase 2) so every visual-parity review is judged against final typography/rendering. RSC conversion and GSAP porting happen **per section in one pass** so each section is reviewed once, not twice.
 **Why:** Reviewing sections first and changing fonts after would invalidate every approval.
 **Approved by user:** yes — accepted with the skill's phase plan, 2026-07-11; re-confirmation due at the Phase 0 gate.
+
+## D-7 — Package manager: keep pnpm (the audit's "no lockfile" finding was wrong)
+
+**Context:** `references/audit-baseline.md` states "no lockfile of any kind exists", and phase-plan 0.2 therefore prescribes `npm install` + committing a generated `package-lock.json`. Re-audit on 2026-09-13 found `pnpm-lock.yaml` (lockfileVersion 9.0) and `pnpm-workspace.yaml` tracked in git since `4ec3a44` (Initial commit), last updated in `8892c2f` (2026-04-05); history includes `05d1d3b pnpm add framer-motion`. All 26 `package.json` specifiers match the lockfile's importer entries exactly. pnpm 10.34.3 is installed locally. Vercel selects the package manager from the committed lockfile.
+**Decision:** The run uses pnpm. Installs are `pnpm install --frozen-lockfile` (reproduces the committed resolution exactly, same as Vercel); dependency changes are `pnpm remove` / `pnpm add`, which update `pnpm-lock.yaml` in the same commit. No `package-lock.json` is ever created. Gates V1/V2 run the same `package.json` scripts via `pnpm build` / `pnpm lint`. The skill's npm commands (SKILL.md gates, phase-plan 0.2/0.4/2.8/5.1, cwv-invariants Lighthouse procedure) and `verify-portfolio.mjs`'s known-root-files list are updated to match. `pnpm-workspace.yaml`'s `ignoredBuiltDependencies: [sharp, unrs-resolver]` is kept as-is.
+**Why:** Switching to npm would re-resolve every caret range before the baseline build (silent version drift) and leave two competing lockfiles; keeping pnpm makes the local baseline identical to what Vercel installs.
+**Approved by user:** yes — 2026-09-13 (structured question in 0.2).
+
+## D-8 — Next 16 doc deltas against the skill's recipes + gate-runner corrections
+
+**Context:** Reading the installed guides in 0.2 (AGENTS.md gate) surfaced two places where the skill's recipes contradict Next.js 16.2.1, and running the gate runner surfaced a blind check:
+1. `02-guides/upgrading/version-16.md`: "Next.js 16 removes the `size` and `First Load JS` metrics from the `next build` output." The skill's V5 gate, STATE `Budget:` line, `cwv-invariants.md` budget rule and phase-plan 0.2/2.8 all read budgets from that route table. The baseline build confirms it prints only the route list.
+2. `03-api-reference/02-components/image.md`: "Starting with Next.js 16, the `priority` property has been deprecated in favor of the `preload` property"; the doc recommends `loading="eager"` or `fetchPriority="high"` in most cases and forbids combining `preload` with either. `cwv-invariants.md` F-1.4 prescribed `priority`.
+3. `verify-portfolio.mjs deps` included `package.json` in the text it searched for references, so every declared dependency counted as used: the committed script reported 0 warnings while `lucide-react`, `tailwind-merge`, `@react-three/postprocessing` and `@gsap/react` have zero references in `src/`.
+**Decision:**
+- New `budget` check in `verify-portfolio.mjs`: for each prerendered `.next/server/app/**/*.html` (framework `_*` pages excluded) it collects every `static/chunks/*.js` the document references (script tags, preload links, inline RSC payload) minus `noModule` legacy polyfills, plus linked stylesheets, and reports raw / gzip-9 / brotli sums and the three largest chunks. It FAILs when no build output exists and warns when `/` exceeds the 140 KB gz target. The gzip-9 JS sum for `/` is the figure recorded as `BASELINE`/`CURRENT`. It measures the referenced assets, not Vercel's exact wire bytes; gates compare deltas between runs of the same method, and Lighthouse/PSI stay the authoritative performance evidence (the upgrade guide points there too).
+- `cwv-invariants.md` F-1.4 now prescribes `preload` for a single unambiguous LCP image, otherwise `loading="eager"` / `fetchPriority="high"`.
+- The `deps` check no longer searches `package.json`.
+- SKILL.md V5, the STATE template, `cwv-invariants.md` budget rule and phase-plan 0.2/2.8 point at the `budget` check.
+**Why:** SKILL.md's Next.js gate says where recipes and installed docs disagree, the docs win and the delta is recorded. A budget gate that cannot produce a number, or a dependency check that can never warn, would pass silently — and silence equals green.
+**Approved by user:** docs-win deltas (1, 2) are pre-authorized by SKILL.md; the measurement method and the `deps` fix were presented at the end of 0.2 — confirmation pending (recorded when given).

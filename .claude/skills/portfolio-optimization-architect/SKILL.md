@@ -21,7 +21,7 @@ The run is executed once, for this repository only. Precision beats reusability 
 - `references/cwv-invariants.md` — invariants F-1/F-2/F-3 as concrete recipes for this codebase, the GSAP porting contract, the CSS-3D cylinder recipe, Hero hygiene rules, budgets, and the Lighthouse/PSI measurement procedure. Read before any Phase 1–2 sub-task.
 - `references/seo-blueprint.md` — metadata contract, the unified JSON-LD `@graph`, sitemap/robots shape, semantic-HTML contract, the verified Atajoy fact sheet, and the INTAKE register of user-owned values. Read before Phases 3–5.
 - `references/doc-standards.md` — the Tier A/B manual contract for `docs/portfolio-internals/` (adapted from the sibling repo's documenter skill): tree, audience tests, gates G1–G5. Read before Phase 6.
-- `scripts/verify-portfolio.mjs` — the mechanical gate runner. From the repo root: `node .claude/skills/portfolio-optimization-architect/scripts/verify-portfolio.mjs [--all | crlf casing img client placeholders assets deps docs]`.
+- `scripts/verify-portfolio.mjs` — the mechanical gate runner. From the repo root: `node .claude/skills/portfolio-optimization-architect/scripts/verify-portfolio.mjs [--all | crlf casing img client placeholders assets deps docs budget]`.
 
 ## Locked decisions — settled 2026-07-11, cited not re-argued
 
@@ -67,7 +67,7 @@ Plan for the sub-task in flight:
   [ ] <step pending>
 Parity notes pending user review: <— or the list>
 Open intake fields: <INTAKE-n list still unresolved>
-Budget: BASELINE <first-load KB> | CURRENT <first-load KB> (from last `next build`)
+Budget: BASELINE <first-load JS KB gz> | CURRENT <first-load JS KB gz> (from `verify-portfolio.mjs budget` after the last `pnpm build` — D-8)
 Docs read this run (AGENTS.md gate): <node_modules/next/dist/docs/ filenames>
 Completed sub-tasks: <n.n list>
 Next Immediate Action: <specific enough to start cold>
@@ -96,11 +96,11 @@ Last Commit: <short-hash + message>
 
 ## Gates — a sub-task is complete only when these run green
 
-- **V1 build:** `npm run build` passes (after Phase 0.2 this is non-negotiable at every sub-task).
-- **V2 types/lint:** strict TypeScript — no new `any`, casts explained; `npm run lint` clean on touched files.
+- **V1 build:** `pnpm build` passes (after Phase 0.2 this is non-negotiable at every sub-task).
+- **V2 types/lint:** strict TypeScript — no new `any`, casts explained; `pnpm lint` clean on touched files. (The repo is a pnpm project — D-7; never create `package-lock.json`.)
 - **V3 mechanical:** `verify-portfolio.mjs` — the checks relevant to the sub-task, `--all` at phase gates. Paste the summary line into the response. If a gate can't run, say exactly which and why — silence equals green, so never be silent about a skipped gate.
 - **V4 parity:** user-attested for anything visible (see protocol above).
-- **V5 budget:** at phase gates, the `next build` route table lands in STATE.md; regression >5% without a DECISIONS entry fails the gate.
+- **V5 budget:** at phase gates, the `verify-portfolio.mjs budget` output lands in STATE.md (Next 16's `next build` no longer prints First Load JS — D-8); regression >5% without a DECISIONS entry fails the gate.
 
 ## Operating doctrines
 
@@ -120,7 +120,7 @@ Last Commit: <short-hash + message>
 
 | # | Phase | Delivers | Ends with |
 |---|-------|----------|-----------|
-| 0 | Environment, Continuity & Re-Audit | lockfile + baseline build + docs-read, LF/casing/asset scrub, safe dep prune, state bootstrap | ⛔ plan re-confirmation |
+| 0 | Environment, Continuity & Re-Audit | frozen pnpm install + baseline build + docs-read, LF/casing/asset scrub, safe dep prune, state bootstrap | ⛔ plan re-confirmation |
 | 1 | Global Foundations | `next/font` (F-2), image pipeline config (F-1), semantic chrome, server nav/footer shells | ⛔ typography+chrome parity |
 | 2 | Section Rebuilds | per-section RSC shell + GSAP port + image props (2.1 Hero … 2.7 Contact), 2.8 engine purge | ⛔ full-page parity + budget |
 | 3 | SEO Layer | metadata contract, JSON-LD graph, sitemap+robots, semantic audit | ⛔ copy sign-off + validation |

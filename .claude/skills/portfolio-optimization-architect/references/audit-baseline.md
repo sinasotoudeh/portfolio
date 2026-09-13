@@ -8,7 +8,7 @@
 
 - Branch `main`, remote `origin` → `https://github.com/sinasotoudeh/portfolio.git` (fetch+push). History is healthy and linear; the continuity invariant (File 2, Step 0) applies: no re-init, no history rewrites, all work commits on top.
 - Uncommitted at audit time: `next.config.ts` modified (removes `output: 'export'` — the deliberate move from static export to serverful Vercel); `docs/` untracked (the instruction bundle + this skill).
-- **`node_modules/` absent and no lockfile of any kind exists.** The project cannot build until `npm install` runs. Vercel builds are currently non-reproducible (no pinned resolution).
+- **`node_modules/` absent** — the project cannot build until dependencies are installed. ~~No lockfile of any kind exists~~ — **wrong, corrected 2026-09-13 (D-7):** `pnpm-lock.yaml` + `pnpm-workspace.yaml` are tracked since the initial commit and match `package.json`; the repo is a pnpm project and installs with `pnpm install --frozen-lockfile`.
 - Platform: WSL2 (repo migrated from Windows NTFS). 20 source files still carry CRLF line endings (all of `src/data/*`, most components — full list reproducible via `node .claude/skills/portfolio-optimization-architect/scripts/verify-portfolio.mjs crlf`).
 - `out/` contains stale static-export artifacts (gitignored — harmless, delete at will).
 - `package.json` `name` is still `"nonato"` — the template identity the site was rebranded away from (commits `01341fe`, `0367098`).

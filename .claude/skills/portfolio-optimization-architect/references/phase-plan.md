@@ -17,9 +17,9 @@ Gate: state files exist and are internally consistent. Commit: `chore(env): 0.1 
 
 **0.2 Toolchain & baseline.**
 Sources: `package.json`; after install: `node_modules/next/dist/docs/` index.
-Steps: `node --version` (need ≥ 20 for Next 16 — if not, stop and tell the user); `npm install`; commit the generated `package-lock.json`. Commit the user's pending `next.config.ts` change (drops `output: 'export'`) as its own commit — it's the platform-target decision the whole run builds on. Run `npm run build`; it must pass **before any refactor** — this is the baseline. Paste the route/first-load-JS table into STATE.md as `BASELINE`. Then satisfy the AGENTS.md gate: list `node_modules/next/dist/docs/`, read the guides covering: server/client components, `next/image`, `next/font`, Metadata API + metadata routes (sitemap/robots), Server Actions, `next/dynamic`/lazy loading, `next.config` images options. Record in STATE which guides were read (filenames).
-Gate: build green; lockfile committed; docs-read list recorded. Commits: `chore(env): 0.2 lockfile + toolchain baseline`, `chore(config): adopt serverful Vercel target (drop static export)`.
-*If `npm run build` fails at baseline:* fix only what's needed to compile (recording each fix), or stop and present if the failure implies a decision.
+Steps: `node --version` (need ≥ 20.9 for Next 16 — if not, stop and tell the user); `pnpm install --frozen-lockfile` against the committed `pnpm-lock.yaml` (D-7 — the audit's "no lockfile" finding was wrong; never generate `package-lock.json`). Commit the user's pending `next.config.ts` change (drops `output: 'export'`) as its own commit — it's the platform-target decision the whole run builds on. Run `pnpm build`; it must pass **before any refactor** — this is the baseline. Run `verify-portfolio.mjs budget` and paste its output into STATE.md as `BASELINE` (Next 16 removed First Load JS from the build output — D-8). Then satisfy the AGENTS.md gate: list `node_modules/next/dist/docs/`, read the guides covering: server/client components, `next/image`, `next/font`, Metadata API + metadata routes (sitemap/robots), Server Actions, `next/dynamic`/lazy loading, `next.config` images options. Record in STATE which guides were read (filenames).
+Gate: build green; frozen install leaves `pnpm-lock.yaml` unchanged; docs-read list recorded. Commits: `chore(env): 0.2 pnpm toolchain baseline`, `chore(config): adopt serverful Vercel target (drop static export)`.
+*If `pnpm build` fails at baseline:* fix only what's needed to compile (recording each fix), or stop and present if the failure implies a decision.
 
 **0.3 WSL scrub.**
 Sources: `verify-portfolio.mjs crlf casing assets` output; `.gitattributes` (absent at audit).
@@ -28,7 +28,7 @@ Gate: `verify-portfolio.mjs crlf casing assets` — crlf+casing clean, assets ch
 
 **0.4 Safe dependency prune + audit delta.**
 Sources: `postcss.config.mjs`, `verify-portfolio.mjs deps` output.
-Steps: `npm rm @react-three/postprocessing lucide-react tailwind-merge` (+ `autoprefixer` only if `postcss.config.mjs` doesn't reference it). Do **not** touch `three`/`fiber`/`drei`/`use-gesture`/`framer-motion` (their consumers still compile — removal is 2.8) nor `@gsap/react` (becomes used in 2.0). Write the audit delta into STATE.md: everything found this phase that `references/audit-baseline.md` missed or got wrong.
+Steps: `pnpm remove @react-three/postprocessing lucide-react tailwind-merge` (+ `autoprefixer` only if `postcss.config.mjs` doesn't reference it). Do **not** touch `three`/`fiber`/`drei`/`use-gesture`/`framer-motion` (their consumers still compile — removal is 2.8) nor `@gsap/react` (becomes used in 2.0). Write the audit delta into STATE.md: everything found this phase that `references/audit-baseline.md` missed or got wrong.
 Gate: build green; deps check shows no *newly* dead packages. Commit: `chore(deps): 0.4 prune dead dependencies`.
 **⛔ PHASE GATE (hard stop):** present baseline numbers, audit delta, and the Phase 1–6 plan for re-confirmation.
 
@@ -76,8 +76,8 @@ Shared contract for 2.1–2.7 — every sub-task: (a) read the component + its `
 **2.7 Contact (UI only).** Motion port + shell; the form becomes a client leaf shaped for Phase 5 (`useActionState`-ready markup, no transport yet); `contact/bg.png` (1.33MB) → `next/image fill` + `sizes` + lazy.
 
 **2.8 Engine purge & measurement.**
-Steps: `npm rm framer-motion three @react-three/fiber @react-three/drei @use-gesture/react @types/three`; `verify-portfolio.mjs deps` proves zero imports remain; build; paste the new route table into STATE.md next to BASELINE with the delta.
-Gate: build green; budget table shows First Load JS ≤ 140KB gz target. Commit: `perf(deps): 2.8 remove client rendering engines (−<n>KB first-load)`.
+Steps: `pnpm remove framer-motion three @react-three/fiber @react-three/drei @use-gesture/react @types/three`; `verify-portfolio.mjs deps` proves zero imports remain; build; paste the `verify-portfolio.mjs budget` output into STATE.md next to BASELINE with the delta.
+Gate: build green; `budget` shows `/` first-load JS ≤ 140KB gz target. Commit: `perf(deps): 2.8 remove client rendering engines (−<n>KB first-load)`.
 **⛔ PHASE GATE:** full-page parity pass (user scrolls the whole site top to bottom), census + budget review.
 
 ---
@@ -104,7 +104,7 @@ Gate for the phase: build; `verify-portfolio.mjs --all`; user sign-off on all ou
 
 ## Phase 5 — Contact Transport (D-3)
 
-**5.1 Server Action.** `src/actions/contact.ts`: `"use server"`, Zod schema mirroring the real form fields (read `Contact.tsx` for field census), Resend delivery (`npm i resend`), honeypot field + minimum-fill-time trap (no CAPTCHA bloat), typed `ContactState` result. Env: `RESEND_API_KEY` (INTAKE-2), `CONTACT_TO_EMAIL` (INTAKE-3); create `.env.example`; unset key ⇒ action validates, logs, returns an honest failure message (documented seam). Commit: `feat(contact): 5.1 zod-validated server action via resend`.
+**5.1 Server Action.** `src/actions/contact.ts`: `"use server"`, Zod schema mirroring the real form fields (read `Contact.tsx` for field census), Resend delivery (`pnpm add resend`), honeypot field + minimum-fill-time trap (no CAPTCHA bloat), typed `ContactState` result. Env: `RESEND_API_KEY` (INTAKE-2), `CONTACT_TO_EMAIL` (INTAKE-3); create `.env.example`; unset key ⇒ action validates, logs, returns an honest failure message (documented seam). Commit: `feat(contact): 5.1 zod-validated server action via resend`.
 **5.2 Wire the form.** `useActionState` + pending/success/error states using the section's existing visual language; works without JS (progressive enhancement — verify with JS disabled). Manual test in dev (validation path + missing-key path); live-send test deferred to Vercel once INTAKE-2 lands.
 Gate: both tests demonstrated; build; parity of the form's visual states. Commit: `feat(contact): 5.2 form wired with progressive enhancement`.
 **⛔ PHASE GATE.**
