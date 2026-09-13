@@ -1,5 +1,23 @@
 import type { Metadata } from "next";
+import { Inter, JetBrains_Mono } from "next/font/google";
 import "./globals.css";
+
+// Self-hosted at build time; the size-adjusted fallback (adjustFontFallback, on by default)
+// keeps the swap shift-free. Variable names stay distinct from the --font-body / --font-mono
+// tokens in globals.css, which reference them. Inter ships its italic too: the hero tagline
+// sets body text in italic above the fold.
+const inter = Inter({
+  subsets: ["latin"],
+  style: ["normal", "italic"],
+  display: "swap",
+  variable: "--font-inter",
+});
+
+const jetbrainsMono = JetBrains_Mono({
+  subsets: ["latin"],
+  display: "swap",
+  variable: "--font-jetbrains-mono",
+});
 
 // ایمپورت کامپوننت‌های اختصاصی
 import CustomCursor from '@/components/cursor/CustomCursor';
@@ -21,7 +39,7 @@ export default function RootLayout({
   return (
     <html
       lang="en"
-      className="h-full antialiased"
+      className={`${inter.variable} ${jetbrainsMono.variable} h-full antialiased`}
       suppressHydrationWarning
     >
       <body className="min-h-full flex flex-col">

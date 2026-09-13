@@ -39,8 +39,8 @@
 
   /* ── Typography ── */
   --font-display: 'Helvetica Neue', 'Arial', sans-serif;
-  --font-body: 'Inter', 'Helvetica Neue', sans-serif;
-  --font-mono: 'JetBrains Mono', 'Fira Code', monospace;
+  --font-body: var(--font-inter), 'Helvetica Neue', sans-serif;
+  --font-mono: var(--font-jetbrains-mono), 'Fira Code', monospace;
 
   /* ── Spacing ── */
   --spacing-xs: 0.25rem;
