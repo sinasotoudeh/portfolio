@@ -1,0 +1,15 @@
+# Normalize every text file to LF in the repository and in working trees.
+# The project moved from Windows (NTFS) to WSL2; this keeps CRLF from returning
+# regardless of a machine's core.autocrlf setting.
+* text=auto eol=lf
+
+# Binary assets — never touch their bytes.
+*.png   -text
+*.jpg   -text
+*.jpeg  -text
+*.webp  -text
+*.avif  -text
+*.gif   -text
+*.ico   -text
+*.woff  -text
+*.woff2 -text

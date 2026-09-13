@@ -172,7 +172,7 @@ export default function ProcessSection() {
             >
                 <div
                     className={clsx(styles.bgImage, displayIndex !== null && styles.bgImageHidden)}
-                    style={{ backgroundImage: "url('/images/process/default.png')" }}
+                    style={{ backgroundImage: "url('/images/Process/default.png')" }}
                 />
 
                 <div className={styles.imagesContainer}>

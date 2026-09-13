@@ -44,7 +44,7 @@ export const processNodes: ProcessNode[] = [
             { src: '/images/Process/discover/ID-card.png', alt: 'Understanding the user persona.', config: { priority: 2, top: 80, right: 1, scale: 1.5, delay: 0.45 } },
             { src: '/images/Process/discover/checked-form.png', alt: 'Dovetail - Organizing research data.', config: { priority: 2, top: 12, right: 35, scale: 1.5, delay: 0.05 } },
             { src: '/images/Process/discover/logos-FigJam.png', alt: 'FigJam - Team brainstorming.', config: { priority: 2, top: 45, right: 5, scale: 1.0, delay: 0.29 } },
-            { src: '/images/Process/discover/logos-Google Analytics.png', alt: 'Google Analytics - Data never lies!', config: { priority: 3, top: 58, right: 48, scale: 1, delay: 0.19 } },
+            { src: '/images/Process/discover/logos-Google-Analytics.png', alt: 'Google Analytics - Data never lies!', config: { priority: 3, top: 58, right: 48, scale: 1, delay: 0.19 } },
             { src: '/images/Process/discover/logos-Hotjar.png', alt: 'Hotjar - Watching real user journeys.', config: { priority: 2, top: 65, right: 10, scale: 0.95, delay: 0.35 } },
             { src: '/images/Process/discover/logos-Maze.png', alt: 'Maze - Rapid testing and validation.', config: { priority: 3, top: 75, right: 37, scale: 1, delay: 0.33 } },
             { src: '/images/Process/discover/logos-Microsoft-Clarity.png', alt: 'Clarity - Analyzing user interactions.', config: { priority: 2, top: 30, right: 3, scale: 1.05, delay: 0.21 } },
@@ -116,7 +116,7 @@ export const processNodes: ProcessNode[] = [
 
             // { src: '/images/Process/design/motion-design.png', alt: 'Crafting buttery smooth motions.', config: { priority: 1, top: 75, right: 42, scale: 0.85, delay: 0.38, mobileOverride: { top: 88, right: 75, scale: 0.9 } } },
             // { src: '/images/Process/design/logos-figma.png', alt: 'Figma - Collaborative design.', config: { priority: 3, top: 80, right: 10, scale: 0.8, delay: 0.35 } },
-            // { src: '/images/Process/design/geometric shape.png', alt: 'Mixing forms and geometry in design.', config: { priority: 2, top: 70, right: 35, scale: 0.9, delay: 0.3 } },
+            // { src: '/images/Process/design/geometric-shape.png', alt: 'Mixing forms and geometry in design.', config: { priority: 2, top: 70, right: 35, scale: 0.9, delay: 0.3 } },
             // { src: '/images/Process/design/logos-UI-UX.png', alt: 'Focusing on unparalleled user experience.', config: { priority: 2, top: 85, right: 28, scale: 1.0, delay: 0.32 } },
 
             // { src: '/images/Process/design/bezier-curves.png', alt: 'Drawing flawless curves.', config: { priority: 1, top: 15, right: 25, scale: 1.1, delay: 0.1, mobileOverride: { top: 58, right: 75, scale: 1.0 } } },
