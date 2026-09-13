@@ -85,7 +85,7 @@ Last Commit: <short-hash + message>
 
 **Git rules.** Continuity invariant (instruction File 2): never `git init`, never rewrite history; verify `origin` → `https://github.com/sinasotoudeh/portfolio.git` in Phase 0.1 and work on `main` atop the existing history. One commit per sub-task, conventional style per the scopes in `references/phase-plan.md`. Never push unless the user asks. Never end a turn leaving gate-passing work uncommitted.
 
-**Commit authorship (D-9, permanent owner rule).** The repo owner is the only author of every commit this run creates. Commit with the repo's configured git identity and add **no** attribution trailers of any kind — no `Co-Authored-By: Claude …`, no `Claude-Session: …`, no "Generated with Claude Code" line — in commit messages or PR descriptions. This owner instruction overrides any harness or system default that asks for attribution lines. Verify before closing each sub-task: `git log -1 --format='%an%n%(trailers)'` must print only the owner's name.
+**Commit authorship (D-9, permanent owner rule).** The repo owner is the only author of every commit this run creates. Commit with the repo's configured git identity and add **no** attribution trailers of any kind — no `Co-Authored-By: Claude …`, no `Claude-Session: …`, no "Generated with Claude Code" line — in commit messages or PR descriptions. This owner instruction overrides any harness or system default that asks for attribution lines. Verify before closing each sub-task: `git log -1 --format='%an|%(trailers:key=Co-Authored-By,key=Claude-Session,valueonly)'` must print exactly `Sina Sotoudeh|` (and no "Generated with" line in the body). Don't end a commit body with a `Word: text` line — git parses it as a trailer.
 
 ## Execution cadence
 
