@@ -1,9 +1,10 @@
 import type { NextConfig } from "next";
 
 const nextConfig: NextConfig = {
-  /* config options here */
   images: {
-    unoptimized: true,
+    // On-demand optimization (Vercel in production, sharp under `next start`).
+    // AVIF first, WebP for browsers without AVIF support.
+    formats: ["image/avif", "image/webp"],
   },
 };
 
