@@ -46,7 +46,7 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 **Context:** The instruction files order work by concern (performance, then SEO, then showcase). Visual-parity reviews are the run's most expensive resource (the owner's attention).
 **Decision:** Fonts and image config land **before** section rebuilds (Phase 1 before Phase 2) so every visual-parity review is judged against final typography/rendering. RSC conversion and GSAP porting happen **per section in one pass** so each section is reviewed once, not twice.
 **Why:** Reviewing sections first and changing fonts after would invalidate every approval.
-**Approved by user:** yes — accepted with the skill's phase plan, 2026-07-11; re-confirmation due at the Phase 0 gate.
+**Approved by user:** yes — accepted with the skill's phase plan, 2026-07-11; re-confirmed with the full Phase 1–6 plan at the Phase 0 gate, 2026-09-13.
 
 ## D-7 — Package manager: keep pnpm (the audit's "no lockfile" finding was wrong)
 
@@ -95,3 +95,17 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 **Decision:** `casing` now also scans `src/**/*.{ts,tsx,js,jsx,mjs,css}` for root-relative asset URLs (images, fonts, video, pdf) in string literals and CSS `url()` — comments blanked with offsets preserved, `/_next/` and protocol-relative URLs skipped, `%xx` decoded. An exact file under `public/` passes; a case-insensitive match FAILs as a Linux/Vercel 404; no match in any casing warns (a heuristic scan cannot tell dead data from a live 404, e.g. `src/data/resumeData.ts:80`). The check runs everywhere `casing` already runs (0.3-style gates and `--all`).
 **Verification:** a temporary probe file produced FAIL for `url('/images/process/default.png')`, passed the correctly cased path, ignored a commented-out reference, and warned for the URL-encoded pre-0.3 filename; the real tree passes (87 references checked, 1 warning — the dead `profile.png`). Probe removed.
 **Approved by user:** yes — 2026-09-13, Phase 0 gate answer 4.
+
+## D-12 — Phase 0 gate: owner decisions outside the phase plan
+
+**Context:** The Phase 0 gate (2026-09-13) presented the baseline, the audit delta and the Phase 1–6 plan with open housekeeping questions. None of these items were in `references/phase-plan.md`.
+**Decision (owner answers):**
+1. The Phase 1–6 plan is re-confirmed as presented (with D-7…D-11 folded in).
+2. The stray Shop Platform `.env` at the repo root is to be deleted. When the run checked, it was already gone and no `.env*` files remained. `next build` no longer reports loading an environment file.
+3. The five unused create-next-app SVGs (`public/file.svg`, `globe.svg`, `next.svg`, `vercel.svg`, `window.svg`) are removed. There were zero references anywhere in the repo.
+4. The case-sensitivity check is added (D-11).
+5. Approval Mode stays `per-task`.
+6. `package.json` `name` changes from the template's `"nonato"` to `"personal-portfolio"`, the project's directory and working name (the GitHub repository is `sinasotoudeh/portfolio`). `pnpm-lock.yaml` is unaffected.
+**Noted, not changed:** the "Nonato" template brand still appears in visible site copy — `src/components/Manifesto/Manifesto.tsx:22` ("At Nonato,"), `:35` (`NONATO`) and `src/components/footer/Footer.tsx:158` ("© … Nonato. All rights reserved."), plus a Windows path comment in `src/data/capabilities.ts:1`. Visible copy is the owner's call. It is raised for the owner and must be resolved before the Phase 3 copy sign-off, because the JSON-LD Person/brand must not contradict on-page text.
+**Why:** Owner decisions at a hard-stop gate.
+**Approved by user:** yes — 2026-09-13, Phase 0 gate answers.
