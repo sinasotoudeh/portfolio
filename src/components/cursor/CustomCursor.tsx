@@ -3,6 +3,13 @@
 import { useEffect, useRef, useState } from 'react';
 import styles from './Cursor.module.css';
 
+// Cursor.module.css hides the cursor under exactly this query; there the engine never runs.
+const HIDDEN_CURSOR_QUERY = '(hover: none) and (pointer: coarse)';
+const REDUCED_MOTION_QUERY = '(prefers-reduced-motion: reduce)';
+
+// Below this distance (px) the ring snaps onto the pointer and the loop sleeps until the next move.
+const SETTLE_DISTANCE = 0.01;
+
 export default function CustomCursor() {
     const dotRef = useRef<HTMLDivElement>(null);
     const ringRef = useRef<HTMLDivElement>(null);
@@ -15,29 +22,45 @@ export default function CustomCursor() {
     const [isClicked, setIsClicked] = useState(false);
 
     useEffect(() => {
-        // 1. آپدیت موقعیت دقیق ماوس
-        const onMouseMove = (e: MouseEvent) => {
-            mouse.current.x = e.clientX;
-            mouse.current.y = e.clientY;
-        };
+        const hiddenCursor = window.matchMedia(HIDDEN_CURSOR_QUERY);
+        const reducedMotion = window.matchMedia(REDUCED_MOTION_QUERY);
 
         // 2. حلقه انیمیشن (Performance Optimized)
-        let animationFrameId: number;
+        let animationFrameId = 0; // 0 while the loop sleeps
         const render = () => {
             // نقطه مستقیماً به ماوس می‌چسبد
             if (dotRef.current) {
                 dotRef.current.style.transform = `translate(calc(${mouse.current.x}px - 50%), calc(${mouse.current.y}px - 50%))`;
             }
 
-            // حلقه بیرونی با تاخیر (Lerp) دنبال می‌کند
-            ring.current.x += (mouse.current.x - ring.current.x) * 0.15; // سرعت دنبال کردن
-            ring.current.y += (mouse.current.y - ring.current.y) * 0.15;
+            // حلقه بیرونی با تاخیر (Lerp) دنبال می‌کند — with reduced motion it sits on the pointer
+            const follow = reducedMotion.matches ? 1 : 0.15; // سرعت دنبال کردن
+            ring.current.x += (mouse.current.x - ring.current.x) * follow;
+            ring.current.y += (mouse.current.y - ring.current.y) * follow;
+
+            const settled =
+                Math.abs(mouse.current.x - ring.current.x) < SETTLE_DISTANCE &&
+                Math.abs(mouse.current.y - ring.current.y) < SETTLE_DISTANCE;
+            if (settled) {
+                ring.current.x = mouse.current.x;
+                ring.current.y = mouse.current.y;
+            }
 
             if (ringRef.current) {
                 ringRef.current.style.transform = `translate(calc(${ring.current.x}px - 50%), calc(${ring.current.y}px - 50%))`;
             }
 
-            animationFrameId = requestAnimationFrame(render);
+            animationFrameId = settled ? 0 : requestAnimationFrame(render);
+        };
+        const wake = () => {
+            if (!animationFrameId) animationFrameId = requestAnimationFrame(render);
+        };
+
+        // 1. آپدیت موقعیت دقیق ماوس
+        const onMouseMove = (e: MouseEvent) => {
+            mouse.current.x = e.clientX;
+            mouse.current.y = e.clientY;
+            wake();
         };
 
         // 3. سیستم تشخیص Hover (Event Delegation)
@@ -59,20 +82,36 @@ export default function CustomCursor() {
         const onMouseDown = () => setIsClicked(true);
         const onMouseUp = () => setIsClicked(false);
 
-        window.addEventListener('mousemove', onMouseMove);
-        window.addEventListener('mouseover', onMouseOver);
-        window.addEventListener('mousedown', onMouseDown);
-        window.addEventListener('mouseup', onMouseUp);
-
-        // شروع حلقه انیمیشن
-        animationFrameId = requestAnimationFrame(render);
-
-        return () => {
+        // The engine (listeners + loop) runs only while the cursor is visible, following the
+        // media query live — e.g. a tablet that gains a mouse.
+        let running = false;
+        const start = () => {
+            if (running) return;
+            running = true;
+            window.addEventListener('mousemove', onMouseMove);
+            window.addEventListener('mouseover', onMouseOver);
+            window.addEventListener('mousedown', onMouseDown);
+            window.addEventListener('mouseup', onMouseUp);
+            wake(); // شروع حلقه انیمیشن
+        };
+        const stop = () => {
+            if (!running) return;
+            running = false;
             window.removeEventListener('mousemove', onMouseMove);
             window.removeEventListener('mouseover', onMouseOver);
             window.removeEventListener('mousedown', onMouseDown);
             window.removeEventListener('mouseup', onMouseUp);
             cancelAnimationFrame(animationFrameId);
+            animationFrameId = 0;
+        };
+        const syncWithMedia = () => (hiddenCursor.matches ? stop() : start());
+
+        syncWithMedia();
+        hiddenCursor.addEventListener('change', syncWithMedia);
+
+        return () => {
+            hiddenCursor.removeEventListener('change', syncWithMedia);
+            stop();
         };
     }, []);
 

@@ -109,3 +109,14 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 **Noted, not changed:** the "Nonato" template brand still appears in visible site copy — `src/components/Manifesto/Manifesto.tsx:22` ("At Nonato,"), `:35` (`NONATO`) and `src/components/footer/Footer.tsx:158` ("© … Nonato. All rights reserved."), plus a Windows path comment in `src/data/capabilities.ts:1`. Visible copy is the owner's call. It is raised for the owner and must be resolved before the Phase 3 copy sign-off, because the JSON-LD Person/brand must not contradict on-page text.
 **Why:** Owner decisions at a hard-stop gate.
 **Approved by user:** yes — 2026-09-13, Phase 0 gate answers.
+
+## D-13 — CustomCursor guard: engine-only, keyed to the CSS hide rule
+
+**Context:** phase-plan 1.3 says CustomCursor "gains `(pointer: fine)` + `prefers-reduced-motion` guards (skip mounting on touch devices — INP win, no visual change on desktop)". Reading the code in 1.3b showed that a literal implementation would break that promise. `Cursor.module.css` hides the cursor only under `(hover: none) and (pointer: coarse)`, while `globals.css` hides the native pointer (`body`/`button { cursor: none }`) on every device. On a device with hover but a coarse primary pointer, skip-mounting on `!(pointer: fine)` would remove the custom cursor where CSS still shows it, leaving no pointer at all. Unmounting would also drop the server-rendered cursor markup that is visible at the top-left corner on first paint.
+**Decision:**
+1. The markup keeps rendering on every device, unchanged.
+2. The engine (window listeners + requestAnimationFrame loop) runs only while `(hover: none) and (pointer: coarse)` does not match, which is exactly where the cursor is visible. It follows that media query live.
+3. The loop sleeps once the ring has settled: within 0.01 px it snaps onto the pointer. It wakes on mousemove. Rendered pixels are identical, and there are no idle frames.
+4. With `prefers-reduced-motion: reduce`, the ring follows the pointer directly instead of trailing it (lerp 1 instead of 0.15). This is the only visible change, for reduced-motion users only.
+**Why:** It keeps the INP/main-thread win the plan asked for (no loop or listeners on touch devices, no idle frames on desktop) with zero visual change where the cursor was visible. The reduced-motion behaviour is what the plan's guard is for.
+**Approved by user:** pending — presented with the 1.3b parity review.
