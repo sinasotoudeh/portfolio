@@ -68,4 +68,4 @@ Continuity notes:
   - Local main is ahead of origin/main by 9 owner commits + this run's commits. Run never pushes unless asked.
   - .claude/settings.local.json is a per-machine settings file — deliberately left uncommitted.
   - .gitignore ignores `.env*` — Phase 5.1's `.env.example` needs a `!.env.example` negation.
-Last Commit: d06608e chore(env): 0.2 pnpm toolchain baseline (+ follow-up state commit recording the LOG line)
+Last Commit: eaeb835 chore(env): 0.3 normalize line endings, asset names, add .gitattributes (+ follow-up state commit recording the LOG line)
