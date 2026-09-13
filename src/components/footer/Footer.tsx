@@ -1,7 +1,7 @@
-// Footer.tsx
-'use client';
-
-import React, { useState } from 'react';
+// Footer.tsx — server shell; the newsletter form and back-to-top button are client leaves.
+import React from 'react';
+import NewsletterForm from './NewsletterForm';
+import BackToTopButton from './BackToTopButton';
 import styles from './Footer.module.css';
 
 interface FooterLink {
@@ -43,24 +43,6 @@ const SOCIAL_LINKS = [
 ];
 
 export default function Footer() {
-  const [email, setEmail] = useState('');
-  const [isSubmitting, setIsSubmitting] = useState(false);
-
-  const handleNewsletterSubmit = async (e: React.FormEvent) => {
-    e.preventDefault();
-    if (!email) return;
-
-    setIsSubmitting(true);
-    // Simulate API call
-    await new Promise(resolve => setTimeout(resolve, 1000));
-    setIsSubmitting(false);
-    setEmail('');
-  };
-
-  const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
-  };
-
   return (
     <footer className={styles.footer}>
       <div className={styles.footerInner}>
@@ -75,28 +57,7 @@ export default function Footer() {
             <p className={styles.newsletterDesc}>
               Get the latest insights and updates delivered to your inbox.
             </p>
-            <form onSubmit={handleNewsletterSubmit} className={styles.newsletterForm}>
-              <input
-                type="email"
-                value={email}
-                onChange={(e) => setEmail(e.target.value)}
-                placeholder="your@email.com"
-                className={styles.newsletterInput}
-                required
-                aria-label="Email address"
-              />
-              <button
-                type="submit"
-                className={styles.newsletterButton}
-                disabled={isSubmitting}
-              >
-                {isSubmitting ? (
-                  <span className={styles.spinner} />
-                ) : (
-                  <ArrowIcon />
-                )}
-              </button>
-            </form>
+            <NewsletterForm />
           </div>
         </div>
 
@@ -158,13 +119,7 @@ export default function Footer() {
             <span>© {new Date().getFullYear()} Nonato. All rights reserved.</span>
           </div>
 
-          <button
-            onClick={scrollToTop}
-            className={styles.backToTop}
-            aria-label="Back to top"
-          >
-            <ChevronUpIcon />
-          </button>
+          <BackToTopButton />
         </div>
       </div>
 
@@ -175,18 +130,6 @@ export default function Footer() {
 }
 
 // Icon Components
-const ArrowIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-    <path d="M5 12h14M12 5l7 7-7 7" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
-const ChevronUpIcon = () => (
-  <svg width="20" height="20" viewBox="0 0 24 24" fill="none" stroke="currentColor">
-    <path d="M18 15l-6-6-6 6" strokeWidth="2" strokeLinecap="round" strokeLinejoin="round" />
-  </svg>
-);
-
 const SocialIcon = ({ type }: { type: string }) => {
   const icons: Record<string, React.ReactElement> = {
     twitter: (

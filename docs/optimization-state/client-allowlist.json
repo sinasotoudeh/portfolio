@@ -1,0 +1,15 @@
+[
+  "src/components/Capability/CapabilitiesSection.tsx",
+  "src/components/Capability/CylinderCard.tsx",
+  "src/components/Hero/Hero.tsx",
+  "src/components/Manifesto/Manifesto.tsx",
+  "src/components/ProcessSection/ProcessSection.tsx",
+  "src/components/Resume/ResumeDashboard.tsx",
+  "src/components/contact/Contact.tsx",
+  "src/components/cursor/CustomCursor.tsx",
+  "src/components/footer/BackToTopButton.tsx",
+  "src/components/footer/NewsletterForm.tsx",
+  "src/components/navigation/NavigationController.tsx",
+  "src/components/providers/LenisProvider.tsx",
+  "src/components/workminimal/WorkMinimal.tsx"
+]
