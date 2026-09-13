@@ -92,4 +92,4 @@ Continuity notes:
   - .gitignore ignores `.env*` — Phase 5.1's `.env.example` needs a `!.env.example` negation.
   - Machine: Playwright 1.63.0 tools at ~/.local/share/portfolio-visual-tools, Chromium 153 system deps installed (D-10). Other servers run on this box (owner's next-servers on :3000 and :3001): stop only your own PIDs. This run used :4310.
   - `pnpm build` needs network for next/font/google (fonts are downloaded at build time); Vercel builds have it.
-Last Commit: 1.3a commit `refactor(rsc): 1.3a server nav/footer shells with client leaves` (hash in LOG.md; previous: 13a65c1 perf(assets): 1.2 enable Vercel image optimization (AVIF/WebP))
+Last Commit: 50438ed refactor(rsc): 1.3a server nav/footer shells with client leaves (previous: 13a65c1 perf(assets): 1.2 enable Vercel image optimization (AVIF/WebP))
