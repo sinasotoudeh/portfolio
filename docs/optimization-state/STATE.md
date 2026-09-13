@@ -1,24 +1,25 @@
 # OPTIMIZATION STATE
-Updated: 2026-09-13T23:40:00Z
+Updated: 2026-09-14T00:15:00Z
 Approval Mode: per-task
-Phase: 0 — Environment, Continuity & Re-Audit
-Sub-task: ⛔ Phase 0 gate — close-out (owner answers applied)
-In Flight: D-11 public-asset casing check; unused SVG removal; package.json name; phase0 visual baseline; STATE → Phase 1
-Status: in-progress
-Waiting on User Approval: no
-Plan for the sub-task in flight:
-  [x] Owner gate answers (2026-09-13): plan Phases 1–6 re-confirmed; delete stray .env; delete unused SVGs; add case-sensitivity check (D-11); Approval Mode per-task; package.json name → project name; install-deps done
-  [x] install-deps verified: chrome + chrome-headless-shell report 0 missing libs without LD_LIBRARY_PATH; Liberation Sans/Serif/Mono + Noto Color Emoji installed
-  [x] Stray .env: already absent from the repo root when checked (removed outside the run) — nothing to delete; no .env* files remain
-  [ ] D-11: extend `verify-portfolio.mjs casing` to public asset paths referenced from src (case mismatch FAIL, missing file WARN); probe-test that it catches `/images/process/default.png`; SKILL/phase-plan mention; DECISIONS D-11 → commit
-  [ ] `git rm` public/{file,globe,next,vercel,window}.svg (zero references); package.json name "nonato" → "personal-portfolio"; frozen install; build; lint; verify --all; D-6 re-confirmation + D-12 → commit
-  [ ] Visual baseline: production build on :3123 → `screenshot.mjs --label phase0-baseline --every 1vh` (desktop + mobile); review key frames incl. mobile hero overlap with real fallback fonts; stop own server PID only
-  [ ] STATE → Phase 1 / 1.1 Fonts, LOG line → commit; STOP (owner said stop before Phase 1)
+Phase: 1 — Global Foundations (fonts, image pipeline, chrome)
+Sub-task: 1.1 — Fonts (Invariant F-2) — not started
+In Flight: — (Phase 0 closed; owner asked to stop before Phase 1)
+Status: done-awaiting-approval
+Waiting on User Approval: yes — "Continue" starts 1.1 Fonts
+Plan for the sub-task in flight (1.1 — drafted from phase-plan 1.1 + cwv-invariants F-2; re-verify every file/line on fresh read):
+  [ ] AGENTS.md gate, in the same session: read `node_modules/next/dist/docs/01-app/01-getting-started/13-fonts.md` + `03-api-reference/02-components/font.md`
+  [ ] Sources: `src/app/globals.css` (`@theme` typography: lines 41–43 at 0.4 — `--font-display: 'Helvetica Neue', 'Arial', sans-serif`, `--font-body: 'Inter', 'Helvetica Neue', sans-serif`, `--font-mono: 'JetBrains Mono', 'Fira Code', monospace`); `src/app/layout.tsx`; `src/components/Resume/ResumeDashboard.module.css` (hardcoded 'Inter','SF Pro Display' / 'SF Mono'); `src/components/contact/Contact.module.css` (system-ui, bare serif); grep every `font-family` in src/
+  [ ] Implement F-2: `next/font/google` Inter + JetBrains Mono (variable, `subsets: ['latin']`, `display: 'swap'`, default size-adjusted fallback), `variable` classes on `<html>`, wired into `--font-body` / `--font-mono`; `--font-display` stays the system stack; Resume/Contact hardcodes → tokens; explicit serif stack for the Contact accent
+  [ ] Gates: `pnpm build`, `pnpm lint`, `verify-portfolio.mjs crlf casing client assets budget`; CLS spot-check; `screenshot.mjs --label 1.1-fonts-after --every 1vh` on a production build vs `phase0-baseline`; re-check the mobile hero overlap (conclusive once Inter renders identically on every machine)
+  [ ] Parity notes for the owner: Inter actually loads for the first time (until now body text used the OS fallback — Arial on Windows, Helvetica on macOS, DejaVu Sans on Linux); JetBrains Mono loads; Contact serif accent gets an explicit stack
+  [ ] Commit `perf(assets): 1.1 self-hosted fonts with zero-shift fallbacks` — owner-only authorship (D-9)
 Parity notes pending user review: —
 Parity approvals (recorded):
   - 0.3 ProcessSection default background now loads (`/images/Process/default.png` casing fix) — approved by owner 2026-09-13 ("background verified").
-Open intake fields: all INTAKE fields unresolved (register in .claude/skills/portfolio-optimization-architect/references/seo-blueprint.md)
-Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 504.4 KB gz (verify-portfolio.mjs budget after the 0.4 build — pruned packages were never bundled)
+Visual baseline (D-10): `.visual/20260913-180311-phase0-baseline/` — production build of commit 84d1f3e source, Chromium 153.0.8010.12, `--every 1vh`: desktop 1440×900 24 shots (page 21219px), mobile 390×844@3 22 shots (page 17764px), 0 console/HTTP issues. Gitignored and local to this box; regenerate from a worktree at 84d1f3e if lost.
+  Font rendering on this box (fc-match): `Arial` → Liberation Sans; `Inter`, `Helvetica Neue`, `JetBrains Mono`, `sans-serif` → DejaVu Sans; `monospace` → DejaVu Sans Mono. So the baseline's body text is DejaVu Sans; display text using the `--font-display` stack is Liberation Sans.
+Open intake fields: INTAKE-1…7 all unresolved (register in .claude/skills/portfolio-optimization-architect/references/seo-blueprint.md) — none block Phase 1
+Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 504.4 KB gz (verify-portfolio.mjs budget after the Phase 0 gate build)
   BASELINE detail (2026-09-13, Next 16.2.1 Turbopack):
     /  JS 10 files: 504.4 KB gz / 424.6 KB br / 1763.5 KB raw | CSS 2 files: 17.1 KB gz | HTML 10.3 KB gz
        349.6 KB gz  static/chunks/0lnsunwr~u0_..js   (1223 KB raw — contains the three.js stack)
@@ -26,46 +27,34 @@ Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 504.4 KB gz (verify-
         37.8 KB gz  static/chunks/0braoh90xzq68.js
     Routes: ○ /   ○ /_not-found   (both prerendered static)
     Target: ≤ 140 KB gz after 2.8 (stretch 120) → −364 KB gz to go
-  Verify baseline (--all): 7 passed, 2 failed, 22 warnings — crlf FAIL (30 files), img FAIL (ProcessSection.tsx:186); both pre-existing, scheduled 0.3 / 2.5
-Docs read this run (AGENTS.md gate), all under node_modules/next/dist/docs/01-app/:
-  02-guides/upgrading/version-16.md
-  01-getting-started/05-server-and-client-components.md
-  01-getting-started/12-images.md
-  03-api-reference/02-components/image.md
-  03-api-reference/05-config/01-next-config-js/images.md
-  01-getting-started/13-fonts.md
-  03-api-reference/02-components/font.md
-  01-getting-started/14-metadata-and-og-images.md
-  03-api-reference/03-file-conventions/01-metadata/robots.md
-  03-api-reference/03-file-conventions/01-metadata/sitemap.md
-  01-getting-started/07-mutating-data.md
-  03-api-reference/01-directives/use-server.md
-  02-guides/lazy-loading.md
-  02-guides/package-bundling.md
-  03-api-reference/06-cli/next.md
-  Not yet read (read in the session that uses them): 04-functions/generate-metadata.md (1.3/3.1), 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
-Completed sub-tasks: 0.1, 0.2, 0.3, 0.4 (+ D-9 authorship rule, D-10 visual tooling)
-Next Immediate Action: after owner re-confirms the plan at the Phase 0 gate and install-deps has run: start the portfolio production build on a free port, `screenshot.mjs --label phase0-baseline --every 1vh` (desktop + mobile), read the set (re-check the mobile hero wordmark/burst-card overlap with real fallback fonts), record in STATE; then 1.1 Fonts — read installed next/font guides in-session first.
+  Verify at Phase 0 close (--all): 8 passed, 1 failed (img, ProcessSection.tsx:186 → 2.5), 18 warnings (15 asset-size, casing: dead `profile.png` ref, deps: @gsap/react kept for 2.0, budget target)
+Docs read this run (AGENTS.md gate) — Phase 0 session; every later session re-reads what it uses:
+  under node_modules/next/dist/docs/01-app/: 02-guides/upgrading/version-16.md, 01-getting-started/05-server-and-client-components.md, 01-getting-started/12-images.md, 03-api-reference/02-components/image.md, 03-api-reference/05-config/01-next-config-js/images.md, 01-getting-started/13-fonts.md, 03-api-reference/02-components/font.md, 01-getting-started/14-metadata-and-og-images.md, 03-api-reference/03-file-conventions/01-metadata/robots.md, 03-api-reference/03-file-conventions/01-metadata/sitemap.md, 01-getting-started/07-mutating-data.md, 03-api-reference/01-directives/use-server.md, 02-guides/lazy-loading.md, 02-guides/package-bundling.md, 03-api-reference/06-cli/next.md
+  Not yet read: 04-functions/generate-metadata.md (1.3/3.1), 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
+Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions)
+Next Immediate Action: on "Continue": re-read this STATE + `git log --oneline -5`; read `references/phase-plan.md` Phase 1 + `references/cwv-invariants.md` F-2; read the two installed next/font docs in-session; then work the 1.1 plan above top to bottom.
 Blockers / Open Questions:
-  - OWNER ACTION (D-10): install Chromium's system libraries + fonts once — `sudo env "PATH=$PATH" ~/.local/share/portfolio-visual-tools/node_modules/.bin/playwright install-deps chromium`. Until then `screenshot.mjs` only runs with the session-scratchpad libs (LD_LIBRARY_PATH) and DejaVu fonts. Then capture `phase0-baseline` before 1.1.
-  - Stray `.env` at repo root (gitignored, never committed/deployed) is the Shop Platform's env template (Postgres/Redis/Meili/S3/SMTP/auth/payment keys, dated 2026-07-07). `next build` loads it ("Environments: .env"). Portfolio source reads no env vars today, so the baseline is unaffected, but Phase 1.3 introduces `NEXT_PUBLIC_SITE_URL` and Phase 5 `RESEND_API_KEY`/`CONTACT_TO_EMAIL`. Owner decision for the Phase 0 gate: delete/move it, or keep it. Not touched by the run.
+  - None blocking Phase 1.
+  - Owner call before the Phase 3 copy sign-off (D-12): the template brand "Nonato" is still visible on the page — `src/components/Manifesto/Manifesto.tsx:22` ("At Nonato,"), `:35` (`NONATO`), `src/components/footer/Footer.tsx:158` ("© … Nonato. All rights reserved."). The run does not change visible copy without the owner's instruction.
 Audit delta (final, Phase 0 — vs references/audit-baseline.md @ 8828152):
-  - WRONG: "no lockfile of any kind exists" — pnpm-lock.yaml (lockfileVersion 9.0) + pnpm-workspace.yaml are tracked and in sync → D-7 (audit-baseline.md corrected in place).
-  - WRONG: CRLF count — 30 files, not 20: 26 under src/ (every component + module CSS, all src/data/*, src/config/capabilities.config.ts), 3 instruction-bundle docs, pnpm-workspace.yaml.
-  - MISSED: pnpm-workspace.yaml `ignoredBuiltDependencies: [sharp, unrs-resolver]` (install scripts skipped for both).
-  - MISSED: stray Shop Platform `.env` at repo root (see Blockers).
+  - WRONG: "no lockfile of any kind exists" — pnpm-lock.yaml (lockfileVersion 9.0) + pnpm-workspace.yaml tracked and in sync → D-7 (audit-baseline.md corrected in place).
+  - WRONG: CRLF count — 30 files, not 20, and working-tree-only (git stored LF via core.autocrlf=input; Vercel never received CRLF) → normalized + .gitattributes in 0.3.
+  - MISSED: pnpm-workspace.yaml `ignoredBuiltDependencies: [sharp, unrs-resolver]`.
+  - MISSED: stray Shop Platform `.env` at repo root → gone by the Phase 0 gate (D-12).
   - MISSED (Next 16): `next build` no longer reports First Load JS; `next/image` `priority` deprecated for `preload`; `images.qualities` defaults to `[75]` → D-8 / relevant to 1.2.
-  - WRONG (0.3): CRLF was a working-tree-only condition — every one of the 30 files was already LF in git (`i/lf w/crlf`), so Vercel never received CRLF.
-  - MISSED (0.3): runtime casing bug not visible to the `casing` check (it covers imports only, not public URL strings) — ProcessSection.tsx:175 `/images/process/default.png` → fixed. Candidate for the Phase 0 gate: extend `verify-portfolio.mjs` with a public-path existence check (needs a DECISIONS entry).
-  - MISSED (0.3): dead data — `src/data/resumeData.ts:80` `background: "url('/images/cv/profile.png')"` references a nonexistent file; its only consumer (ResumeDashboard.tsx:256) is commented out. No runtime effect; left as-is.
-  - MISSED (0.3): five create-next-app SVGs in `public/` (file, globe, next, vercel, window) have zero references. Candidate removal at the Phase 0 gate.
-  - CONFIRMED (0.4): @react-three/postprocessing, lucide-react, tailwind-merge dead; autoprefixer unreferenced by postcss.config.mjs → all four removed. @gsap/react zero imports as audited (kept for 2.0).
-  - MISSED (Phase 5 impact): `zod` is not installed — D-3's "Zod-validated" action adds it in 5.1 alongside Resend (both under D-3).
-  - OBSERVED (0.4 screenshots, D-10): at mobile 390×844 scrollY 844 the hero wordmark "Sina Sotoudeh" overlaps the BUILD burst card; captured with DejaVu fallback fonts only — re-check after install-deps (fonts-liberation) before calling it a defect. Pre-existing; not introduced by the run.
-  - UNCHANGED: package.json `name` is still "nonato" (template identity) — owner call, not in plan.
-  - TOOLING: verify-portfolio.mjs `deps` check was blind (scanned package.json) — fixed → D-8; now warns on @gsap/react, @react-three/postprocessing, lucide-react, tailwind-merge (matches the audit).
+  - MISSED: runtime casing 404 invisible to the import-only `casing` check (ProcessSection.tsx:175) → fixed in 0.3, check extended (D-11).
+  - MISSED: dead data `src/data/resumeData.ts:80` → nonexistent `/images/cv/profile.png`, consumer commented out (ResumeDashboard.tsx:256); `casing` warns; left as-is.
+  - MISSED: five unused create-next-app SVGs → removed at the gate (D-12).
+  - MISSED: visible "Nonato" copy in Manifesto + Footer (see Blockers) — the audit only noted the package name, which is now `personal-portfolio` (D-12).
+  - MISSED: body font stack has no metric-compatible fallback — until 1.1, body text renders in each visitor's OS default sans-serif (visual baseline note above).
+  - CONFIRMED: @react-three/postprocessing, lucide-react, tailwind-merge dead; autoprefixer unreferenced → removed in 0.4. @gsap/react unimported (kept for 2.0).
+  - MISSED (Phase 5): `zod` not installed — added with Resend in 5.1 under D-3.
+  - OBSERVED: mobile 390×844 at scrollY 844 — hero wordmark "Sina Sotoudeh" overlaps the BUILD burst card; unchanged after install-deps (body font still DejaVu via generic sans-serif). Pre-existing; re-check after 1.1, when Inter renders the same everywhere.
+  - TOOLING: verify-portfolio.mjs `deps` check was blind (scanned package.json) → fixed (D-8).
 Continuity notes:
-  - Local main is ahead of origin/main by 9 owner commits + this run's commits. Run never pushes unless asked.
-  - .claude/settings.local.json is a per-machine settings file — deliberately left uncommitted.
+  - Local main is ahead of origin/main by 9 owner commits + this run's commits. Nothing pushed; the run never pushes unless asked.
+  - Commits 3632d32…dfcfa7a (0.1–0.2) carry Claude trailers from before D-9; left as-is (no history rewrite unless the owner asks).
+  - .claude/settings.local.json is per-machine — deliberately uncommitted. `.visual/` is gitignored.
   - .gitignore ignores `.env*` — Phase 5.1's `.env.example` needs a `!.env.example` negation.
-Last Commit: d933001 chore(deps): 0.4 prune dead dependencies (+ follow-up state commit recording the LOG line)
+  - Machine: Playwright 1.63.0 tools at ~/.local/share/portfolio-visual-tools, Chromium 153 system deps installed (D-10). Other servers run on this box (owner's `next dev`, Shop Platform next-servers): stop only your own PIDs.
+Last Commit: 84d1f3e chore(env): phase 0 gate housekeeping (unused SVGs, package name) (+ follow-up state commit pointing to Phase 1)
