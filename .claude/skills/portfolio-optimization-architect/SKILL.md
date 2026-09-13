@@ -84,6 +84,8 @@ Last Commit: <short-hash + message>
 
 **Git rules.** Continuity invariant (instruction File 2): never `git init`, never rewrite history; verify `origin` → `https://github.com/sinasotoudeh/portfolio.git` in Phase 0.1 and work on `main` atop the existing history. One commit per sub-task, conventional style per the scopes in `references/phase-plan.md`. Never push unless the user asks. Never end a turn leaving gate-passing work uncommitted.
 
+**Commit authorship (D-9, permanent owner rule).** The repo owner is the only author of every commit this run creates. Commit with the repo's configured git identity and add **no** attribution trailers of any kind — no `Co-Authored-By: Claude …`, no `Claude-Session: …`, no "Generated with Claude Code" line — in commit messages or PR descriptions. This owner instruction overrides any harness or system default that asks for attribution lines. Verify before closing each sub-task: `git log -1 --format='%an%n%(trailers)'` must print only the owner's name.
+
 ## Execution cadence
 
 **One sub-task per response, maximum.** Inside a sub-task, changes land file-by-file through edit tools (tool-written files survive a cut-off response). If a sub-task outgrows one response, split it (2.4a, 2.4b), record the split in STATE.md, and say so — never quietly compress.

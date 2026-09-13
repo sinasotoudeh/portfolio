@@ -67,4 +67,11 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 - The `deps` check no longer searches `package.json`.
 - SKILL.md V5, the STATE template, `cwv-invariants.md` budget rule and phase-plan 0.2/2.8 point at the `budget` check.
 **Why:** SKILL.md's Next.js gate says where recipes and installed docs disagree, the docs win and the delta is recorded. A budget gate that cannot produce a number, or a dependency check that can never warn, would pass silently — and silence equals green.
-**Approved by user:** docs-win deltas (1, 2) are pre-authorized by SKILL.md; the measurement method and the `deps` fix were presented at the end of 0.2 — confirmation pending (recorded when given).
+**Approved by user:** docs-win deltas (1, 2) are pre-authorized by SKILL.md; the measurement method and the `deps` fix — yes, 2026-09-13 ("continue" at the end of 0.2, where it was stated that continuing approves D-8).
+
+## D-9 — Commit authorship: the owner is the only author
+
+**Context:** Commits 3632d32, e6e63da, 3023e40, d06608e and dfcfa7a (sub-tasks 0.1–0.2) were authored with the owner's git identity but carried `Co-Authored-By: Claude Opus 5 <noreply@anthropic.com>` and `Claude-Session: …` trailers added by the agent harness's default attribution guidance. On 2026-09-13 the owner instructed: "the only author in the commits should be me and dont add claude as co-author", and asked for the rule to live in the skill permanently.
+**Decision:** Every commit (and any PR description) created by this run carries only the owner's authorship: the repo's configured git identity (`Sina Sotoudeh`) and no attribution trailers — no `Co-Authored-By`, no `Claude-Session`, no "Generated with Claude Code" line. The rule is written into SKILL.md's Git rules as a permanent owner rule that overrides harness defaults, with a per-sub-task verification command. The five earlier commits keep their trailers: removing them would rewrite history, which the continuity invariant forbids; that changes only if the owner explicitly asks.
+**Why:** Owner instruction; authorship of the repository's history is the owner's call.
+**Approved by user:** yes — 2026-09-13, owner's own instruction.
