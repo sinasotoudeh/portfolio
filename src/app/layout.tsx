@@ -4,11 +4,10 @@ import "./globals.css";
 
 // Self-hosted at build time; the size-adjusted fallback (adjustFontFallback, on by default)
 // keeps the swap shift-free. Variable names stay distinct from the --font-body / --font-mono
-// tokens in globals.css, which reference them. Inter ships its italic too: the hero tagline
-// sets body text in italic above the fold.
+// tokens in globals.css, which reference them. No Inter italic file on purpose (owner call):
+// the browser synthesizes the few italic words, saving a 52 KB preload.
 const inter = Inter({
   subsets: ["latin"],
-  style: ["normal", "italic"],
   display: "swap",
   variable: "--font-inter",
 });

@@ -3,9 +3,9 @@ Updated: 2026-09-13T18:30:00Z
 Approval Mode: per-task
 Phase: 1 — Global Foundations (fonts, image pipeline, chrome)
 Sub-task: 1.1 — Fonts (Invariant F-2)
-In Flight: — (1.1 implemented, gates green, committed; parity review pending)
-Status: done-awaiting-approval
-Waiting on User Approval: yes — V4 parity of 1.1 typography (see parity notes) + the CLS residual question under Blockers; "Continue" = approve both as recommended and start 1.2
+In Flight: 1.1 amendment — src/app/layout.tsx (drop Inter italic per owner), then 1.2
+Status: in-progress
+Waiting on User Approval: no — owner 2026-09-13: "Drop the 52 KB italic font file and continue" (= 1.1 parity approved with that change; CLS residual accepted as recommended, re-judge in Phase 6)
 Plan for the sub-task in flight (1.1):
   [x] AGENTS.md gate, same session: `node_modules/next/dist/docs/01-app/01-getting-started/13-fonts.md` + `03-api-reference/02-components/font.md`; also read next/font internals (validate-google-font-function-call.js, loader.js preload, server/font-utils.js fallback metrics)
   [x] Sources read fresh: globals.css `@theme` lines 41–43; layout.tsx; font-family grep of src/ — hardcodes at ResumeDashboard.module.css:33/186/295/500, Contact.module.css:22 (system-ui) + :117 (bare serif); `font-mono` utility in CylinderCard.tsx:109; no <code>/<pre>/<kbd>. Body-font italic above the fold: Hero.tsx:300 tagline `<span>mark</span>` (Hero.module.css:282) → Inter loads `style: ['normal','italic']` (Resume `.quote` italic is dead — resumeData.ts:67 commented out). JetBrains Mono: normal only.
@@ -16,7 +16,7 @@ Plan for the sub-task in flight (1.1):
   [ ] Owner parity review (V4) → record approval below, then 1.2
 Parity notes pending user review (1.1):
   - Body text is now real Inter everywhere (nav, hero tagline, Works copy, Capabilities copy, Process panel copy, Resume, Contact, footer). Before, it was whatever each OS substituted for the never-loaded 'Inter': Arial on Windows, Helvetica on macOS, Roboto on Android, DejaVu Sans on Linux — unless the visitor had Inter installed locally. Inter is a little narrower than those, so some paragraphs re-wrap (visible: Resume "About Me" paragraph, Process LAUNCH copy on mobile, the hero burst cards' third line). No section height or position changed (page heights identical).
-  - Hero tagline "that leave a *mark*." — "mark" is a true Inter Italic (costs the 52 KB italic file, preloaded). Alternative if you prefer lighter: drop the italic file and let the browser slant regular Inter (a more steeply faux-slanted "mark").
+  - Hero tagline "that leave a *mark*." — SUPERSEDED by owner: the Inter italic file is dropped (1.1 amendment); the browser synthesizes the slant from regular Inter (verified: still slanted, slightly steeper than a true italic).
   - Monospace text (Manifesto eyebrow + marquee, section numbers, Capabilities card numbers, Resume window title / sidebar label / profile date) is now JetBrains Mono. Resume's three 'SF Mono' spots previously rendered SF Mono only on macOS; Windows showed Consolas/Courier New.
   - Resume section: was 'Inter' → 'SF Pro Display' → system-ui, i.e. Segoe UI on Windows, SF Pro on macOS. Now Inter like the rest of the page.
   - Contact section: was system-ui (Segoe UI on Windows, SF Pro on macOS). Now Inter. The italic accent "Something" gets `Times, 'Times New Roman', serif` — the same face browsers pick for bare `serif` on macOS/iOS (Times) and Windows (Times New Roman), so it should look unchanged; Android keeps Noto Serif.
@@ -24,12 +24,13 @@ Parity notes pending user review (1.1):
   - What to look at (production build or Vercel preview, desktop + phone): hero first screen (tagline + nav), scroll to the burst cards, Works/Capabilities copy, Resume window (title bar, sidebar, About Me text), Contact heading "Let's Build *Something*", footer.
 Parity approvals (recorded):
   - 0.3 ProcessSection default background now loads (`/images/Process/default.png` casing fix) — approved by owner 2026-09-13 ("background verified").
+  - 1.1 typography (all 1.1 parity notes above) — approved by owner 2026-09-13 with one change: "Drop the 52 KB italic font file and continue" → Inter loads normal only; CLS residual accepted as recommended (re-judge with PSI in Phase 6). Amendment verified: build + lint green, verify 5 passed / 0 failed, 2 font preloads (Inter normal 48 KB + JetBrains Mono 40 KB), probe CLS unchanged (desktop 0.0004 / mobile 0.0008 on this box), hero shots `.visual/20260913-184013-1.1b-no-italic/` 0 issues.
 Visual baseline (D-10): `.visual/20260913-180311-phase0-baseline/` — production build of commit 84d1f3e source, Chromium 153.0.8010.12, `--every 1vh`: desktop 1440×900 24 shots (page 21219px), mobile 390×844@3 22 shots (page 17764px), 0 console/HTTP issues. Gitignored and local to this box; regenerate from a worktree at 84d1f3e if lost.
   Latest set: `.visual/20260913-182411-1.1-fonts-after/` (same shot grid, 0 issues).
   Font rendering on this box — corrected 1.1 by CSS.getPlatformFontsForNode (fc-match was misleading): Chromium renders `'Helvetica Neue', Arial, sans-serif` (display) AND the old body stack in DejaVu Sans; mono → DejaVu Sans Mono; bare serif → DejaVu Serif. Chromium's `local()` resolves neither Arial nor "Liberation Sans" here (only e.g. "DejaVu Sans"), so next/font's `Inter Fallback` (`src: local(Arial)`) reports `error` on this box.
 Open intake fields: INTAKE-1…7 all unresolved (register in .claude/skills/portfolio-optimization-architect/references/seo-blueprint.md) — none block Phase 1
 Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 504.4 KB gz (verify-portfolio.mjs budget after the 1.1 build)
-  1.1 detail: /  JS 10 files: 504.4 KB gz / 424.5 KB br / 1763.5 KB raw | CSS 2 files: 18.3 KB gz (+1.2, @font-face rules) | HTML 10.6 KB gz (+0.3, 3 font preload links). Font bytes preloaded on `/`: 140 KB (not counted in the JS budget).
+  1.1 detail (after italic drop): /  JS 10 files: 504.4 KB gz / 424.5 KB br / 1763.5 KB raw | CSS 2 files: 18.1 KB gz (+1.0, @font-face rules) | HTML 10.6 KB gz (+0.3, font preload links). Font bytes preloaded on `/`: 88 KB (Inter 48 + JetBrains Mono 40; not counted in the JS budget).
   BASELINE detail (2026-09-13, Next 16.2.1 Turbopack):
     /  JS 10 files: 504.4 KB gz / 424.6 KB br / 1763.5 KB raw | CSS 2 files: 17.1 KB gz | HTML 10.3 KB gz
        349.6 KB gz  static/chunks/0lnsunwr~u0_..js   (1223 KB raw — contains the three.js stack)
@@ -45,11 +46,11 @@ Docs read this run (AGENTS.md gate) — Phase 0 session; every later session re-
 Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 implemented + committed (parity approval pending)
 Next Immediate Action: owner reviews 1.1 parity notes + answers the CLS question below. On approval: record it under "Parity approvals", then start 1.2 — re-read `next.config.ts`, `node_modules/next/dist/docs/01-app/01-getting-started/12-images.md` + `03-api-reference/02-components/image.md` + `03-api-reference/05-config/01-next-config-js/images.md`, remove `images.unoptimized`, set `formats`, render every section on a production build, `verify-portfolio.mjs casing img assets`.
 Blockers / Open Questions:
-  - 1.1 CLS residual (owner call; recommendation: accept now, re-judge with PSI numbers in Phase 6). Scratch probe, throttled cold load, no input:
+  - 1.1 CLS residual — ACCEPTED by owner 2026-09-13 as recommended; re-judge with PSI numbers in Phase 6 (kept here as the Phase 6 input). Scratch probe, throttled cold load, no input:
       · as shipped on this box (no local Arial → fallback metrics not applied): desktop 0.0004, mobile 0.0008 — one shift when Inter swaps in; sources: nav links row / Start Project button / logo line + the right-aligned hero tagline.
       · simulated Windows/macOS (fallback face served from Arial-metric Liberation Sans): mobile 0.0000; desktop 0.0004 remains (nav links row + tagline — average-width matching can't make every string identical).
       · implication: Android (no Arial; Roboto) behaves like this box ≈ 0.0008 in the field. Lighthouse lab likely loads the three preloaded fonts before first paint (no swap), but that's unverified until Phase 6.
-      · Option if Phase 6 isn't 0.000: D-13 refinement — an extra Roboto-metric fallback @font-face (local(Roboto), overrides from next's capsize metrics) after next/font's Arial one; and/or JetBrains Mono `preload: false` (not used in the first viewport) to cut 40 KB of early font bytes. Neither is applied — both would need a DECISIONS entry + approval. Nav is rebuilt in 1.3, which may move the desktop shift sources anyway.
+      · Option if Phase 6 isn't 0.000: D-13 refinement — an extra Roboto-metric fallback @font-face (local(Roboto), overrides from next's capsize metrics) after next/font's Arial one; and/or JetBrains Mono `preload: false` (not used in the first viewport) to cut 40 KB of early font bytes. (Inter italic already dropped by the owner.) Neither is applied — both would need a DECISIONS entry + approval. Nav is rebuilt in 1.3, which may move the desktop shift sources anyway.
   - Owner call before the Phase 3 copy sign-off (D-12): the template brand "Nonato" is still visible on the page — `src/components/Manifesto/Manifesto.tsx:22` ("At Nonato,"), `:35` (`NONATO`), `src/components/footer/Footer.tsx:158` ("© … Nonato. All rights reserved."). The run does not change visible copy without the owner's instruction.
 Audit delta (final, Phase 0 — vs references/audit-baseline.md @ 8828152):
   - WRONG: "no lockfile of any kind exists" — pnpm-lock.yaml (lockfileVersion 9.0) + pnpm-workspace.yaml tracked and in sync → D-7 (audit-baseline.md corrected in place).
