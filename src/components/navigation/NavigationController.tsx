@@ -1,6 +1,7 @@
 'use client';
 
 import { useState, useEffect, type MouseEvent, type ReactNode } from 'react';
+import { useLenis } from 'lenis/react';
 import styles from './Navigation.module.css';
 
 interface NavigationControllerProps {
@@ -15,6 +16,8 @@ interface NavigationControllerProps {
 export default function NavigationController({ bar, menu }: NavigationControllerProps) {
     const [isScrolled, setIsScrolled] = useState(false);
     const [isMobileMenuOpen, setIsMobileMenuOpen] = useState(false);
+    // The root Lenis instance (this bar sits outside LenisProvider; useLenis reads the root store).
+    const lenis = useLenis();
 
     useEffect(() => {
         let ticking = false;
@@ -56,12 +59,14 @@ export default function NavigationController({ bar, menu }: NavigationController
         setIsMobileMenuOpen(false);
 
         const targetElement = document.getElementById(href.replace('#', ''));
+        if (!targetElement) return;
 
-        if (targetElement) {
-            targetElement.scrollIntoView({
-                behavior: 'smooth',
-                block: 'start',
-            });
+        // Lenis owns page scrolling, so the scroll goes through it (D-14): native smooth scrolling
+        // was cut short on this page. The native call only covers a click before Lenis has started.
+        if (lenis) {
+            lenis.scrollTo(targetElement);
+        } else {
+            targetElement.scrollIntoView({ behavior: 'smooth', block: 'start' });
         }
     };
 

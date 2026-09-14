@@ -2,15 +2,10 @@
 'use client';
 
 import React, { useState, useRef, useEffect, useMemo, useCallback } from 'react';
-import gsap from 'gsap';
-import { ScrollTrigger } from 'gsap/dist/ScrollTrigger';
+import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { processNodes } from '../../data/processData';
 import styles from './ProcessSection.module.css';
 import clsx from 'clsx';
-
-if (typeof window !== 'undefined') {
-    gsap.registerPlugin(ScrollTrigger);
-}
 
 export default function ProcessSection() {
     const [scrollIndex, setScrollIndex] = useState<number | null>(null);

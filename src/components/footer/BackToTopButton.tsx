@@ -1,11 +1,21 @@
 'use client';
 
+import { useLenis } from 'lenis/react';
 import styles from './Footer.module.css';
 
 // Client leaf of the server-rendered Footer: smooth scroll back to the top.
 export default function BackToTopButton() {
+  // The root Lenis instance (the footer sits outside LenisProvider; useLenis reads the root store).
+  const lenis = useLenis();
+
+  // Through Lenis, which owns page scrolling (D-14); native smooth scrolling was cut short on this
+  // page. The native call only covers a click before Lenis has started.
   const scrollToTop = () => {
-    window.scrollTo({ top: 0, behavior: 'smooth' });
+    if (lenis) {
+      lenis.scrollTo(0);
+    } else {
+      window.scrollTo({ top: 0, behavior: 'smooth' });
+    }
   };
 
   return (
