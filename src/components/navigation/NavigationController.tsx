@@ -48,8 +48,8 @@ export default function NavigationController({ bar, menu }: NavigationController
     }, [isMobileMenuOpen]);
 
     // One delegated handler per container replaces the per-link onClick: section links
-    // (href="#id") scroll smoothly without touching the URL and close the menu. Bare
-    // href="#" links (the mobile socials) never had a handler and stay native.
+    // (href="#id") scroll smoothly without touching the URL and close the menu. Every other
+    // link (the external mobile socials) stays native.
     const handleSectionLinkClick = (e: MouseEvent<HTMLElement>) => {
         const link = e.target instanceof Element ? e.target.closest('a[href^="#"]') : null;
         const href = link?.getAttribute('href');

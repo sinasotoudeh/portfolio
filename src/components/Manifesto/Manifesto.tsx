@@ -17,7 +17,7 @@ const PARAGRAPH_1: WordData[] = [
 ];
 
 const PARAGRAPH_2: WordData[] = [
-    { text: 'At' }, { text: 'Nonato,' },
+    { text: 'For' }, { text: 'me,' },
     { text: 'every', isAccent: true }, { text: 'pixel', isAccent: true },
     { text: 'carries' }, { text: 'intention.' },
     { text: 'Every' }, { text: 'interaction' }, { text: 'is' },
@@ -30,7 +30,7 @@ const LAST_WORD = "inevitable.";
 
 const MARQUEE_SEGMENT = (
     <>
-        <span>NONATO</span> <span className={styles.star}>✦</span>
+        <span>SINA SOTOUDEH</span> <span className={styles.star}>✦</span>
         <span>WORLD CLASS</span> <span className={styles.star}>✦</span>
         <span>EST.2019</span> <span className={styles.star}>✦</span>
         <span>CUTTING EDGE</span> <span className={styles.star}>✦</span>

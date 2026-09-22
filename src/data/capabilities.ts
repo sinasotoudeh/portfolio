@@ -1,5 +1,3 @@
-// A:\NEXT\Development\Projects\nonato\src\data\capabilities.ts
-
 export interface Capability {
     id: number;
     number: string;

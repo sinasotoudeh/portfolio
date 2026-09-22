@@ -155,3 +155,15 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 **Measurement (this box renders through SwiftShader, a software GPU):** mobile 390×844 @3, 4× CPU, hero on screen. Frame rate on the same build: 60 fps with a 1× buffer vs 44/47/48 fps with the 2× buffer (three rounds). The 2.1b before/after runs show 58 → 43 fps. Script time per canvas frame is barely changed (2.45 → 2.76 ms mean); the extra cost is raster/compositing of the larger buffer. On real phones canvas raster runs on the GPU, so this box likely overstates it, but it can't be proven here. Raster is off the main thread, so TBT/INP/LCP are not expected to move.
 **Decision:** ships as `MAX_DPR = 2` (the recipe). Alternatives are one constant in `HeroCanvas.tsx`: `1.5` (a compromise) or `1` (exactly the old softness and cost). Owner decides at the 2.1b review, ideally after looking at particle sharpness and smoothness on a real phone.
 **Approved by user:** yes — 2026-09-22, after testing production 18c28c2 on a phone ("approved, continue") → `MAX_DPR = 2` stays.
+
+## D-19 — Template brand "Nonato" replaced by the owner's name; real social profiles
+
+**Context:** D-12 left the template brand "Nonato" in visible copy for the owner to decide. The 1.3a blockers also listed footer socials pointing at bare twitter.com/linkedin.com/github.com/dribbble.com home pages and mobile-menu socials with `href="#"`. On 2026-09-23 the owner asked to "change every nonato mark to personal context (Sina Sotoude /sinasotoudeh for socials like linkedin,github and sina.sotoude on instagram) and push".
+**Decision:**
+1. The name is spelled "Sina Sotoudeh", as in the resume data, nav logo, h1 and metadata. The Instagram handle is used verbatim: `sina.sotoude`.
+2. Manifesto: "At Nonato," → "For me,". Two words for two keeps the 26-word scrub timing unchanged. Marquee "NONATO" → "SINA SOTOUDEH".
+3. Footer logo N·O·NATO → "SINA SOTOUDEH" with "SO" in the accent colour, echoing the nav logo. `.logoAccent`'s 0.1em side margins are dropped because they split the surname. Copyright → "© <year> Sina Sotoudeh. All rights reserved."
+4. Footer socials → LinkedIn `https://www.linkedin.com/in/sinasotoudeh`, GitHub `https://github.com/sinasotoudeh`, Instagram `https://www.instagram.com/sina.sotoude/`. Twitter and Dribbble are removed along with their icons, since no profiles were given. The Instagram icon is an outline glyph. Mobile-menu socials → Instagram, LinkedIn, GitHub with the same URLs, `target="_blank" rel="noopener noreferrer"`.
+5. `src/data/capabilities.ts`: the template's Windows path comment is removed.
+**Not changed (still template content, owner's call by the Phase 3 copy sign-off):** "Our Manifesto" and "We craft …" voice, marquee claims (WORLD CLASS / EST.2019 / AWARD WINNING …), footer Services/Company links to non-existent routes, legal links, nav "▶ Reel" / "Start Project" buttons, hero project list names.
+**Approved by user:** yes — the owner's own request, 2026-09-23.

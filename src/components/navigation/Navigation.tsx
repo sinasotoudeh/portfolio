@@ -78,9 +78,9 @@ export default function Navigation() {
                     <div className={styles.mobileFooter}>
                         <span>Let&apos;s Connect</span>
                         <div className={styles.mobileSocials}>
-                            <a href="#" data-cursor="hover">Instagram</a>
-                            <a href="#" data-cursor="hover">Twitter</a>
-                            <a href="#" data-cursor="hover">LinkedIn</a>
+                            <a href="https://www.instagram.com/sina.sotoude/" target="_blank" rel="noopener noreferrer" data-cursor="hover">Instagram</a>
+                            <a href="https://www.linkedin.com/in/sinasotoudeh" target="_blank" rel="noopener noreferrer" data-cursor="hover">LinkedIn</a>
+                            <a href="https://github.com/sinasotoudeh" target="_blank" rel="noopener noreferrer" data-cursor="hover">GitHub</a>
                         </div>
                     </div>
                 </>
