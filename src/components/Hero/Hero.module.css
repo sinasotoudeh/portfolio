@@ -112,8 +112,10 @@
     transition: max-width 1.2s cubic-bezier(0.19, 1, 0.22, 1), opacity 1s ease 0.2s;
 }
 
-/* Wordmark States — HeroController sets data-state="0..3" on the pin section */
-[data-state="0"] .wmGroup {
+/* Wordmark States — HeroController sets data-state="0..3" on the pin section.
+   State 0: the wordmark sits around the sphere (which stands in for the "o"). From state 1 on it
+   keeps that look and rises + fades out; the nav logo already carries the name (D-17). */
+[data-state] .wmGroup {
     top: 50%;
     left: 50%;
     transform: translate(-50%, -50%);
@@ -122,99 +124,13 @@
     gap: 0;
 }
 
-[data-state="0"] .wmLetterO {
-    opacity: 0; /* در این حالت کره جای آن را می‌گیرد */
-}
-
-[data-state="1"] .wmGroup {
-    top: 12vh;
-    left: 6vw;
-    transform: translate(0, 0);
-    font-size: clamp(3.5rem, 7vw, 6rem);
-    flex-direction: column; /* دو خطی شدن */
-    align-items: flex-start;
-}
-
-[data-state="1"] .wmColor1 {
-        /* ۱. تعریف گرادیان به عنوان پس‌زمینه */
-    background: linear-gradient(135deg, var(--color-accent-primary, #a78bfa), var(--color-accent-secondary, #ec4899));
-    
-    /* ۲. برش دادن پس‌زمینه به شکل متن */
-    -webkit-background-clip: text;
-    background-clip: text;
-    
-    /* ۳. شفاف کردن رنگ اصلی متن تا گرادیانِ زیر آن دیده شود */
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-}
-
-[data-state="1"] .wmLetterS {
-    /* در جایگاه جدید کلمه دوم است */
-        /* ۱. تعریف گرادیان به عنوان پس‌زمینه */
-    background: var(--color-accent-primary, #a78bfa);
-    
-    /* ۲. برش دادن پس‌زمینه به شکل متن */
-    -webkit-background-clip: text;
-    background-clip: text;
-    
-    /* ۳. شفاف کردن رنگ اصلی متن تا گرادیانِ زیر آن دیده شود */
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    transition: color 0.8s ease, transform 1s cubic-bezier(0.19, 1, 0.22, 1);
-}
-
-[data-state="1"] .wmLetterO {
-    opacity: 1;
-        /* ۱. تعریف گرادیان به عنوان پس‌زمینه */
-    background: linear-gradient(135deg, var(--color-accent-primary, #a78bfa), var(--color-accent-secondary, #ec4899));
-    
-    /* ۲. برش دادن پس‌زمینه به شکل متن */
-    -webkit-background-clip: text;
-    background-clip: text;
-    
-    /* ۳. شفاف کردن رنگ اصلی متن تا گرادیانِ زیر آن دیده شود */
-    -webkit-text-fill-color: transparent;
-    color: transparent;
-    transform: translateX(0);
-}
-
-[data-state="1"] .wmExpand {
-    max-width: 500px; /* فضای کافی برای باز شدن کشویی حروف */
-    opacity: 1;
-}
-
-[data-state="2"] .wmGroup {
-    top: 12vh;
-    left: 6vw;
-    transform: translate(0, 0);
-    font-size: clamp(1.5rem, 4vw, 3rem);
-    opacity: 0.4;
-    flex-direction: column;
-    align-items: flex-start;
-}
-
-[data-state="2"] .wmColor1,
-[data-state="2"] .wmLetterS,
-[data-state="2"] .wmLetterO,
-[data-state="2"] .wmExpand {
-    background:  #ffffff;
-    
-    /* ۲. برش دادن پس‌زمینه به شکل متن */
-    -webkit-background-clip: text;
-    background-clip: text;
-    
-    /* ۳. شفاف کردن رنگ اصلی متن تا گرادیانِ زیر آن دیده شود */
-    -webkit-text-fill-color: transparent;
-    color: transparent;}
-
-[data-state="2"] .wmExpand {
-    max-width: 500px;
-    opacity: 1;
-}
-
-[data-state="3"] .wmGroup {
-    top: -20%;
+[data-state]:not([data-state="0"]) .wmGroup {
+    top: 42%;
     opacity: 0;
+}
+
+[data-state] .wmLetterO {
+    opacity: 0; /* در این حالت کره جای آن را می‌گیرد */
 }
 
 

@@ -33,6 +33,9 @@
     font-family: var(--font-body);
     -webkit-font-smoothing: antialiased;
     box-sizing: border-box;
+    /* The intro columns slide in from ±100px; clip them here so phones don't widen the layout
+       viewport (466px instead of 390px). clip, not hidden: no scroll container, sticky unaffected. */
+    overflow-x: clip;
 }
 
 .root *,

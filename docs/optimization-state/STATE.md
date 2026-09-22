@@ -1,11 +1,20 @@
 # OPTIMIZATION STATE
-Updated: 2026-09-14T05:40:00Z
+Updated: 2026-09-22T19:55:00Z
 Approval Mode: per-task
 Phase: 2 — Section Rebuilds
-Sub-task: 2.1a — Hero server shell, scroll-state controller, semantics (split recorded below)
-In Flight: src/components/Hero/Hero.tsx (→ server shell), HeroController.tsx + HeroCanvas.tsx (new client leaves), heroStates.ts (new), Hero.module.css (state selectors → [data-state]), client-allowlist.json
-Status: done-awaiting-approval
-Waiting on User Approval: yes — V4 parity review of 2.1a (Hero looks and behaves identically; semantics only) + the D-15 question — see Parity notes pending user review and Blockers
+Sub-task: 2.1c — owner-requested fixes: mobile viewport overflow + hero wordmark exit (inserted before 2.1b; 2.1a parity review still open)
+In Flight: src/components/Resume/ResumeDashboard.module.css (.root overflow-x: clip), src/components/Hero/Hero.module.css (wordmark state rules)
+Status: in-progress
+Waiting on User Approval: no
+2.1c (owner request 2026-09-22: "the mobile nav-header goes out of screen and makes every section viewport messed up" + "the big Sina Sotoudeh on hero ... goes top-left seems unnecessary because the header has the same word mark up there"):
+Plan for 2.1c:
+  [x] Probe (HEAD 8c0e8ab build, port 4310, mobile 390×844@3 isMobile): layout viewport 466×1009 at every scroll position, document scrollWidth 466, fixed nav 20→446 (hamburger clipped). The only unclipped offender is ResumeDashboard `.introRight` (framer initial x: 100 → right edge 466). body's existing `overflow-x: hidden` does not stop Chrome's mobile layout-viewport expansion. Live CSS test: `section#cv { overflow-x: clip }` → 390×844, scrollWidth 390, nav 20→370, 0 offenders; `html { overflow-x: clip }` also works but would turn body (overflow-x: hidden) into a scroll container and endanger the Hero's sticky pin → rejected.
+  [x] Before shots `.visual/20260922-194919-2.1c-hero-before/` (top, 1000, 1800, 2500 px ×2 viewports) + `.visual/20260922-194942-2.1c-cv-before/` (#cv element).
+  [x] ResumeDashboard.module.css `.root { overflow-x: clip }` (no scroll container → sticky/ScrollTrigger unaffected; overflow-y stays visible)
+  [x] Hero.module.css: states 1–3 → the wordmark keeps its state-0 look and leaves with a short rise + fade (same 1.2 s transition) instead of docking top-left; the state-1/2 letter-reveal rules become unreachable and are removed; the "o" stays hidden in every state (it only ever showed while docked)
+  [x] Gates: `pnpm build` ✓; `pnpm lint` ✓; `verify-portfolio.mjs --all` → `VERIFY: 8 passed, 1 failed, 17 warning(s)` (FAIL = known ProcessSection.tsx:181 raw img → 2.5). Budget / JS 502.5 KB gz (±0 vs 2.1a) | CSS 18.0 KB gz (−0.1).
+  [x] After: overflow probe → 390×844 at all 8 positions, scrollWidth 390, nav 20→370, 0 offenders. Wordmark probe (both viewports): state 0 opacity 1; states 1–3 opacity 0, same font size, 72 px (desktop) / 68 px (mobile) higher; scrolling back to state 0 restores it. Mobile pin 3376 px (was 4036 at the inflated 1009 px vh). Shots `.visual/20260922-195147-2.1c-hero-after/`, `.visual/20260922-195213-2.1c-cv-after/`: 0 issues; #cv identical at rest; hamburger now fully on screen; the mobile back-to-top shows at the true screen corner (authored `position: fixed`, see D-16).
+  [x] DECISIONS D-16 (overflow fix pulled forward from 2.6) + D-17 (wordmark exit) — owner's own requests; commit (D-9) → LOG → STATE
 2.1 split (recorded 2026-09-14, after reading Hero.tsx (364) + Hero.module.css (530) + globals.css heading/element rules): 2.1a = server shell rendering all static markup + HeroController client leaf (ScrollTrigger → data-state 0..3 on the pin section, CSS keyed off it) + HeroCanvas client leaf holding the engine VERBATIM + heading/landmark semantics — zero visible change intended, proven by DOM/state/screenshot comparison; 2.1b = the canvas hygiene fixes (IntersectionObserver pause, passive listeners, DPR cap 2, reduced-motion static composition + a CSS reduced-motion block, and the mobile particle-count question as D-15). Reason: 2.1a is structural and verifiable to the pixel; 2.1b carries every visible change (sharper retina canvas, reduced-motion behaviour) and its own decision — two focused reviews instead of one entangled one, and each fits one response (the 2.0 response was cut off once by length).
 Plan for 2.1a:
   [x] Sources: phase-plan 2.1 + Phase 2 contract; cwv-invariants "Hero engine hygiene" + F-3; seo-blueprint "Semantic HTML contract"; audit-baseline census row; Hero.tsx; Hero.module.css; globals.css (unlayered element rules after `@import "tailwindcss"`: h1–h4 family display / weight 700 / letter-spacing −0.03em / line-height 1.05, h1 clamp(3rem,8vw,9rem), h2 clamp(2.2rem,5vw,5.5rem), h3 clamp(1.3rem,2.5vw,2.2rem), h4 1rem / 600 / 0.05em / uppercase; `section { position: relative }`; `ul, ol { list-style: none }`; `em` italic gradient); page.tsx (Hero first in <main>); src/lib/motion/gsap.ts
