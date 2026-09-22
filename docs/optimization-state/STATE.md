@@ -1,11 +1,11 @@
 # OPTIMIZATION STATE
-Updated: 2026-09-22T21:45:00Z
+Updated: 2026-09-22T22:15:00Z
 Approval Mode: per-task
 Phase: 2 — Section Rebuilds
 Sub-task: 2.2 — Manifesto: server shell + GSAP scrub (framer useScroll/useTransform port)
 In Flight: src/components/Manifesto/Manifesto.tsx (→ server shell), ManifestoScrub.tsx (new client leaf), Manifesto.module.css (SSR initial state + eyebrow h2 look + reduced motion), client-allowlist.json
-Status: in-progress
-Waiting on User Approval: no
+Status: done-awaiting-approval
+Waiting on User Approval: yes — V4 parity review of 2.2 Manifesto (see Parity notes pending user review)
 Plan for 2.2 (Manifesto):
   [x] Owner 2026-09-22 "approved, continue" after testing production 18c28c2 → 2.1b approved, D-18 stays at MAX_DPR 2, D-15 confirmed.
   [x] Sources: phase-plan Phase 2 contract + 2.2; cwv-invariants GSAP consolidation contract (useScroll+useTransform → ScrollTrigger scrub, same input range → same outputs; reduced motion via gsap.matchMedia, disclosed); seo-blueprint semantic contract; Manifesto.tsx (190) + Manifesto.module.css (150); prerendered HTML (.next/server/app/index.html); framer-motion 12.38.0; globals h1–h4 rules. AGENTS.md gate: no Next.js API touched (server component split only — pattern already read in 2.1a: 01-getting-started/05-server-and-client-components.md "Interleaving").
@@ -25,9 +25,10 @@ Plan for 2.2 (Manifesto):
     - "Nonato" copy stays (owner call, Phase 3).
   [x] Before probe (2.1b build = HEAD source, port 4310): geometry desktop T 3600 / H 1118, mobile T 3376 / H 1237; 7 elements × 18 progress samples (0…1 and back) + first paint; eyebrow SPAN mono 12px / 400 / 3.6px / 19.2px / uppercase / rgb(167,139,250); text "Designisnotdecoration.…"; no heading, no aria-labelledby. Shots `.visual/20260922-2.2-before/{d,m}` (p 0.1/0.3/0.5/0.62/0.8/1; 0 issues).
   [x] Implemented: Manifesto.tsx server shell (framer + directive gone; words carry data-word, last word data-last-word; spaces between word spans; eyebrow → h2#manifesto-title; section aria-labelledby); ManifestoScrub.tsx (section wrapper + useGSAP; gsap.matchMedia no-preference → one scrubbed timeline, start 'top 80%', end 'bottom top', scrub: true; word i at (i+1)/n·0.5 for 0.1; last word reveal at 0.55 for 0.1, scale 1→25 at 0.67 for 0.33; all ease none); Manifesto.module.css (first-paint state on .word/.inevitable, eyebrow weight 400 + line-height 1.6, reduced-motion block); client-allowlist Manifesto.tsx → ManifestoScrub.tsx.
-  [x] Gates: `pnpm build` ✓; `pnpm lint` ✓; `verify-portfolio.mjs --all` → `VERIFY: 8 passed, 1 failed, 17 warning(s)` (known ProcessSection.tsx:181 img → 2.5); client census 14, all allowlisted. Budget / JS 502.2 KB gz (−0.6) | CSS 18.2 KB gz | HTML 13.5 KB gz (+0.5: spaces, no inline styles… net).
+  [x] Gates: `pnpm build` ✓; `pnpm lint` ✓; `verify-portfolio.mjs --all` → `VERIFY: 8 passed, 1 failed, 17 warning(s)` (known ProcessSection.tsx:181 img → 2.5); client census 14, all allowlisted. Budget / JS 502.2 KB gz (−0.6) | CSS 18.2 KB gz | HTML 13.5 KB gz (+0.5: the Manifesto markup now also rides in the RSC payload, as the Hero did in 2.1a).
   [x] After probe: 0 differences beyond tolerance (opacity 0.01 / blur 0.1 px / scale 0.01 / y 0.3 px) across all 18 samples × 7 elements × 2 viewports; first paint and geometry identical; eyebrow computed style + rect identical; paragraph rects identical. Only intended diffs: H2 "Our Manifesto", aria-labelledby, readable text. No-JS first paint = framer SSR (0.1 / blur 12 / translateY 30). Reduced motion: words + last word opacity 1, no filter/transform, marquee animation none. Shots `.visual/20260922-2.2-after/{d,m}`, `-2.2-after-rm/d`, pair sheets `.visual/20260922-2.2-pairs/{desktop,mobile}.png` (read: identical; marquee phase is time-based).
-  [ ] Commit `refactor(rsc)+perf(motion): 2.2 Manifesto` (D-9) → LOG → STATE → ⛔ owner parity review
+  [x] Commit d13d43e `refactor(rsc)+perf(motion): 2.2 Manifesto` (D-9) → LOG → STATE
+  [ ] ⛔ owner parity review → then 2.3 WorkMinimal
 Plan for 2.1b:
   [x] Owner 2026-09-22 "approved, continue" after testing production (fdb7c39) → 2.1a + 2.1c (D-16, D-17) approved. D-15 not answered explicitly → the recommended default applies (all 250 particles kept = no visible change); 2.1b measures the cost and D-15 records the result. Back-to-top: no change requested → stays as authored.
   [x] Sources: phase-plan 2.1 + Phase 2 contract (f reduced motion); cwv-invariants "Hero engine hygiene" 1–5; HeroCanvas.tsx, heroStates.ts, HeroController.tsx, Hero.module.css; existing reduced-motion rules (globals.css, Footer.module.css, CustomCursor.tsx live matchMedia pattern). AGENTS.md gate: 2.1b touches no Next.js API (DOM/canvas/CSS only) → no new docs needed.
@@ -205,7 +206,7 @@ Open intake fields: INTAKE-2, 3, 4, 6, 7 unresolved (register in .claude/skills/
   RESOLVED 2026-09-13 by owner:
     INTAKE-1 production domain = sinasotoudeh.ir → canonical origin https://sinasotoudeh.ir. Wiring is the blueprint's env var, no code edit: owner sets `NEXT_PUBLIC_SITE_URL=https://sinasotoudeh.ir` on Vercel (Production; Preview too, so previews also point canonicals at production). Until set, src/lib/site.ts falls back to `https://${VERCEL_PROJECT_PRODUCTION_URL}`. Apex vs www: owner gave the apex; confirm the Vercel domain redirects www → apex (or the reverse) before Phase 3 canonicals ship.
     INTAKE-5 sameAs = https://www.linkedin.com/in/sinasotoudeh (owner) + https://github.com/sinasotoudeh (verified from git remote) → Person node in 3.2. The footer's LinkedIn icon still points at the bare linkedin.com home page — visible link change stays with the Phase 3 copy decisions (Blockers).
-Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 502.8 KB gz (verify-portfolio.mjs budget after the 2.1b build)
+Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 502.2 KB gz (verify-portfolio.mjs budget after the 2.2 build)
   2.1a detail: /  JS 11 files: 502.5 KB gz / 424.3 KB br / 1755.3 KB raw (−0.6 KB gz: hero markup left the client bundle) | CSS 2 files: 18.1 KB gz | HTML 13.0 KB gz (+0.9)
   2.0 detail: /  JS 11 files: 503.1 KB gz / 424.7 KB br / 1758.5 KB raw (+0.8 KB gz vs 1.3b: shared ESM ScrollTrigger + @gsap/react now bundled; chunks re-split — 307.0 / 62.5 / 43.3 KB gz largest) | CSS 2 files: 18.1 KB gz | HTML 12.1 KB gz
   1.3b detail: /  JS 10 files: 502.3 KB gz / 423.0 KB br / 1757.0 KB raw (+0.2 KB gz: cursor guard/settle logic, Lenis loop) | CSS 2 files: 18.1 KB gz | HTML 12.0 KB gz (real title/description)
@@ -228,8 +229,8 @@ Docs read this run (AGENTS.md gate) — Phase 0 session; every later session re-
   1.3b session (2026-09-13): re-read 01-getting-started/14-metadata-and-og-images.md; read 03-api-reference/04-functions/generate-metadata.md (title, description, metadataBase, URL composition) — Not yet read now: 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
   2.0 session (2026-09-13): re-read 01-getting-started/05-server-and-client-components.md "Context providers"; non-Next sources: @gsap/react 2.1.2 src/types, gsap 3.14.2 exports + gsap-core ticker + ScrollTrigger.update, lenis 1.3.21 README + lenis.mjs + lenis-react.mjs
   Not yet read (as of Phase 0; see per-session lines below): 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
-Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 (owner-approved, italic dropped); 1.2 (owner-approved); 1.3a (owner-approved); 1.3b (owner-approved, D-13 approved); ⛔ Phase 1 gate (owner-approved 2026-09-13); 2.0 (owner-approved); 2.1a (owner-approved 2026-09-22); 2.1c (owner-approved 2026-09-22, D-16/D-17); 2.1b (owner-approved 2026-09-22, D-15/D-18)
-Next Immediate Action: owner V4 of 2.1b + the D-18 answer (if 1.5 or 1: change MAX_DPR in src/components/Hero/HeroCanvas.tsx, rebuild, re-run the scratch perf probe, amend D-18). On approval: record it, then 2.2 per phase-plan (read its section + the Phase 2 contract first; motion + interaction inventory before editing).
+Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 (owner-approved, italic dropped); 1.2 (owner-approved); 1.3a (owner-approved); 1.3b (owner-approved, D-13 approved); ⛔ Phase 1 gate (owner-approved 2026-09-13); 2.0 (owner-approved); 2.1a (owner-approved 2026-09-22); 2.1c (owner-approved 2026-09-22, D-16/D-17); 2.1b (owner-approved 2026-09-22, D-15/D-18); 2.2 (committed d13d43e — owner review pending)
+Next Immediate Action: owner V4 of 2.2 Manifesto. On approval: record it, then 2.3 WorkMinimal per phase-plan (read WorkMinimal.tsx + .module.css fully; motion inventory of useInView reveals + AnimatePresence swaps and interaction inventory into STATE before editing; next/image sizes from the CSS; before/after probe + shots incl. the mobile tap-to-open sheet).
 Blockers / Open Questions:
   - RESOLVED 2026-09-22 → D-15 (keep 250; measured in 2.1b) — (2.1a → 2.1b, owner call — D-15) cwv-invariants "Hero engine hygiene" item 4 asks for fewer particles on phones (≤ 768 px). That is visible (a sparser sphere/field), so it conflicts with parity. Recommendation: keep all 250 particles and take the CPU win from the parity-neutral fixes (pause off-screen, DPR cap, reduced-motion static), measuring the per-frame cost on a 4× CPU-throttled phone profile in 2.1b; only if that cost is material, propose a count with before/after screenshots.
   - (2.1a, Phase 3 copy) Hero project list copy looks like template placeholders ("Nexus Identity"… / "Branding"…).
@@ -265,4 +266,4 @@ Continuity notes:
   - .gitignore ignores `.env*` — Phase 5.1's `.env.example` needs a `!.env.example` negation.
   - Machine: Playwright 1.63.0 tools at ~/.local/share/portfolio-visual-tools, Chromium 153 system deps installed (D-10). Other servers run on this box (owner's next-servers on :3000 and :3001): stop only your own PIDs. This run used :4310.
   - `pnpm build` needs network for next/font/google (fonts are downloaded at build time); Vercel builds have it.
-Last Commit: 12b1c99 perf(motion): 2.1b Hero canvas hygiene and reduced motion (+ the log-hash commit after it)
+Last Commit: d13d43e refactor(rsc)+perf(motion): 2.2 Manifesto (+ the log-hash commit after it)
