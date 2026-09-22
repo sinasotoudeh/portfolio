@@ -232,7 +232,7 @@ Audit delta (final, Phase 0 — vs references/audit-baseline.md @ 8828152):
   - OBSERVED: mobile 390×844 at scrollY 844 — hero wordmark "Sina Sotoudeh" overlaps the BUILD burst card. Still present after 1.1, but 1.1 can't decide it: the wordmark uses `--font-display` (not Inter), which renders as DejaVu Sans Bold on this box — much wider than the Arial/Helvetica real phones use. Needs the owner's eyes on a real phone; belongs to 2.1 Hero if real.
   - TOOLING: verify-portfolio.mjs `deps` check was blind (scanned package.json) → fixed (D-8).
 Continuity notes:
-  - Remote: pushed by the run at the owner's request 2026-09-22 — `origin/main` == local `main` at fdb7c39 (fast-forward 8c0e8ab..fdb7c39) for the owner's production test of 2.1c. Earlier: `origin/main` == local `main` at 110d7f0 when 1.1 started — the owner pushed the Phase 0 commits after the gate (the run itself never pushes). Everything from 1.1 on is local-only until the owner pushes.
+  - Remote: pushed by the run at the owner's request 2026-09-22 — fdb7c39 (2.1c test), then 18c28c2 (fast-forward fdb7c39..18c28c2, 2.1b phone test incl. D-18). Later docs-only commits stay local until the next requested push. Earlier: `origin/main` == local `main` at 110d7f0 when 1.1 started — the owner pushed the Phase 0 commits after the gate (the run itself never pushes). Everything from 1.1 on is local-only until the owner pushes.
   - Commits 3632d32…dfcfa7a (0.1–0.2) carry Claude trailers from before D-9; left as-is (no history rewrite unless the owner asks).
   - .claude/settings.local.json is per-machine — deliberately uncommitted. `.visual/` is gitignored.
   - .gitignore ignores `.env*` — Phase 5.1's `.env.example` needs a `!.env.example` negation.
