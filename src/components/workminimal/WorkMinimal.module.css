@@ -2,6 +2,8 @@
 .scrollContainer {
     position: relative;
     width: 100%;
+    /* Desktop scroll-through: one viewport per project plus 0.8 (--project-count set by WorkMinimal) */
+    height: calc((var(--project-count) + 0.8) * 100vh);
 }
 
 .desktopShowcase {
@@ -277,6 +279,7 @@
 
 /* ─── MOBILE VIEW ─── */
 .mobileShowcase {
+    position: relative;
     width: 100%;
     min-height: 100vh;
     background: #050505;
@@ -490,4 +493,24 @@
 .closeBtnMobile:hover {
     background: rgba(255, 255, 255, 0.2);
     transform: scale(1.1);
+}
+
+/* ─── BREAKPOINT SPLIT ───
+   Both layouts are in the HTML; this shows one. Same query as WORK_MOBILE_QUERY (workTheme.ts). */
+.mobileShowcase {
+    display: none;
+}
+
+@media (max-width: 1024px) {
+    .scrollContainer {
+        height: auto;
+    }
+
+    .desktopShowcase {
+        display: none;
+    }
+
+    .mobileShowcase {
+        display: flex;
+    }
 }

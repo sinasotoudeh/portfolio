@@ -167,3 +167,10 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 5. `src/data/capabilities.ts`: the template's Windows path comment is removed.
 **Not changed (still template content, owner's call by the Phase 3 copy sign-off):** "Our Manifesto" and "We craft …" voice, marquee claims (WORLD CLASS / EST.2019 / AWARD WINNING …), footer Services/Company links to non-existent routes, legal links, nav "▶ Reel" / "Start Project" buttons, hero project list names.
 **Approved by user:** yes — the owner's own request, 2026-09-23.
+
+## D-20 — Selected Works title clicks scroll through Lenis (extends D-14)
+
+**Context:** In 2.3a's before probe, the desktop Selected Works title click was tested. `handleProjectClick` → `window.scrollTo({ behavior: 'smooth' })` has the same Lenis conflict D-14 fixed for the nav: from FoladMarket, clicking AutoDM stopped at y 5168 instead of 6968. The click still set the highlight to AutoDM while the page showed FoladMarket's slot. The 1 s scroll-update pause then ended with no further scroll event, so the highlight and the content stayed out of step.
+**Decision:** `WorkDesktop` calls `lenis.scrollTo(target)` on the root Lenis instance. That is 1.5 s with Lenis' easing, the same motion as the D-14 nav links. Scroll-driven index updates stay paused until Lenis' `onComplete`, instead of a fixed 1 s, so the highlight doesn't flicker through the projects passed on the way. The native smooth scroll + 1 s pause remains only as the fallback before Lenis exists.
+**Result:** AutoDM from FoladMarket lands at 6968 (target 6968). Highlight, background, image and border colour all match AutoDM.
+**Approved by user:** pending the 2.3a parity review (same class of fix as the approved D-14).
