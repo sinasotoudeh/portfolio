@@ -1,11 +1,11 @@
 # OPTIMIZATION STATE
-Updated: 2026-09-23T07:10:00Z
+Updated: 2026-09-23T08:00:00Z
 Approval Mode: per-task
 Phase: 2 — Section Rebuilds
 Sub-task: 2.3a — WorkMinimal: server shell, CSS breakpoint split, semantics, image loading (motion moves verbatim; GSAP port = 2.3b)
 In Flight: src/components/workminimal/WorkMinimal.tsx (→ server shell), WorkDesktop.tsx + WorkMobile.tsx (new client leaves, framer verbatim), WorkMinimal.module.css (breakpoint display/height), client-allowlist.json
-Status: in-progress
-Waiting on User Approval: no
+Status: done-awaiting-approval
+Waiting on User Approval: yes — V4 parity review of 2.3a + D-20 + the keyboard-access question (see Parity notes pending user review)
 2.3 split (recorded 2026-09-23 after reading WorkMinimal.tsx (409) + .module.css (492) + workminimal-projects.ts (3 projects)): 2.3a = server shell with both layouts in the HTML and a CSS breakpoint instead of the JS `isMobile` swap, heading/semantic fixes, next/image loading props — framer-motion moves verbatim into the two client leaves; 2.3b = port the five framer animations + the spring to GSAP. Same reasoning as 2.1a/2.1b: structure verifiable to the pixel, motion reviewed on its own.
 Plan for 2.3a:
   [x] Owner 2026-09-23 "approved, continue" after testing production 106887a → 2.2 Manifesto + 2.2b (D-19) approved.
@@ -37,7 +37,8 @@ Plan for 2.3a:
   [x] Implemented: WorkMinimal.tsx server shell (<section id="work" aria-labelledby="work-title" style --project-count>); WorkDesktop.tsx (desktop branch + AnnotationPoint, framer verbatim; container = showcase.parentElement; scroll handler stops under WORK_MOBILE_QUERY; h1→h3, h5→p, h2#work-title; `priority` removed ×2; click → lenis.scrollTo with onComplete release, D-20); WorkMobile.tsx (mobile branch, framer verbatim; matchMedia-driven body lock; h1→h3, modal h2→h3, close aria-label); workTheme.ts (PROJECT_COLORS, projectColor, WORK_MOBILE_QUERY); CSS: container height calc((--project-count + 0.8) × 100vh), ≤1024px height auto + desktop hidden + mobile flex, mobile hidden above; .mobileShowcase position relative; allowlist WorkMinimal.tsx → WorkDesktop.tsx + WorkMobile.tsx.
   [x] Gates: `pnpm build` ✓; `pnpm lint` ✓; `tsc --noEmit` ✓; `verify-portfolio.mjs --all` → `VERIFY: 8 passed, 1 failed, 17 warning(s)` (known ProcessSection.tsx:181 img); client census 15, all allowlisted. Budget / JS 502.1 KB gz (−0.1) | CSS 18.2 KB gz | HTML 13.2 KB gz.
   [x] After probe diff = intended only: tags H1→H3 / H5→P / modal H2→H3 with identical computed type; page h1s → Sina Sotoudeh + All About Me! (Resume's, 2.6); aria-labelledby work-title; section tag; click lands 6968 = target; head preloads none, images loading=lazy (not fetched at load); close button labelled; no-JS mobile shows the mobile layout (H 844). Geometry, page heights, active/hover/border states, modal flow identical. Shots `.visual/20260923-2.3a-after/{d,m}` + pair sheets `.visual/20260923-2.3a-pairs/{desktop,mobile}.png` (read: identical).
-  [ ] Commit `refactor(rsc): 2.3a WorkMinimal server shell and breakpoint split` (D-9) → LOG → STATE → ⛔ owner parity review
+  [x] Commit 759e43e `refactor(rsc): 2.3a WorkMinimal server shell and breakpoint split` (D-9) → LOG → STATE
+  [ ] ⛔ owner parity review (+ D-20, keyboard question) → then 2.3b motion port
 Plan for 2.2b (owner request 2026-09-23: "change every nonato mark to personal context (Sina Sotoude /sinasotoudeh for socials like linkedin,github and sina.sotoude on instagram) and push"):
   [x] Census: Manifesto.tsx:20 "At Nonato," + :33 marquee "NONATO"; Footer.tsx logo spans N·O·NATO (missed by the text grep — split letters), :119 "© … Nonato."; capabilities.ts:1 template Windows path comment. Socials: footer Twitter/LinkedIn/GitHub/Dribbble → bare home pages; mobile menu Instagram/Twitter/LinkedIn → href="#".
   Design (visible copy — owner's own request, D-19):
@@ -259,7 +260,7 @@ Open intake fields: INTAKE-2, 3, 4, 6, 7 unresolved (register in .claude/skills/
     INTAKE-5 (2026-09-23, D-19): sameAs profiles = https://www.linkedin.com/in/sinasotoudeh, https://github.com/sinasotoudeh, https://www.instagram.com/sina.sotoude/ (no X/Twitter).
     INTAKE-1 production domain = sinasotoudeh.ir → canonical origin https://sinasotoudeh.ir. Wiring is the blueprint's env var, no code edit: owner sets `NEXT_PUBLIC_SITE_URL=https://sinasotoudeh.ir` on Vercel (Production; Preview too, so previews also point canonicals at production). Until set, src/lib/site.ts falls back to `https://${VERCEL_PROJECT_PRODUCTION_URL}`. Apex vs www: owner gave the apex; confirm the Vercel domain redirects www → apex (or the reverse) before Phase 3 canonicals ship.
     INTAKE-5 sameAs = https://www.linkedin.com/in/sinasotoudeh (owner) + https://github.com/sinasotoudeh (verified from git remote) → Person node in 3.2. The footer's LinkedIn icon still points at the bare linkedin.com home page — visible link change stays with the Phase 3 copy decisions (Blockers).
-Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 502.2 KB gz (verify-portfolio.mjs budget after the 2.2 build)
+Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 502.1 KB gz (verify-portfolio.mjs budget after the 2.3a build)
   2.1a detail: /  JS 11 files: 502.5 KB gz / 424.3 KB br / 1755.3 KB raw (−0.6 KB gz: hero markup left the client bundle) | CSS 2 files: 18.1 KB gz | HTML 13.0 KB gz (+0.9)
   2.0 detail: /  JS 11 files: 503.1 KB gz / 424.7 KB br / 1758.5 KB raw (+0.8 KB gz vs 1.3b: shared ESM ScrollTrigger + @gsap/react now bundled; chunks re-split — 307.0 / 62.5 / 43.3 KB gz largest) | CSS 2 files: 18.1 KB gz | HTML 12.1 KB gz
   1.3b detail: /  JS 10 files: 502.3 KB gz / 423.0 KB br / 1757.0 KB raw (+0.2 KB gz: cursor guard/settle logic, Lenis loop) | CSS 2 files: 18.1 KB gz | HTML 12.0 KB gz (real title/description)
@@ -282,8 +283,8 @@ Docs read this run (AGENTS.md gate) — Phase 0 session; every later session re-
   1.3b session (2026-09-13): re-read 01-getting-started/14-metadata-and-og-images.md; read 03-api-reference/04-functions/generate-metadata.md (title, description, metadataBase, URL composition) — Not yet read now: 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
   2.0 session (2026-09-13): re-read 01-getting-started/05-server-and-client-components.md "Context providers"; non-Next sources: @gsap/react 2.1.2 src/types, gsap 3.14.2 exports + gsap-core ticker + ScrollTrigger.update, lenis 1.3.21 README + lenis.mjs + lenis-react.mjs
   Not yet read (as of Phase 0; see per-session lines below): 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
-Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 (owner-approved, italic dropped); 1.2 (owner-approved); 1.3a (owner-approved); 1.3b (owner-approved, D-13 approved); ⛔ Phase 1 gate (owner-approved 2026-09-13); 2.0 (owner-approved); 2.1a (owner-approved 2026-09-22); 2.1c (owner-approved 2026-09-22, D-16/D-17); 2.1b (owner-approved 2026-09-22, D-15/D-18); 2.2 (owner-approved 2026-09-23); 2.2b (owner-requested copy, D-19, approved on production)
-Next Immediate Action: owner verdict on 2.2 Manifesto + 2.2b (pushed to production). On approval: record it, then 2.3 WorkMinimal per phase-plan (read WorkMinimal.tsx + .module.css fully; motion inventory of useInView reveals + AnimatePresence swaps and interaction inventory into STATE before editing; next/image sizes from the CSS; before/after probe + shots incl. the mobile tap-to-open sheet).
+Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 (owner-approved, italic dropped); 1.2 (owner-approved); 1.3a (owner-approved); 1.3b (owner-approved, D-13 approved); ⛔ Phase 1 gate (owner-approved 2026-09-13); 2.0 (owner-approved); 2.1a (owner-approved 2026-09-22); 2.1c (owner-approved 2026-09-22, D-16/D-17); 2.1b (owner-approved 2026-09-22, D-15/D-18); 2.2 (owner-approved 2026-09-23); 2.2b (owner-requested copy, D-19, approved on production); 2.3a (committed 759e43e — owner review pending)
+Next Immediate Action: owner V4 of 2.3a (+ D-20 approval, + keyboard-access answer). On approval: record it, then 2.3b — port F1–F6 (see 2.3a motion inventory) to GSAP in WorkDesktop.tsx / WorkMobile.tsx: first confirm framer 12.38 defaults for duration-only transitions (node_modules/framer-motion) and the spring (bounce 0.5) settle curve by measurement, then AnimatePresence → GSAP exit-then-swap, useInView → ScrollTrigger (toggleActions play/reverse at 30 %), reduced motion; probe transition timings before/after.
 Blockers / Open Questions:
   - RESOLVED 2026-09-22 → D-15 (keep 250; measured in 2.1b) — (2.1a → 2.1b, owner call — D-15) cwv-invariants "Hero engine hygiene" item 4 asks for fewer particles on phones (≤ 768 px). That is visible (a sparser sphere/field), so it conflicts with parity. Recommendation: keep all 250 particles and take the CPU win from the parity-neutral fixes (pause off-screen, DPR cap, reduced-motion static), measuring the per-frame cost on a 4× CPU-throttled phone profile in 2.1b; only if that cost is material, propose a count with before/after screenshots.
   - (2.1a, Phase 3 copy) Hero project list copy looks like template placeholders ("Nexus Identity"… / "Branding"…).
@@ -319,4 +320,4 @@ Continuity notes:
   - .gitignore ignores `.env*` — Phase 5.1's `.env.example` needs a `!.env.example` negation.
   - Machine: Playwright 1.63.0 tools at ~/.local/share/portfolio-visual-tools, Chromium 153 system deps installed (D-10). Other servers run on this box (owner's next-servers on :3000 and :3001): stop only your own PIDs. This run used :4310.
   - `pnpm build` needs network for next/font/google (fonts are downloaded at build time); Vercel builds have it.
-Last Commit: 71f768e feat(copy): 2.2b replace template brand with Sina Sotoudeh, real social links (+ the log-hash commit after it)
+Last Commit: 759e43e refactor(rsc): 2.3a WorkMinimal server shell and breakpoint split (+ the log-hash commit after it)
