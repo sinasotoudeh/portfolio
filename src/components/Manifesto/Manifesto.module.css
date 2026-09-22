@@ -35,6 +35,9 @@
 }
 
 .eyebrowText {
+    /* The section's h2; restates the span look it had (global h2 rules set weight/line-height) */
+    font-weight: 400;
+    line-height: 1.6;
     font-family: var(--font-mono);
     font-size: 0.75rem;
     letter-spacing: 0.3em;
@@ -65,6 +68,10 @@
 
 .word {
     display: inline-block;
+    /* First paint (dim, blurred, lowered); ManifestoScrub scrubs from here */
+    opacity: 0.1;
+    filter: blur(12px);
+    transform: translateY(30px);
     will-change: opacity, transform, filter;
     transform-origin: center center;
 }
@@ -79,6 +86,9 @@
 /* استایل اختصاصی برای کلمه آخر که قراره کل صفحه رو بگیره */
 .inevitable {
     display: inline-block;
+    opacity: 0.1;
+    filter: blur(12px);
+    transform: translateY(30px);
     background: linear-gradient(135deg, var(--color-accent-rose), var(--color-accent-primary));
     -webkit-background-clip: text;
     -webkit-text-fill-color: transparent;
@@ -147,5 +157,19 @@
 
     100% {
         transform: translateX(-50%);
+    }
+}
+
+/* Reduced motion: the text stands still and fully visible (no scrub runs), the marquee stops */
+@media (prefers-reduced-motion: reduce) {
+    .word,
+    .inevitable {
+        opacity: 1;
+        filter: none;
+        transform: none;
+    }
+
+    .marqueeTrack {
+        animation: none;
     }
 }

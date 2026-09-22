@@ -1,11 +1,33 @@
 # OPTIMIZATION STATE
-Updated: 2026-09-22T21:20:00Z
+Updated: 2026-09-22T21:45:00Z
 Approval Mode: per-task
 Phase: 2 — Section Rebuilds
-Sub-task: 2.1b — Hero canvas hygiene + reduced motion
-In Flight: src/components/Hero/HeroCanvas.tsx (IO pause, passive listeners, DPR cap 2, reduced-motion static frames), src/components/Hero/Hero.module.css (reduced-motion block)
-Status: done-awaiting-approval
-Waiting on User Approval: yes — V4 parity review of 2.1b (see Parity notes pending user review) + D-18 pixel-ratio choice (2 / 1.5 / 1) + D-15 confirmation
+Sub-task: 2.2 — Manifesto: server shell + GSAP scrub (framer useScroll/useTransform port)
+In Flight: src/components/Manifesto/Manifesto.tsx (→ server shell), ManifestoScrub.tsx (new client leaf), Manifesto.module.css (SSR initial state + eyebrow h2 look + reduced motion), client-allowlist.json
+Status: in-progress
+Waiting on User Approval: no
+Plan for 2.2 (Manifesto):
+  [x] Owner 2026-09-22 "approved, continue" after testing production 18c28c2 → 2.1b approved, D-18 stays at MAX_DPR 2, D-15 confirmed.
+  [x] Sources: phase-plan Phase 2 contract + 2.2; cwv-invariants GSAP consolidation contract (useScroll+useTransform → ScrollTrigger scrub, same input range → same outputs; reduced motion via gsap.matchMedia, disclosed); seo-blueprint semantic contract; Manifesto.tsx (190) + Manifesto.module.css (150); prerendered HTML (.next/server/app/index.html); framer-motion 12.38.0; globals h1–h4 rules. AGENTS.md gate: no Next.js API touched (server component split only — pattern already read in 2.1a: 01-getting-started/05-server-and-client-components.md "Interleaving").
+  Motion inventory — Manifesto:
+    M1 scroll source: useScroll({ target: section, offset: ['start 80%', 'end start'] }) → progress 0 when the section top is at 80 % of the viewport, 1 when its bottom reaches the viewport top; linear, clamped.
+    M2 26 words (13 + 13), word k = 1..26: range [k/26·0.5, k/26·0.5 + 0.1]; opacity 0.1→1, y 30→0 px, filter blur(12px)→blur(0px); linear, clamped (useTransform defaults).
+    M3 last word "inevitable.": opacity 0.1→1, blur 12→0, y 30→0 over [0.55, 0.65]; scale 1→25 over [0.67, 1]; transform-origin center 70 %; will-change transform/opacity/filter/text-shadow (CSS).
+    M4 marquee: CSS keyframes translateX 0→−50 %, 50 s linear infinite, paused on hover (stays CSS).
+    M5 SSR/first paint: every word + last word inline `opacity:0.1; filter:blur(12px); transform:translateY(30px)`.
+  Interaction inventory: marquee hover pause (CSS); no other handlers.
+  Semantics today: no heading (eyebrow "Our Manifesto" is a span); word spans adjacent with no whitespace → text reads "Designisnotdecoration."; marquee aria-hidden.
+  Design:
+    - Manifesto.tsx → server component (all markup). ManifestoScrub.tsx (client leaf) renders the <section> with ref + server children (HeroController pattern); useGSAP: one timeline (duration 1) with scrollTrigger { trigger: section, start: 'top 80%', end: 'bottom top', scrub: true }; per word fromTo at position k/26·0.5, duration 0.1, ease 'none'; last word fromTo at 0.55 (0.1) + scale tween at 0.67 (0.33). Words found by DOM order (data-word / data-last-word attributes).
+    - CSS: .word + .inevitable carry the SSR initial state (opacity 0.1, blur 12px, translateY 30px) so first paint is unchanged without inline styles.
+    - Reduced motion (gsap.matchMedia + CSS): words and last word static and fully visible (no blur/rise/scale-up), marquee stopped. New behaviour, disclosed.
+    - Semantics: section aria-labelledby="manifesto-title"; eyebrow text span → <h2 id="manifesto-title"> restating its computed look (weight 400, line-height 1.6 — verified by probe); {' '} between word spans (ignored inside the flex paragraph) → text "Design is not decoration. …".
+    - "Nonato" copy stays (owner call, Phase 3).
+  [x] Before probe (2.1b build = HEAD source, port 4310): geometry desktop T 3600 / H 1118, mobile T 3376 / H 1237; 7 elements × 18 progress samples (0…1 and back) + first paint; eyebrow SPAN mono 12px / 400 / 3.6px / 19.2px / uppercase / rgb(167,139,250); text "Designisnotdecoration.…"; no heading, no aria-labelledby. Shots `.visual/20260922-2.2-before/{d,m}` (p 0.1/0.3/0.5/0.62/0.8/1; 0 issues).
+  [x] Implemented: Manifesto.tsx server shell (framer + directive gone; words carry data-word, last word data-last-word; spaces between word spans; eyebrow → h2#manifesto-title; section aria-labelledby); ManifestoScrub.tsx (section wrapper + useGSAP; gsap.matchMedia no-preference → one scrubbed timeline, start 'top 80%', end 'bottom top', scrub: true; word i at (i+1)/n·0.5 for 0.1; last word reveal at 0.55 for 0.1, scale 1→25 at 0.67 for 0.33; all ease none); Manifesto.module.css (first-paint state on .word/.inevitable, eyebrow weight 400 + line-height 1.6, reduced-motion block); client-allowlist Manifesto.tsx → ManifestoScrub.tsx.
+  [x] Gates: `pnpm build` ✓; `pnpm lint` ✓; `verify-portfolio.mjs --all` → `VERIFY: 8 passed, 1 failed, 17 warning(s)` (known ProcessSection.tsx:181 img → 2.5); client census 14, all allowlisted. Budget / JS 502.2 KB gz (−0.6) | CSS 18.2 KB gz | HTML 13.5 KB gz (+0.5: spaces, no inline styles… net).
+  [x] After probe: 0 differences beyond tolerance (opacity 0.01 / blur 0.1 px / scale 0.01 / y 0.3 px) across all 18 samples × 7 elements × 2 viewports; first paint and geometry identical; eyebrow computed style + rect identical; paragraph rects identical. Only intended diffs: H2 "Our Manifesto", aria-labelledby, readable text. No-JS first paint = framer SSR (0.1 / blur 12 / translateY 30). Reduced motion: words + last word opacity 1, no filter/transform, marquee animation none. Shots `.visual/20260922-2.2-after/{d,m}`, `-2.2-after-rm/d`, pair sheets `.visual/20260922-2.2-pairs/{desktop,mobile}.png` (read: identical; marquee phase is time-based).
+  [ ] Commit `refactor(rsc)+perf(motion): 2.2 Manifesto` (D-9) → LOG → STATE → ⛔ owner parity review
 Plan for 2.1b:
   [x] Owner 2026-09-22 "approved, continue" after testing production (fdb7c39) → 2.1a + 2.1c (D-16, D-17) approved. D-15 not answered explicitly → the recommended default applies (all 250 particles kept = no visible change); 2.1b measures the cost and D-15 records the result. Back-to-top: no change requested → stays as authored.
   [x] Sources: phase-plan 2.1 + Phase 2 contract (f reduced motion); cwv-invariants "Hero engine hygiene" 1–5; HeroCanvas.tsx, heroStates.ts, HeroController.tsx, Hero.module.css; existing reduced-motion rules (globals.css, Footer.module.css, CustomCursor.tsx live matchMedia pattern). AGENTS.md gate: 2.1b touches no Next.js API (DOM/canvas/CSS only) → no new docs needed.
@@ -23,7 +45,7 @@ Plan for 2.1b:
   [x] Gates: `pnpm build` ✓; `pnpm lint` ✓; `verify-portfolio.mjs --all` → `VERIFY: 8 passed, 1 failed, 17 warning(s)` (known ProcessSection.tsx:181 img → 2.5). Budget / JS 502.8 KB gz (+0.3) | CSS 18.1 KB gz.
   [x] After: canvas 0/s far below the hero (desktop + mobile); script far below 4× CPU desktop 93 → 55, mobile 102 → 60 ms/s; loop resumes on return (60/s at the pin end + 100 px and back at top); hero on screen unchanged at 1× (60/s, 0.5–0.6 ms). Mobile buffer 780×1688: 4× CPU frame rate 60 (1× buffer) vs 44–48 fps (2× buffer) on this SwiftShader box → D-18 (owner call). Reduced motion: 0 loop frames anywhere, 5 draws for 5 state changes. Shots `.visual/20260922-201118-2.1b-after/`, `-201142-2.1b-after-rm/`, pair sheets `.visual/20260922-2.1b-pairs/{desktop,mobile}.png` (read): motion states match before; reduced motion shows still sphere / cube / field frames, static cards, no scroll hint past state 0. D-15 written (keep 250).
   [x] Commit 12b1c99 `perf(motion): 2.1b Hero canvas hygiene and reduced motion` (D-9) → LOG → STATE
-  [ ] ⛔ owner parity review (+ D-18 choice) → then 2.2
+  [x] ⛔ owner parity review — approved 2026-09-22 ("approved, continue", tested on production 18c28c2); D-18 stays 2
 2.1c (owner request 2026-09-22: "the mobile nav-header goes out of screen and makes every section viewport messed up" + "the big Sina Sotoudeh on hero ... goes top-left seems unnecessary because the header has the same word mark up there"):
 Plan for 2.1c:
   [x] Probe (HEAD 8c0e8ab build, port 4310, mobile 390×844@3 isMobile): layout viewport 466×1009 at every scroll position, document scrollWidth 466, fixed nav 20→446 (hamburger clipped). The only unclipped offender is ResumeDashboard `.introRight` (framer initial x: 100 → right edge 466). body's existing `overflow-x: hidden` does not stop Chrome's mobile layout-viewport expansion. Live CSS test: `section#cv { overflow-x: clip }` → 390×844, scrollWidth 390, nav 20→370, 0 offenders; `html { overflow-x: clip }` also works but would turn body (overflow-x: hidden) into a scroll container and endanger the Hero's sticky pin → rejected.
@@ -136,7 +158,12 @@ Plan for 1.3a:
   [ ] Owner parity review (V4) → record approval, then 1.3b
 1.2 — closed 2026-09-13 (commit 13a65c1, owner-approved): next.config images → optimizer on, formats AVIF+WebP; Works next/image PNGs now 22–56 KB AVIF. Details: LOG.md + commit body.
 1.1 — closed 2026-09-13 (commits 9d3e03a + 2619c24): next/font Inter (normal only, owner dropped italic) + JetBrains Mono feeding --font-body/--font-mono; Resume/Contact family hardcodes → tokens; Contact accent serif stack. Details: LOG.md + commit bodies; parity notes approved (see approvals).
-Parity notes pending user review (2.1b):
+Parity notes pending user review (2.2 Manifesto):
+  - Nothing should look or move differently: each word still clears from dim + blurred + lowered as you scroll, at the same scroll positions, and "inevitable." still grows to 25× on the way out. Measured identical to the old framer-motion version at 18 scroll points on desktop and phone.
+  - Not visible: the text is now plain server HTML read as "Design is not decoration. …" (was "Designisnotdecoration." to screen readers and search engines); "Our Manifesto" is the section's h2 with the exact same look.
+  - With "reduce motion" on: the manifesto text is shown still and fully visible (no blur, rise or giant zoom) and the marquee strip stands still. New behaviour.
+  - What to look at: scroll slowly from the hero's end through the Manifesto (word-by-word reveal, "inevitable." zoom) and back up; hover the marquee (pauses).
+Parity notes of 2.1b (approved 2026-09-22):
   - Desktop (normal screens): nothing should look or move differently. The particle loop now pauses when the hero is more than 200 px off screen and resumes before it comes back.
   - Phones / retina / scaled screens: particles are drawn at up to 2× resolution, so they look crisper (were upscaled from CSS pixels). Measured cost on this box's software GPU: 60 → 44–48 fps with a 4× slowed CPU; real phone GPUs should do better, but judge smoothness on your phone. D-18: keep 2, or 1.5, or 1 (exactly as before).
   - With "reduce motion" on in the OS: the hero shows a still particle picture per state (sphere → cube → scattered field) instead of the animated morph, the cards don't float, the scroll hint doesn't pulse and hides after the first state, and the layers cross-fade without sliding or rising.
@@ -201,7 +228,7 @@ Docs read this run (AGENTS.md gate) — Phase 0 session; every later session re-
   1.3b session (2026-09-13): re-read 01-getting-started/14-metadata-and-og-images.md; read 03-api-reference/04-functions/generate-metadata.md (title, description, metadataBase, URL composition) — Not yet read now: 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
   2.0 session (2026-09-13): re-read 01-getting-started/05-server-and-client-components.md "Context providers"; non-Next sources: @gsap/react 2.1.2 src/types, gsap 3.14.2 exports + gsap-core ticker + ScrollTrigger.update, lenis 1.3.21 README + lenis.mjs + lenis-react.mjs
   Not yet read (as of Phase 0; see per-session lines below): 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
-Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 (owner-approved, italic dropped); 1.2 (owner-approved); 1.3a (owner-approved); 1.3b (owner-approved, D-13 approved); ⛔ Phase 1 gate (owner-approved 2026-09-13); 2.0 (owner-approved); 2.1a (owner-approved 2026-09-22); 2.1c (owner-approved 2026-09-22, D-16/D-17); 2.1b (committed 12b1c99 — owner review pending)
+Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 (owner-approved, italic dropped); 1.2 (owner-approved); 1.3a (owner-approved); 1.3b (owner-approved, D-13 approved); ⛔ Phase 1 gate (owner-approved 2026-09-13); 2.0 (owner-approved); 2.1a (owner-approved 2026-09-22); 2.1c (owner-approved 2026-09-22, D-16/D-17); 2.1b (owner-approved 2026-09-22, D-15/D-18)
 Next Immediate Action: owner V4 of 2.1b + the D-18 answer (if 1.5 or 1: change MAX_DPR in src/components/Hero/HeroCanvas.tsx, rebuild, re-run the scratch perf probe, amend D-18). On approval: record it, then 2.2 per phase-plan (read its section + the Phase 2 contract first; motion + interaction inventory before editing).
 Blockers / Open Questions:
   - RESOLVED 2026-09-22 → D-15 (keep 250; measured in 2.1b) — (2.1a → 2.1b, owner call — D-15) cwv-invariants "Hero engine hygiene" item 4 asks for fewer particles on phones (≤ 768 px). That is visible (a sparser sphere/field), so it conflicts with parity. Recommendation: keep all 250 particles and take the CPU win from the parity-neutral fixes (pause off-screen, DPR cap, reduced-motion static), measuring the per-frame cost on a 4× CPU-throttled phone profile in 2.1b; only if that cost is material, propose a count with before/after screenshots.

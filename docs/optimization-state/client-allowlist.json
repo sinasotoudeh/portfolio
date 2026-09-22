@@ -3,7 +3,7 @@
   "src/components/Capability/CylinderCard.tsx",
   "src/components/Hero/HeroCanvas.tsx",
   "src/components/Hero/HeroController.tsx",
-  "src/components/Manifesto/Manifesto.tsx",
+  "src/components/Manifesto/ManifestoScrub.tsx",
   "src/components/ProcessSection/ProcessSection.tsx",
   "src/components/Resume/ResumeDashboard.tsx",
   "src/components/contact/Contact.tsx",
