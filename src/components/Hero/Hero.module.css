@@ -459,3 +459,44 @@
     }
 
 }
+/* =========================================
+   Reduced motion — no looping float/pulse; every layer cross-fades on opacity only (no slides,
+   scales, rises or line growth). The canvas draws one still frame per state (HeroCanvas).
+   Selectors match or beat the specificity of the rules they override and come later.
+   ========================================= */
+
+@media (prefers-reduced-motion: reduce) {
+    .wmGroup,
+    .heroTagline,
+    .burstCard,
+    .fluidWorkItem,
+    .fwLine,
+    .heroConnect {
+        transition-property: opacity;
+    }
+
+    .heroScrollHint {
+        animation: none;
+    }
+
+    [data-state]:not([data-state="0"]) .wmGroup {
+        top: 50%;
+    }
+
+    [data-state]:not([data-state="0"]) .heroTagline {
+        transform: none;
+    }
+
+    [data-state] .burstCard {
+        transform: none;
+        animation: none;
+    }
+
+    [data-state] .fluidWorkItem {
+        transform: none;
+    }
+
+    [data-state] .heroConnect {
+        transform: translate(-50%, -50%);
+    }
+}

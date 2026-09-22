@@ -134,10 +134,24 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 **Decision:** `ResumeDashboard.module.css` `.root` gets `overflow-x: clip`. `clip` creates no scroll container, so sticky, ScrollTrigger and Lenis are unaffected, and overflow-y stays visible. `html { overflow-x: clip }` was also tested and fixes the width too. It was rejected because body's `overflow-x: hidden` would stop propagating to the viewport, and body would become a scroll container under the Hero's sticky pin. The 2.6 Resume port keeps this rule.
 **Result:** mobile layout viewport 390×844 at every probed position, scrollWidth 390, nav 20→370, 0 unclipped offenders. The #cv section at rest is identical before and after. Desktop is unchanged (page 21219 px). Mobile emulated page height is 17764 → 17929 px because `vh` now means 844 px.
 **Side effect (disclosed, authored behaviour):** the footer's back-to-top is `position: fixed` bottom-right under 768 px with no scroll condition. It has been that way since the footer was added in d1d072d. It was already visible on a zoomed-out real phone. It now sits at the true screen corner at normal size, including at the top of the page.
-**Approved by user:** requested by the owner 2026-09-22; visual result pending the owner's V4 check.
+**Approved by user:** yes — requested by the owner 2026-09-22; result approved after testing production fdb7c39 ("approved, continue").
 
 ## D-17 — Hero wordmark leaves at state 1 instead of docking top-left
 
 **Context:** The owner said of the Hero: "the big Sina Sotoudeh on hero on the stage it goes top-left seems unnecessary because the header has the same word mark up there". In states 1–2 the wordmark docked at top 12vh / left 6vw, expanded to the full two-line name (state 1) and then shrank to 40 % opacity (state 2). That duplicated the nav logo. On phones it also overlapped the BUILD card (audit observation, Phase 0).
 **Decision:** State 0 is unchanged. From state 1 on, the wordmark keeps its state-0 look (same size, colours, position) and leaves with a short rise (top 50 % → 42 %) and a fade to opacity 0, on the existing 1.2 s cubic-bezier(0.19, 1, 0.22, 1) transition. Scrolling back to state 0 brings it back. The state-1/2 letter-reveal rules became unreachable and were removed. The "o" is now hidden in every state; it only ever showed while docked. The DOM is unchanged, so the h1 still reads "Sina Sotoudeh" to assistive tech and search engines.
-**Approved by user:** requested by the owner 2026-09-22 (the exit motion is this run's reading of "unnecessary"; visual result pending the owner's V4 check).
+**Approved by user:** yes — requested by the owner 2026-09-22; the rise-and-fade exit approved after testing production fdb7c39 ("approved, continue").
+
+## D-15 — Hero keeps all 250 particles on phones
+
+**Context:** cwv-invariants "Hero engine hygiene" item 4 asks for fewer particles under 768 px. That change is visible (a sparser sphere and field), so it conflicts with parity. In 2.1a the run recommended keeping 250 and measuring first. The owner did not ask for a reduction when they approved 2.1a/2.1c on 2026-09-22.
+**Measurement (2.1b, production build, 390×844 mobile profile, 4× CPU throttle, this box):** the engine's frame costs 2.3–2.8 ms of script (mean; p95 3.5–5.1 ms), about 15 % of a 60 fps frame. Before 2.1b it ran 49–60 times a second for the whole page life. After 2.1b's IntersectionObserver pause it runs only while the hero is within 200 px of the viewport, and draws 0 frames/s elsewhere. Off-screen script time is 102 → 60 ms/s (mobile, 4×) and 93 → 55 ms/s (desktop, 4×).
+**Decision:** keep 250 particles on every viewport. The per-frame cost is modest and now bounded to the hero, and it runs on the rAF path, not in input handlers or long tasks. Revisit only if Phase 6 PSI/field data shows the hero frame cost matters.
+**Approved by user:** default applied 2026-09-22 (the recommendation stood without objection); confirm at the 2.1b review.
+
+## D-18 — Canvas pixel ratio: cap 2 per the recipe, with a measured cost (owner call)
+
+**Context:** cwv-invariants item 3 caps the canvas buffer at devicePixelRatio 2. Before 2.1b the buffer was CSS pixels, so it was blurry on retina and phones. 2.1b implements the cap: buffer = CSS size × min(DPR, 2) and a context transform. Desktop at DPR 1 is byte-for-byte the same buffer. Phones and retina screens get 4× the pixels.
+**Measurement (this box renders through SwiftShader, a software GPU):** mobile 390×844 @3, 4× CPU, hero on screen. Frame rate on the same build: 60 fps with a 1× buffer vs 44/47/48 fps with the 2× buffer (three rounds). The 2.1b before/after runs show 58 → 43 fps. Script time per canvas frame is barely changed (2.45 → 2.76 ms mean); the extra cost is raster/compositing of the larger buffer. On real phones canvas raster runs on the GPU, so this box likely overstates it, but it can't be proven here. Raster is off the main thread, so TBT/INP/LCP are not expected to move.
+**Decision:** ships as `MAX_DPR = 2` (the recipe). Alternatives are one constant in `HeroCanvas.tsx`: `1.5` (a compromise) or `1` (exactly the old softness and cost). Owner decides at the 2.1b review, ideally after looking at particle sharpness and smoothness on a real phone.
+**Approved by user:** pending (2.1b review).
