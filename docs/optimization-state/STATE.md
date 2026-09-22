@@ -178,7 +178,7 @@ Open intake fields: INTAKE-2, 3, 4, 6, 7 unresolved (register in .claude/skills/
   RESOLVED 2026-09-13 by owner:
     INTAKE-1 production domain = sinasotoudeh.ir → canonical origin https://sinasotoudeh.ir. Wiring is the blueprint's env var, no code edit: owner sets `NEXT_PUBLIC_SITE_URL=https://sinasotoudeh.ir` on Vercel (Production; Preview too, so previews also point canonicals at production). Until set, src/lib/site.ts falls back to `https://${VERCEL_PROJECT_PRODUCTION_URL}`. Apex vs www: owner gave the apex; confirm the Vercel domain redirects www → apex (or the reverse) before Phase 3 canonicals ship.
     INTAKE-5 sameAs = https://www.linkedin.com/in/sinasotoudeh (owner) + https://github.com/sinasotoudeh (verified from git remote) → Person node in 3.2. The footer's LinkedIn icon still points at the bare linkedin.com home page — visible link change stays with the Phase 3 copy decisions (Blockers).
-Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 502.8 KB gz (verify-portfolio.mjs budget after the 2.1a build)
+Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 502.8 KB gz (verify-portfolio.mjs budget after the 2.1b build)
   2.1a detail: /  JS 11 files: 502.5 KB gz / 424.3 KB br / 1755.3 KB raw (−0.6 KB gz: hero markup left the client bundle) | CSS 2 files: 18.1 KB gz | HTML 13.0 KB gz (+0.9)
   2.0 detail: /  JS 11 files: 503.1 KB gz / 424.7 KB br / 1758.5 KB raw (+0.8 KB gz vs 1.3b: shared ESM ScrollTrigger + @gsap/react now bundled; chunks re-split — 307.0 / 62.5 / 43.3 KB gz largest) | CSS 2 files: 18.1 KB gz | HTML 12.1 KB gz
   1.3b detail: /  JS 10 files: 502.3 KB gz / 423.0 KB br / 1757.0 KB raw (+0.2 KB gz: cursor guard/settle logic, Lenis loop) | CSS 2 files: 18.1 KB gz | HTML 12.0 KB gz (real title/description)
