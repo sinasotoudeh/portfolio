@@ -3,10 +3,14 @@
 .wrapper {
     position: relative;
     width: 100%;
+    /* The pinned stretch: the intro screen + one screen per stage of travel, plus the 100vh
+       panel itself (the former pin-spacer's height) */
+    height: calc((var(--stages) + 2) * 100vh);
 }
 
 .container {
-    position: relative;
+    position: sticky;
+    top: 0;
     height: 100vh;
     display: flex;
     align-items: center;
@@ -105,6 +109,11 @@
         height: 9vh;
         min-height: 48px;
         max-height: 120px;
+    }
+
+    /* Their shadow scales with them (60 % of 8/20/24 px): same look, a cheaper blur on phone GPUs */
+    .fixedImageArt {
+        filter: drop-shadow(5px 12px 14px rgba(0, 0, 0, 0.25)) drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.2));
     }
 
     .fixedImage[data-priority="2"],

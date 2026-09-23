@@ -220,3 +220,12 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 **Not changed:** the icon artwork. The icons are stylised 3D renders rather than real brand marks; replacing them is a separate proposal.
 **Result:** desktop walk 15 → 50 fps average, median frame 83 → 17 ms, frames > 50 ms 235 → 15, GPU 1.75 → 1.41 s/s on this software-GPU box. Phone profile (4× CPU) 31 → 46 fps, GPU 1.47 → 0.32 s/s, raster 0.68 → 0.36 s/s. The remaining cost is the icons' own shadows, rasterised once per fly-in; switching them off entirely would only add ~25 % more on this box. Stage states, icon sets per breakpoint, colours, hover override, pin length and page height are identical to before (probe). Desktop screenshots are identical. `verify-portfolio.mjs --all`: 9/9 (the raw-`<img>` failure is gone).
 **Approved by user:** requested by the owner 2026-09-23; to be checked on production.
+
+## D-24 — ProcessSection is pinned by CSS sticky, not by a ScrollTrigger pin
+
+**Context:** On 2026-09-23 the owner reported that, especially on phones, scrolling into Process from above or below lets the section slide past before it "re-fixes to the viewport". ScrollTrigger's `pin` applies `position: fixed` from JavaScript in response to scroll events. Phones scroll on the compositor thread ahead of JavaScript, so a JS pin always lands a frame or more late. The Hero and Capabilities sections, pinned with CSS sticky, never showed this.
+**Decision:** `.wrapper` is `(stages + 2) × 100vh` tall (700vh — exactly the former pin-spacer's height) and `.container` is `position: sticky; top: 0`. The ScrollTrigger keeps its trigger and the same stage maths but only reads progress (`top top` → `bottom bottom` = the same 600vh of travel); it no longer pins. D-2's GSAP choreography is unchanged. Also for phones:
+- the icons' drop-shadow scales with the 60 % icons (5/12/14 px instead of 8/20/24 px): same look, cheaper blur;
+- each stage's icon group is a memoised component, so a stage change re-renders only the two groups whose visibility flips.
+**Result:** stage states, icon sets, hover, entry/exit positions, pinned length (desktop 6300 px, phone 5908 px) and page heights are identical to before (probe). A touch-scroll entry/exit sample found the panel at the top in every one of 217 frames inside the stretch. Phone profile (4× CPU): 48 fps, p95 50 → 33 ms, frames > 50 ms 25 → 16, script 168 → 109 ms/s, long tasks 4 → 2.
+**Approved by user:** requested by the owner 2026-09-23; to be checked on a real phone on production.

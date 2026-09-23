@@ -1,10 +1,10 @@
 // components/ProcessSection/ProcessSection.tsx
 'use client';
 
-import React, { useState, useRef, useEffect, useLayoutEffect, useCallback } from 'react';
+import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, memo } from 'react';
 import Image from 'next/image';
 import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
-import { processNodes } from '../../data/processData';
+import { processNodes, type ProcessNode } from '../../data/processData';
 import styles from './ProcessSection.module.css';
 import clsx from 'clsx';
 
@@ -44,14 +44,14 @@ export default function ProcessSection() {
 
         const ctx = gsap.context(() => {
             const totalNodes = processNodes.length;
-            const totalScrollSpace = (totalNodes + 1) * 100;
 
+            // The section is pinned by CSS (position: sticky inside the (stages + 2) × 100vh wrapper),
+            // which the browser applies on its scroll thread — no late "re-fix" on phones, where a
+            // JavaScript pin lags behind native scrolling. ScrollTrigger only reads the progress.
             ScrollTrigger.create({
                 trigger: wrapperRef.current,
                 start: "top top",
-                end: `+=${totalScrollSpace}%`,
-                pin: sectionRef.current,
-                scrub: true,
+                end: "bottom bottom",
                 onUpdate: (self) => {
                     const totalStages = totalNodes + 1;
                     const currentStage = Math.floor(self.progress * totalStages);
@@ -147,7 +147,7 @@ export default function ProcessSection() {
     };
 
     return (
-        <div ref={wrapperRef} className={styles.wrapper}>
+        <div ref={wrapperRef} className={styles.wrapper} style={{ '--stages': processNodes.length } as React.CSSProperties}>
             <section
                 ref={sectionRef}
                 id='process'
@@ -169,42 +169,7 @@ export default function ProcessSection() {
 
                 <div className={styles.imagesContainer}>
                     {processNodes.map((node, stage) => mountedStages.includes(stage) && (
-                        <div
-                            key={node.id}
-                            data-stage={stage}
-                            className={styles.stageIcons}
-                            style={{ visibility: stage === displayIndex ? 'visible' : 'hidden' }}
-                        >
-                            {node.images.map((image, index) => {
-                                const cfg = image.config;
-                                const mobile = cfg.mobileOverride;
-                                return (
-                                    <div
-                                        key={`${node.id}-img-${index}`}
-                                        className={styles.fixedImage}
-                                        data-priority={cfg.priority}
-                                        data-scale={cfg.scale}
-                                        data-scale-mobile={mobile?.scale ?? cfg.scale}
-                                        data-delay={cfg.delay ?? ''}
-                                        style={{
-                                            '--top': `${cfg.top}%`,
-                                            '--right': `${cfg.right}%`,
-                                            '--top-mobile': `${mobile?.top ?? cfg.top}%`,
-                                            '--right-mobile': `${mobile?.right ?? cfg.right}%`,
-                                            zIndex: cfg.zIndex !== undefined ? cfg.zIndex : Math.floor(cfg.scale * 10),
-                                        } as React.CSSProperties}
-                                    >
-                                        <Image
-                                            src={image.src}
-                                            alt={image.alt}
-                                            width={image.width}
-                                            height={image.height}
-                                            className={styles.fixedImageArt}
-                                        />
-                                    </div>
-                                );
-                            })}
-                        </div>
+                        <StageIcons key={node.id} node={node} stage={stage} visible={stage === displayIndex} />
                     ))}
                 </div>
 
@@ -246,3 +211,44 @@ export default function ProcessSection() {
         </div>
     );
 }
+
+// One stage's icons. Memoised: a stage change re-renders only the two groups whose visibility flips.
+const StageIcons = memo(function StageIcons({ node, stage, visible }: { node: ProcessNode; stage: number; visible: boolean }) {
+    return (
+        <div
+            data-stage={stage}
+            className={styles.stageIcons}
+            style={{ visibility: visible ? 'visible' : 'hidden' }}
+        >
+            {node.images.map((image, index) => {
+                const cfg = image.config;
+                const mobile = cfg.mobileOverride;
+                return (
+                    <div
+                        key={`${node.id}-img-${index}`}
+                        className={styles.fixedImage}
+                        data-priority={cfg.priority}
+                        data-scale={cfg.scale}
+                        data-scale-mobile={mobile?.scale ?? cfg.scale}
+                        data-delay={cfg.delay ?? ''}
+                        style={{
+                            '--top': `${cfg.top}%`,
+                            '--right': `${cfg.right}%`,
+                            '--top-mobile': `${mobile?.top ?? cfg.top}%`,
+                            '--right-mobile': `${mobile?.right ?? cfg.right}%`,
+                            zIndex: cfg.zIndex !== undefined ? cfg.zIndex : Math.floor(cfg.scale * 10),
+                        } as React.CSSProperties}
+                    >
+                        <Image
+                            src={image.src}
+                            alt={image.alt}
+                            width={image.width}
+                            height={image.height}
+                            className={styles.fixedImageArt}
+                        />
+                    </div>
+                );
+            })}
+        </div>
+    );
+});
