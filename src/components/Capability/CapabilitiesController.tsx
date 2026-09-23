@@ -39,6 +39,7 @@ export default function CapabilitiesController({ children, ...props }: Component
         const cards = [...section.querySelectorAll<HTMLElement>('[data-cap-card]')].map(el => ({
             el,
             angle: Number(el.dataset.capCard),
+            shown: '', // last depth styles written (skip unchanged writes: no style work for them)
         }));
         const maxRotation = maxScrollRotation(cards.length);
         const reducedMotion = prefersReducedMotion();
@@ -65,6 +66,9 @@ export default function CapabilitiesController({ children, ...props }: Component
             ring.style.transform = `rotateY(${rotation}rad)`;
             for (const card of cards) {
                 const depth = cardDepth(card.angle + rotation);
+                const key = depth.hidden ? 'hidden' : `${depth.opacity}|${depth.transform}|${depth.pointerEvents}`;
+                if (key === card.shown) continue;
+                card.shown = key;
                 if (depth.hidden) {
                     card.el.style.visibility = 'hidden';
                     continue;

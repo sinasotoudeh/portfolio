@@ -65,6 +65,7 @@ export default function Manifesto() {
         <ManifestoScrub
             id="manifesto"
             data-section="manifesto"
+            data-pause-offscreen=""
             className={styles.section}
             aria-labelledby="manifesto-title"
         >

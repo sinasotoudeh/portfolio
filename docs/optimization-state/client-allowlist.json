@@ -12,6 +12,7 @@
   "src/components/navigation/NavigationController.tsx",
   "src/components/providers/KeyboardFocus.tsx",
   "src/components/providers/LenisProvider.tsx",
+  "src/components/providers/OffscreenPause.tsx",
   "src/components/workminimal/WorkDesktop.tsx",
   "src/components/workminimal/WorkMobile.tsx"
 ]

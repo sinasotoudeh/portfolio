@@ -146,6 +146,7 @@ export default function ContactSection() {
     return (
         <section
             id="contact"
+            data-pause-offscreen=""
             className={styles.contactSection}
             ref={sectionRef}
             onClick={handleSectionInteraction}

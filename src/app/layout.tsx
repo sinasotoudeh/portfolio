@@ -24,6 +24,7 @@ import Navigation from '@/components/navigation/Navigation'; // اضافه شد�
 import Footer from '@/components/footer/Footer'; // اضافه شدن ایمپورت منو
 
 import KeyboardFocus from '@/components/providers/KeyboardFocus';
+import OffscreenPause from '@/components/providers/OffscreenPause';
 import LenisProvider from '@/components/providers/LenisProvider'; // مسیر را بر اساس ساختار پروژه خود تنظیم کنید
 import { siteUrl } from '@/lib/site';
 
@@ -54,6 +55,7 @@ export default function RootLayout({
       <body className="min-h-full flex flex-col">
         <CustomCursor />
         <KeyboardFocus />
+        <OffscreenPause />
 
         <Navigation />
         <main className="flex-1 flex flex-col">

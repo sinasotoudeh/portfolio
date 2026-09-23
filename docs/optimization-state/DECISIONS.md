@@ -184,3 +184,20 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 3. A `KeyboardFocus` client leaf (`src/components/providers/KeyboardFocus.tsx`, rendered in layout.tsx) sets `body.keyboard-nav` on Tab and clears it on any pointerdown. The authored 2px accent outline (offset 3px) then appears for keyboard users only, with no change for mouse or touch.
 **Verification:** Tab + Enter on AutoDM lands at 6968 (the target). The outline is 2px solid rgb(167,139,250) after Tab, and the class is gone after a mouse click. Phone: Enter opens the dialog with focus on "Close project details", Escape closes it and focus returns to the title, and body scroll is locked/unlocked. A tap still opens the sheet without focus rings.
 **Approved by user:** yes — the owner's own request 2026-09-23; result approved on production 41b0a4b ("approved, continue").
+
+## D-22 — Mobile scroll performance and the Capabilities touch conflict
+
+**Context:** On 2026-09-23 the owner reported that the Capabilities section is "too laggy and low performance on mobile" while similar designs elsewhere scroll smoothly. They also reported that on phones only the upper half of the section scrolls vertically; swiping up or down over the cards does nothing. Measured on a 390×844 touch profile with a 4× CPU throttle and a traced 1225 px touch scroll through the section:
+- Every frame ran style + layout + layerize + paint.
+- Root repaints were caused by the hero scroll hint's infinite `text-shadow` glow animation (text-shadow can't be composited, so it relays out and repaints every frame even when the hero is thousands of px away).
+- The Contact section's `background-attachment: fixed` repainted #contact every other scroll frame from anywhere on the page. It is also the classic reason Chrome keeps scrolling on the main thread.
+- The Manifesto marquee and the two Contact blobs (100 px blur) forced main-thread style recalc every frame while off screen.
+- The Capabilities background moved every frame without its own layer.
+- The stage had `touch-action: none`, inherited from the WebGL version.
+**Decision (all pixel-identical, verified):**
+1. Stage `touch-action: pan-y`. Vertical swipes anywhere in the section scroll the page (the scroll spring turns the ring). Horizontal swipes on the cards stay a drag. Mouse drag is unchanged.
+2. Sections marked `data-pause-offscreen` (hero pin, Manifesto, Contact) get `data-offscreen` from a small `OffscreenPause` client leaf (one IntersectionObserver, 200 px margin). globals.css pauses every CSS animation inside them while off screen.
+3. Contact's background is a `position: fixed` `::before` layer clipped to the section with `clip-path: inset(0)`, replacing `background-attachment: fixed`. The pixels are the same (desktop and phone pixel diffs inside Contact are 0 beyond antialiasing), but it's composited instead of repainted. Side effect: iOS Safari ignored `background-attachment: fixed` (the image scrolled there), so iPhones now see the fixed background the design intended.
+4. Capabilities background and ring get `will-change: transform`. Card depth styles are written only when they change.
+**Result (same traced touch scroll, 4× CPU):** layout 244 → 0 ms, style 525 → 234 ms, paint 251 → 136 ms, layerize 824 → 597 ms, script 565 → 369 ms, frames > 25 ms 18 → 4. Idle page: style recalc 60/s → 0, paints → 0. Cylinder geometry is still 0.00 px against the WebGL original (desktop and phone, scroll and drag).
+**Approved by user:** requested by the owner 2026-09-23; result to be checked on a real phone on production.

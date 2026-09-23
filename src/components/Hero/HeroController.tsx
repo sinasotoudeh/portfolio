@@ -39,6 +39,7 @@ export default function HeroController({ children }: HeroControllerProps) {
             ref={sectionRef}
             className={styles.heroPinContainer}
             data-state={state}
+            data-pause-offscreen=""
             aria-labelledby="hero-title"
         >
             {children}

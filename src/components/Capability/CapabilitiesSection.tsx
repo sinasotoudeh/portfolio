@@ -15,20 +15,20 @@ export default function CapabilitiesSection() {
         >
             <div className="sticky top-0 w-full h-screen overflow-hidden flex flex-col-reverse lg:flex-row items-center">
 
-                {/* Background, drifting up while the section scrolls */}
+                {/* Background, drifting up while the section scrolls (own GPU layer: moving it never repaints) */}
                 <div
                     data-cap-bg=""
-                    className="absolute inset-0 pointer-events-none opacity-20 bg-center bg-cover bg-no-repeat mix-blend-screen z-0"
+                    className="absolute inset-0 pointer-events-none opacity-20 bg-center bg-cover bg-no-repeat mix-blend-screen z-0 will-change-transform"
                     style={{
                         backgroundImage: "url('/images/capability/back.webp')",
                         height: "120vh",
                     }}
                 />
 
-                {/* گردونه سه‌بعدی */}
+                {/* گردونه سه‌بعدی — touch: vertical swipes scroll the page (which turns the ring), sideways swipes drag it */}
                 <div
                     data-cap-stage=""
-                    className={`${styles.stage} relative w-full lg:w-1/2 h-[50vh] lg:h-full z-10 cursor-grab active:cursor-grabbing touch-none`}
+                    className={`${styles.stage} relative w-full lg:w-1/2 h-[50vh] lg:h-full z-10 cursor-grab active:cursor-grabbing touch-pan-y`}
                 >
                     <div data-cap-ring="" className={styles.ring}>
                         {CAPABILITIES.map((cap, index) => (

@@ -443,6 +443,15 @@ section[data-section="awards"] {
   }
 }
 
+/* Sections marked data-pause-offscreen hold their CSS loops (marquee, glows, drifting blobs)
+   while they are out of view — OffscreenPause sets data-offscreen. Unseen, but it stops per-frame
+   main-thread style work (and the hero hint's text-shadow repaints) everywhere else on the page. */
+[data-offscreen] *,
+[data-offscreen] *::before,
+[data-offscreen] *::after {
+  animation-play-state: paused !important;
+}
+
 @media (prefers-reduced-motion: reduce) {
 
   [data-reveal],

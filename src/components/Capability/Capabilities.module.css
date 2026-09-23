@@ -24,6 +24,8 @@
     position: absolute;
     inset: 0;
     transform-style: preserve-3d;
+    /* Turned every frame while scrolling: its own compositor layer, so rotating it never repaints */
+    will-change: transform;
 }
 
 .slot {
