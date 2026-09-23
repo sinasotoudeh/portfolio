@@ -1,11 +1,11 @@
 # OPTIMIZATION STATE
-Updated: 2026-09-23T08:30:00Z
+Updated: 2026-09-23T09:00:00Z
 Approval Mode: per-task
 Phase: 2 — Section Rebuilds
 Sub-task: 2.3a-kbd — owner request: keyboard-accessible Selected Works titles (+ push)
 In Flight: WorkDesktop.tsx, WorkMobile.tsx, WorkMinimal.module.css (.titleButton), providers/KeyboardFocus.tsx (new), app/layout.tsx, client-allowlist.json
-Status: in-progress
-Waiting on User Approval: no
+Status: done-awaiting-approval
+Waiting on User Approval: yes — production check of 2.3a + D-20 + D-21 (pushed)
 Plan for 2.3a-kbd (owner 2026-09-23: "make them keyboard-accessible an push to production"; the 2.3a review itself stays open until tested on production):
   [x] Finding: globals.css shows focus rings only under body.keyboard-nav (`body:not(.keyboard-nav) *:focus { outline: none }`) and nothing ever sets that class → no focus indicator anywhere on the site today.
   Design (D-21):
@@ -270,7 +270,7 @@ Open intake fields: INTAKE-2, 3, 4, 6, 7 unresolved (register in .claude/skills/
     INTAKE-5 (2026-09-23, D-19): sameAs profiles = https://www.linkedin.com/in/sinasotoudeh, https://github.com/sinasotoudeh, https://www.instagram.com/sina.sotoude/ (no X/Twitter).
     INTAKE-1 production domain = sinasotoudeh.ir → canonical origin https://sinasotoudeh.ir. Wiring is the blueprint's env var, no code edit: owner sets `NEXT_PUBLIC_SITE_URL=https://sinasotoudeh.ir` on Vercel (Production; Preview too, so previews also point canonicals at production). Until set, src/lib/site.ts falls back to `https://${VERCEL_PROJECT_PRODUCTION_URL}`. Apex vs www: owner gave the apex; confirm the Vercel domain redirects www → apex (or the reverse) before Phase 3 canonicals ship.
     INTAKE-5 sameAs = https://www.linkedin.com/in/sinasotoudeh (owner) + https://github.com/sinasotoudeh (verified from git remote) → Person node in 3.2. The footer's LinkedIn icon still points at the bare linkedin.com home page — visible link change stays with the Phase 3 copy decisions (Blockers).
-Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 502.1 KB gz (verify-portfolio.mjs budget after the 2.3a build)
+Budget: BASELINE 504.4 KB gz first-load JS on `/` | CURRENT 502.4 KB gz (verify-portfolio.mjs budget after the 2.3a-kbd build)
   2.1a detail: /  JS 11 files: 502.5 KB gz / 424.3 KB br / 1755.3 KB raw (−0.6 KB gz: hero markup left the client bundle) | CSS 2 files: 18.1 KB gz | HTML 13.0 KB gz (+0.9)
   2.0 detail: /  JS 11 files: 503.1 KB gz / 424.7 KB br / 1758.5 KB raw (+0.8 KB gz vs 1.3b: shared ESM ScrollTrigger + @gsap/react now bundled; chunks re-split — 307.0 / 62.5 / 43.3 KB gz largest) | CSS 2 files: 18.1 KB gz | HTML 12.1 KB gz
   1.3b detail: /  JS 10 files: 502.3 KB gz / 423.0 KB br / 1757.0 KB raw (+0.2 KB gz: cursor guard/settle logic, Lenis loop) | CSS 2 files: 18.1 KB gz | HTML 12.0 KB gz (real title/description)
@@ -294,7 +294,7 @@ Docs read this run (AGENTS.md gate) — Phase 0 session; every later session re-
   2.0 session (2026-09-13): re-read 01-getting-started/05-server-and-client-components.md "Context providers"; non-Next sources: @gsap/react 2.1.2 src/types, gsap 3.14.2 exports + gsap-core ticker + ScrollTrigger.update, lenis 1.3.21 README + lenis.mjs + lenis-react.mjs
   Not yet read (as of Phase 0; see per-session lines below): 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
 Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 (owner-approved, italic dropped); 1.2 (owner-approved); 1.3a (owner-approved); 1.3b (owner-approved, D-13 approved); ⛔ Phase 1 gate (owner-approved 2026-09-13); 2.0 (owner-approved); 2.1a (owner-approved 2026-09-22); 2.1c (owner-approved 2026-09-22, D-16/D-17); 2.1b (owner-approved 2026-09-22, D-15/D-18); 2.2 (owner-approved 2026-09-23); 2.2b (owner-requested copy, D-19, approved on production); 2.3a (committed 759e43e — owner review pending)
-Next Immediate Action: owner V4 of 2.3a (+ D-20 approval, + keyboard-access answer). On approval: record it, then 2.3b — port F1–F6 (see 2.3a motion inventory) to GSAP in WorkDesktop.tsx / WorkMobile.tsx: first confirm framer 12.38 defaults for duration-only transitions (node_modules/framer-motion) and the spring (bounce 0.5) settle curve by measurement, then AnimatePresence → GSAP exit-then-swap, useInView → ScrollTrigger (toggleActions play/reverse at 30 %), reduced motion; probe transition timings before/after.
+Next Immediate Action: owner verdict on production for 2.3a + D-20 + D-21. On approval: record it, then 2.3b — port F1–F6 (see 2.3a motion inventory) to GSAP in WorkDesktop.tsx / WorkMobile.tsx: first confirm framer 12.38 defaults for duration-only transitions (node_modules/framer-motion) and the spring (bounce 0.5) settle curve by measurement, then AnimatePresence → GSAP exit-then-swap, useInView → ScrollTrigger (toggleActions play/reverse at 30 %), reduced motion; probe transition timings before/after.
 Blockers / Open Questions:
   - RESOLVED 2026-09-22 → D-15 (keep 250; measured in 2.1b) — (2.1a → 2.1b, owner call — D-15) cwv-invariants "Hero engine hygiene" item 4 asks for fewer particles on phones (≤ 768 px). That is visible (a sparser sphere/field), so it conflicts with parity. Recommendation: keep all 250 particles and take the CPU win from the parity-neutral fixes (pause off-screen, DPR cap, reduced-motion static), measuring the per-frame cost on a 4× CPU-throttled phone profile in 2.1b; only if that cost is material, propose a count with before/after screenshots.
   - (2.1a, Phase 3 copy) Hero project list copy looks like template placeholders ("Nexus Identity"… / "Branding"…).
@@ -324,10 +324,10 @@ Audit delta (final, Phase 0 — vs references/audit-baseline.md @ 8828152):
   - OBSERVED: mobile 390×844 at scrollY 844 — hero wordmark "Sina Sotoudeh" overlaps the BUILD burst card. Still present after 1.1, but 1.1 can't decide it: the wordmark uses `--font-display` (not Inter), which renders as DejaVu Sans Bold on this box — much wider than the Arial/Helvetica real phones use. Needs the owner's eyes on a real phone; belongs to 2.1 Hero if real.
   - TOOLING: verify-portfolio.mjs `deps` check was blind (scanned package.json) → fixed (D-8).
 Continuity notes:
-  - Remote: pushed by the run at the owner's request 2026-09-22 — fdb7c39 (2.1c test), then 18c28c2 (fast-forward fdb7c39..18c28c2, 2.1b phone test incl. D-18). Later docs-only commits stay local until the next requested push. Earlier: `origin/main` == local `main` at 110d7f0 when 1.1 started — the owner pushed the Phase 0 commits after the gate (the run itself never pushes). Everything from 1.1 on is local-only until the owner pushes.
+  - Remote: pushed by the run at the owner's request — fdb7c39 (2.1c), 18c28c2 (2.1b), 106887a (2.2 + 2.2b), and 2026-09-23 the 2.3a + D-21 commits. Always a fast-forward of main; nothing force-pushed. Earlier: `origin/main` == local `main` at 110d7f0 when 1.1 started — the owner pushed the Phase 0 commits after the gate (the run itself never pushes). Everything from 1.1 on is local-only until the owner pushes.
   - Commits 3632d32…dfcfa7a (0.1–0.2) carry Claude trailers from before D-9; left as-is (no history rewrite unless the owner asks).
   - .claude/settings.local.json is per-machine — deliberately uncommitted. `.visual/` is gitignored.
   - .gitignore ignores `.env*` — Phase 5.1's `.env.example` needs a `!.env.example` negation.
   - Machine: Playwright 1.63.0 tools at ~/.local/share/portfolio-visual-tools, Chromium 153 system deps installed (D-10). Other servers run on this box (owner's next-servers on :3000 and :3001): stop only your own PIDs. This run used :4310.
   - `pnpm build` needs network for next/font/google (fonts are downloaded at build time); Vercel builds have it.
-Last Commit: 759e43e refactor(rsc): 2.3a WorkMinimal server shell and breakpoint split (+ the log-hash commit after it)
+Last Commit: b40e8d4 feat(a11y): 2.3a keyboard-accessible Selected Works titles and focus rings (+ the log-hash commit after it)
