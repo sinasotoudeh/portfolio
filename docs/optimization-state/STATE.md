@@ -428,4 +428,4 @@ Continuity notes:
   - .gitignore ignores `.env*` — Phase 5.1's `.env.example` needs a `!.env.example` negation.
   - Machine: Playwright 1.63.0 tools at ~/.local/share/portfolio-visual-tools, Chromium 153 system deps installed (D-10). Other servers run on this box (owner's next-servers on :3000 and :3001): stop only your own PIDs. This run used :4310.
   - `pnpm build` needs network for next/font/google (fonts are downloaded at build time); Vercel builds have it.
-Last Commit: 314a5a8 perf(motion): 2.5 ProcessSection renders its shadows once (+ the log-hash commit after it)
+Last Commit: 24f7491 perf(mobile): 2.5b pin ProcessSection with CSS sticky (+ the log-hash commit after it)
