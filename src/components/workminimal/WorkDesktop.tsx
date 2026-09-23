@@ -1,9 +1,10 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback } from 'react';
+import React, { useState, useEffect, useRef, useCallback, type ReactNode, type RefObject } from 'react';
 import Image from 'next/image';
-import { motion, AnimatePresence, useInView } from 'framer-motion';
 import { useLenis } from 'lenis/react';
+import { gsap, useGSAP } from '@/lib/motion/gsap';
+import { FRAMER_EASE_IN_OUT, FRAMER_EASE_OUT, FRAMER_SPRING_BOUNCE_05, prefersReducedMotion } from '@/lib/motion/eases';
 import { PROJECTS_DATA, Annotation } from '@/data/workminimal-projects';
 import { WORK_MOBILE_QUERY, projectColor } from './workTheme';
 import styles from './WorkMinimal.module.css';
@@ -19,7 +20,9 @@ export default function WorkDesktop() {
     const lenis = useLenis();
     const showcaseRef = useRef<HTMLDivElement>(null);
     const rightColumnRef = useRef<HTMLDivElement>(null);
-    const isInView = useInView(rightColumnRef, { once: false, amount: 0.3 });
+    const borderRef = useRef<SVGRectElement>(null);
+    const bgRef = useRef<HTMLDivElement>(null);
+    const imageRef = useRef<HTMLDivElement>(null);
 
     const ticking = useRef(false);
     const isClickScrolling = useRef(false);
@@ -63,10 +66,48 @@ export default function WorkDesktop() {
         return () => window.removeEventListener('scroll', handleScroll);
     }, [handleScroll]);
 
-    const activeDesktopProject = PROJECTS_DATA[activeIndex];
     const displayIndex = hoveredIndex !== null ? hoveredIndex : activeIndex;
-    const bgDisplayProject = PROJECTS_DATA[displayIndex];
     const currentProjectColor = projectColor(activeIndex);
+
+    // Background (hovered or active project) and right-hand image (active project) swap like
+    // framer's AnimatePresence mode="wait": the old one animates out, then the new one in.
+    const bgShownIndex = usePresenceSwap(displayIndex, bgRef, BG_PRESENCE);
+    const imageShownIndex = usePresenceSwap(activeIndex, imageRef, IMAGE_PRESENCE);
+    const bgDisplayProject = PROJECTS_DATA[bgShownIndex];
+    const activeDesktopProject = PROJECTS_DATA[imageShownIndex];
+    const shownProjectColor = projectColor(imageShownIndex);
+
+    // A description stays mounted while it collapses after its project stops being active.
+    const [leaving, setLeaving] = useState<number[]>([]);
+    const [prevActive, setPrevActive] = useState(activeIndex);
+    if (prevActive !== activeIndex) {
+        setPrevActive(activeIndex);
+        setLeaving(list => (list.includes(prevActive) ? list : [...list, prevActive]));
+    }
+
+    // The right column's border draws itself while at least 30% of the column is in view and
+    // undraws when it leaves (framer useInView amount 0.3, not once).
+    useGSAP(() => {
+        const column = rightColumnRef.current;
+        const rect = borderRef.current;
+        if (!column || !rect) return;
+        const drawn = { length: 0 };
+        let tween: gsap.core.Tween | undefined;
+        const observer = new IntersectionObserver(([entry]) => {
+            tween?.kill();
+            tween = gsap.to(drawn, {
+                length: entry.isIntersecting ? 1 : 0,
+                duration: motionDuration(1.5),
+                ease: FRAMER_EASE_IN_OUT,
+                onUpdate: () => rect.setAttribute('stroke-dasharray', `${drawn.length} 1`),
+            });
+        }, { threshold: 0.3 });
+        observer.observe(column);
+        return () => {
+            observer.disconnect();
+            tween?.kill();
+        };
+    });
 
     // Scroll updates pause while the page travels to the clicked project. Through Lenis, which
     // owns page scrolling (D-14, D-20): the native smooth scroll stopped short of the target.
@@ -99,25 +140,21 @@ export default function WorkDesktop() {
     return (
         <div ref={showcaseRef} className={styles.desktopShowcase}>
             <div className={styles.backgroundLayer}>
-                <AnimatePresence mode="wait">
-                    <motion.div
-                        key={`bg-${bgDisplayProject.id}`}
-                        initial={{ opacity: 0, filter: 'blur(20px)', scale: 1.05 }}
-                        animate={{ opacity: 0.3, filter: 'blur(0px)', scale: 1 }}
-                        exit={{ opacity: 0, filter: 'blur(20px)', scale: 1.05 }}
-                        transition={{ duration: 0.8 }}
-                        className={styles.bgMediaContainer}
-                    >
-                        <Image
-                            src={bgDisplayProject.coverImage || bgDisplayProject.image}
-                            alt={bgDisplayProject.title}
-                            fill
-                            sizes="100vw"
-                            className={styles.bgMedia}
-                        />
-                        <div className={styles.bgOverlay} />
-                    </motion.div>
-                </AnimatePresence>
+                <div
+                    key={`bg-${bgDisplayProject.id}`}
+                    ref={bgRef}
+                    className={styles.bgMediaContainer}
+                    style={BG_PRESENCE.from.style}
+                >
+                    <Image
+                        src={bgDisplayProject.coverImage || bgDisplayProject.image}
+                        alt={bgDisplayProject.title}
+                        fill
+                        sizes="100vw"
+                        className={styles.bgMedia}
+                    />
+                    <div className={styles.bgOverlay} />
+                </div>
             </div>
 
             <div className={styles.splitContainer}>
@@ -159,24 +196,19 @@ export default function WorkDesktop() {
                                         </button>
                                     </h3>
 
-                                    <AnimatePresence>
-                                        {isActive && (
-                                            <motion.div
-                                                initial={{ opacity: 0, height: 0 }}
-                                                animate={{ opacity: 1, height: 'auto' }}
-                                                exit={{ opacity: 0, height: 0 }}
-                                                transition={{ duration: 0.4 }}
-                                                className={styles.projectDescContainer}
-                                            >
-                                                <p className={styles.projectGeneralDesc}>{project.generalDesc}</p>
-                                                <div className={styles.tagsWrapper}>
-                                                    {project.tags.map(tag => (
-                                                        <span key={tag} className={styles.tag}>{tag}</span>
-                                                    ))}
-                                                </div>
-                                            </motion.div>
-                                        )}
-                                    </AnimatePresence>
+                                    {(isActive || leaving.includes(idx)) && (
+                                        <ProjectDescription
+                                            open={isActive}
+                                            onClosed={() => setLeaving(list => list.filter(i => i !== idx))}
+                                        >
+                                            <p className={styles.projectGeneralDesc}>{project.generalDesc}</p>
+                                            <div className={styles.tagsWrapper}>
+                                                {project.tags.map(tag => (
+                                                    <span key={tag} className={styles.tag}>{tag}</span>
+                                                ))}
+                                            </div>
+                                        </ProjectDescription>
+                                    )}
                                 </div>
                             );
                         })}
@@ -186,47 +218,45 @@ export default function WorkDesktop() {
                 <div className={styles.rightColumn} ref={rightColumnRef}>
                     <div className={styles.rightContentWrapper}>
                         <svg className={styles.borderSvg} preserveAspectRatio="none">
-                            <motion.rect
+                            <rect
+                                ref={borderRef}
                                 x="1" y="1" width="calc(100% - 2px)" height="calc(100% - 2px)" rx="23"
                                 fill="none"
                                 stroke={currentProjectColor}
                                 strokeOpacity="0.3"
                                 strokeWidth="2"
-                                initial={{ pathLength: 0 }}
-                                animate={{ pathLength: isInView ? 1 : 0 }}
-                                transition={{ duration: 1.5, ease: "easeInOut" }}
+                                pathLength={1}
+                                strokeDashoffset={0}
+                                strokeDasharray="0 1"
                             />
                         </svg>
 
-                        <AnimatePresence mode="wait">
-                            <motion.div
-                                key={`right-${activeDesktopProject.id}`}
-                                initial={{ opacity: 0, scale: 0.95 }}
-                                animate={{ opacity: 1, scale: 1 }}
-                                exit={{ opacity: 0, scale: 0.95 }}
-                                transition={{ duration: 0.5 }}
-                                className={styles.imageAndAnnotations}
-                            >
-                                <div className={styles.imageWrapper}>
-                                    <Image
-                                        src={activeDesktopProject.image}
-                                        alt={activeDesktopProject.title}
-                                        fill
-                                        sizes="(max-width: 1024px) 100vw, 60vw"
-                                        className={styles.centerImage}
-                                    />
-                                    <div className={styles.annotationsContainer}>
-                                        {activeDesktopProject.annotations.map((anno, i) => (
-                                            <AnnotationPoint
-                                                key={anno.id}
-                                                annotation={anno}
-                                                index={i}
-                                                color={currentProjectColor}
-                                            />
-                                        ))}
-                                    </div>
-                                </div></motion.div>
-                        </AnimatePresence>
+                        <div
+                            key={`right-${activeDesktopProject.id}`}
+                            ref={imageRef}
+                            className={styles.imageAndAnnotations}
+                            style={IMAGE_PRESENCE.from.style}
+                        >
+                            <div className={styles.imageWrapper}>
+                                <Image
+                                    src={activeDesktopProject.image}
+                                    alt={activeDesktopProject.title}
+                                    fill
+                                    sizes="(max-width: 1024px) 100vw, 60vw"
+                                    className={styles.centerImage}
+                                />
+                                <div className={styles.annotationsContainer}>
+                                    {activeDesktopProject.annotations.map((anno, i) => (
+                                        <AnnotationPoint
+                                            key={anno.id}
+                                            annotation={anno}
+                                            index={i}
+                                            color={shownProjectColor}
+                                        />
+                                    ))}
+                                </div>
+                            </div>
+                        </div>
                     </div>
                 </div>
             </div>
@@ -234,9 +264,117 @@ export default function WorkDesktop() {
     );
 }
 
+// Ported framer animations are instant with reduced motion.
+const motionDuration = (seconds: number) => (prefersReducedMotion() ? 0 : seconds);
+
+// Enter/exit states of the two swapping layers. `style` is the first paint (server HTML and each
+// new mount) and matches `vars`, the state GSAP animates from on enter and back to on exit.
+interface PresenceStates {
+    from: { vars: gsap.TweenVars; style: React.CSSProperties };
+    to: gsap.TweenVars;
+    duration: number;
+}
+
+const BG_PRESENCE: PresenceStates = {
+    from: {
+        vars: { opacity: 0, filter: 'blur(20px)', scale: 1.05 },
+        style: { opacity: 0, filter: 'blur(20px)', transform: 'scale(1.05)' },
+    },
+    to: { opacity: 0.3, filter: 'blur(0px)', scale: 1 },
+    duration: 0.8,
+};
+
+const IMAGE_PRESENCE: PresenceStates = {
+    from: {
+        vars: { opacity: 0, scale: 0.95 },
+        style: { opacity: 0, transform: 'scale(0.95)' },
+    },
+    to: { opacity: 1, scale: 1 },
+    duration: 0.5,
+};
+
+// Shows one keyed layer at a time: when `target` changes, the shown layer animates out, then the
+// target is shown and animates in (also on first mount). A change during the exit only retargets
+// the swap; returning to the shown key during the exit brings it back from where it is.
+function usePresenceSwap(target: number, ref: RefObject<HTMLDivElement | null>, presence: PresenceStates): number {
+    const [shown, setShown] = useState(target);
+    const latestTarget = useRef(target);
+    const exiting = useRef(false);
+
+    // Enter: every newly shown layer (a new keyed element) animates in from its first paint.
+    useGSAP(() => {
+        const el = ref.current;
+        if (!el) return;
+        gsap.fromTo(el, presence.from.vars, {
+            ...presence.to,
+            duration: motionDuration(presence.duration),
+            ease: FRAMER_EASE_OUT,
+        });
+    }, { dependencies: [shown] });
+
+    useEffect(() => {
+        latestTarget.current = target;
+        const el = ref.current;
+        if (!el) return;
+        if (target === shown) {
+            if (exiting.current) {
+                exiting.current = false;
+                gsap.to(el, { ...presence.to, duration: motionDuration(presence.duration), ease: FRAMER_EASE_OUT, overwrite: true });
+            }
+            return;
+        }
+        if (exiting.current) return;
+        exiting.current = true;
+        gsap.to(el, {
+            ...presence.from.vars,
+            duration: motionDuration(presence.duration),
+            ease: FRAMER_EASE_OUT,
+            overwrite: true,
+            onComplete: () => {
+                exiting.current = false;
+                setShown(latestTarget.current);
+            },
+        });
+    }, [target, shown, ref, presence]);
+
+    return shown;
+}
+
+// The active project's description: expands from height 0 when mounted/opened, collapses when
+// closed and then reports back so the list unmounts it (framer AnimatePresence, 0.4 s).
+function ProjectDescription({ open, onClosed, children }: { open: boolean; onClosed: () => void; children: ReactNode }) {
+    const ref = useRef<HTMLDivElement>(null);
+    const onClosedRef = useRef(onClosed);
+    useEffect(() => {
+        onClosedRef.current = onClosed;
+    });
+
+    useGSAP(() => {
+        const el = ref.current;
+        if (!el) return;
+        gsap.to(el, {
+            height: open ? 'auto' : 0,
+            opacity: open ? 1 : 0,
+            duration: motionDuration(0.4),
+            ease: FRAMER_EASE_OUT,
+            overwrite: true,
+            onComplete: open ? undefined : () => onClosedRef.current(),
+        });
+    }, { dependencies: [open] });
+
+    return (
+        <div ref={ref} className={styles.projectDescContainer} style={{ opacity: 0, height: 0 }}>
+            {children}
+        </div>
+    );
+}
+
 function AnnotationPoint({ annotation, index, color }: { annotation: Annotation, index: number, color: string }) {
     const delay = 0.3 + (index * 0.1);
     const dir = annotation.lineDirection;
+    const dotRef = useRef<HTMLDivElement>(null);
+    const pathRef = useRef<SVGPathElement>(null);
+    const boxRef = useRef<HTMLDivElement>(null);
 
     let pathD = "";
     let boxStyles: React.CSSProperties = {};
@@ -259,11 +397,53 @@ function AnnotationPoint({ annotation, index, color }: { annotation: Annotation,
             boxStyles = { top: '80px', right: '-20px' };
             break;
     }
+    const boxFromY = dir === 'bottom' ? -10 : 10;
+
+    // On mount: the dot springs in, then the line draws, then the label fades up. The dot's
+    // transform is only its scale (x/y 0), as framer's inline transform replaced the class translate.
+    useGSAP(() => {
+        const dot = dotRef.current;
+        const path = pathRef.current;
+        const box = boxRef.current;
+        if (!dot || !path || !box) return;
+        const instant = prefersReducedMotion();
+        const at = (seconds: number) => (instant ? 0 : seconds);
+
+        gsap.fromTo(dot, { x: 0, y: 0, scale: 0 }, {
+            scale: 1,
+            delay: at(delay),
+            duration: at(FRAMER_SPRING_BOUNCE_05.duration),
+            ease: FRAMER_SPRING_BOUNCE_05.ease,
+        });
+
+        const line = { length: 0, opacity: 0 };
+        gsap.to(line, {
+            length: 1,
+            opacity: 0.8,
+            delay: at(delay + 0.1),
+            duration: at(0.6),
+            ease: FRAMER_EASE_OUT,
+            onUpdate: () => {
+                path.setAttribute('stroke-dasharray', `${line.length} 1`);
+                path.setAttribute('opacity', String(line.opacity));
+            },
+        });
+
+        gsap.fromTo(box, { opacity: 0, filter: 'blur(5px)', y: boxFromY }, {
+            opacity: 1,
+            filter: 'blur(0px)',
+            y: 0,
+            delay: at(delay + 0.5),
+            duration: at(0.4),
+            ease: FRAMER_EASE_OUT,
+        });
+    });
 
     return (
         <div className={styles.annotationPin} style={{ left: annotation.x, top: annotation.y }}>
             <svg className={styles.annotationLineSvg} viewBox="-100 -100 200 200">
-                <motion.path
+                <path
+                    ref={pathRef}
                     d={pathD}
                     fill="none"
                     stroke={color}
@@ -271,18 +451,14 @@ function AnnotationPoint({ annotation, index, color }: { annotation: Annotation,
                     strokeLinecap="round"
                     strokeLinejoin="round"
                     style={{ filter: `drop-shadow(0 0 4px ${color}80)` }}
-                    initial={{ pathLength: 0, opacity: 0 }}
-                    animate={{ pathLength: 1, opacity: 0.8 }}
-                    transition={{ delay: delay + 0.1, duration: 0.6, ease: "easeOut" }}
+                    opacity={0}
+                    pathLength={1}
+                    strokeDashoffset={0}
+                    strokeDasharray="0 1"
                 />
             </svg>
 
-            <motion.div
-                className={styles.pinDotWrapper}
-                initial={{ scale: 0 }}
-                animate={{ scale: 1 }}
-                transition={{ delay, type: 'spring', bounce: 0.5 }}
-            >
+            <div ref={dotRef} className={styles.pinDotWrapper} style={{ transform: 'scale(0)' }}>
                 <div
                     className={styles.pinDot}
                     style={{
@@ -292,18 +468,16 @@ function AnnotationPoint({ annotation, index, color }: { annotation: Annotation,
                     }}
                 ><div className={styles.pinDotInner} style={{ background: color }} />
                 </div>
-            </motion.div>
+            </div>
 
-            <motion.div
+            <div
+                ref={boxRef}
                 className={styles.annotationContent}
-                style={{ ...boxStyles, borderTopColor: color }}
-                initial={{ opacity: 0, filter: 'blur(5px)', y: dir === 'bottom' ? -10 : 10 }}
-                animate={{ opacity: 1, filter: 'blur(0px)', y: 0 }}
-                transition={{ delay: delay + 0.5, duration: 0.4 }}
+                style={{ ...boxStyles, borderTopColor: color, opacity: 0, filter: 'blur(5px)', transform: `translateY(${boxFromY}px)` }}
             >
                 <p className={styles.annoTitle} style={{ color: color }}>{annotation.title}</p>
                 <p className={styles.annoDesc}>{annotation.description}</p>
-            </motion.div>
+            </div>
         </div>
     );
 }

@@ -173,7 +173,7 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 **Context:** In 2.3a's before probe, the desktop Selected Works title click was tested. `handleProjectClick` → `window.scrollTo({ behavior: 'smooth' })` has the same Lenis conflict D-14 fixed for the nav: from FoladMarket, clicking AutoDM stopped at y 5168 instead of 6968. The click still set the highlight to AutoDM while the page showed FoladMarket's slot. The 1 s scroll-update pause then ended with no further scroll event, so the highlight and the content stayed out of step.
 **Decision:** `WorkDesktop` calls `lenis.scrollTo(target)` on the root Lenis instance. That is 1.5 s with Lenis' easing, the same motion as the D-14 nav links. Scroll-driven index updates stay paused until Lenis' `onComplete`, instead of a fixed 1 s, so the highlight doesn't flicker through the projects passed on the way. The native smooth scroll + 1 s pause remains only as the fallback before Lenis exists.
 **Result:** AutoDM from FoladMarket lands at 6968 (target 6968). Highlight, background, image and border colour all match AutoDM.
-**Approved by user:** pending the 2.3a parity review (same class of fix as the approved D-14).
+**Approved by user:** yes — 2026-09-23, tested on production 41b0a4b ("approved, continue").
 
 ## D-21 — Keyboard access for Selected Works + site-wide keyboard focus rings
 
@@ -183,4 +183,4 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 2. The phone project sheet is `role="dialog"` + `aria-modal` + `aria-labelledby` its title. Focus moves to the close button on open and returns to the opening title on close. Escape closes it.
 3. A `KeyboardFocus` client leaf (`src/components/providers/KeyboardFocus.tsx`, rendered in layout.tsx) sets `body.keyboard-nav` on Tab and clears it on any pointerdown. The authored 2px accent outline (offset 3px) then appears for keyboard users only, with no change for mouse or touch.
 **Verification:** Tab + Enter on AutoDM lands at 6968 (the target). The outline is 2px solid rgb(167,139,250) after Tab, and the class is gone after a mouse click. Phone: Enter opens the dialog with focus on "Close project details", Escape closes it and focus returns to the title, and body scroll is locked/unlocked. A tap still opens the sheet without focus rings.
-**Approved by user:** yes — the owner's own request 2026-09-23; result to be checked on production.
+**Approved by user:** yes — the owner's own request 2026-09-23; result approved on production 41b0a4b ("approved, continue").

@@ -1,11 +1,29 @@
 # OPTIMIZATION STATE
-Updated: 2026-09-23T09:00:00Z
+Updated: 2026-09-23T09:30:00Z
 Approval Mode: per-task
 Phase: 2 — Section Rebuilds
-Sub-task: 2.3a-kbd — owner request: keyboard-accessible Selected Works titles (+ push)
-In Flight: WorkDesktop.tsx, WorkMobile.tsx, WorkMinimal.module.css (.titleButton), providers/KeyboardFocus.tsx (new), app/layout.tsx, client-allowlist.json
-Status: done-awaiting-approval
-Waiting on User Approval: yes — production check of 2.3a + D-20 + D-21 (pushed)
+Sub-task: 2.3b — WorkMinimal motion port: framer F1–F6 → GSAP (then push, owner pre-authorised)
+In Flight: src/components/workminimal/WorkDesktop.tsx, WorkMobile.tsx, src/lib/motion/eases.ts (new)
+Status: in-progress
+Waiting on User Approval: no
+Plan for 2.3b (WorkMinimal motion port):
+  [x] Owner 2026-09-23 "approved, continue (and push when done to check everything on production)" → 2.3a + D-20 + D-21 approved on production 41b0a4b; push pre-authorised for 2.3b.
+  [x] framer 12.38 facts (read in node_modules/motion-dom 12.38.0 + motion-utils 12.36.0): a transition with only `duration` is a keyframes tween with ease "easeOut" = cubic-bezier(0, 0, 0.58, 1) (animateMotionValue default); easeInOut = cubic-bezier(0.42, 0, 0.58, 1); `{ type: 'spring', bounce: 0.5 }` → duration-based spring, 800 ms, damping ratio 0.5 — framer's own generator sampled and fitted: closed-form underdamped spring ω0 = 15.897 rad/s, ζ = 0.5, max error 0.00097. SSR first paint = inline initial styles (bg opacity 0 / blur 20 / scale 1.05; desc opacity 0 height 0; image opacity 0 scale 0.95; pin dot scale(0) — replaces the class translate(-50%, -50%); box opacity 0 / blur 5 / translateY(±10); SVG rect + path pathLength="1" stroke-dasharray="0 1", path opacity attr 0).
+  Design:
+    - src/lib/motion/eases.ts: cubicBezier() (framer's exact algorithm), FRAMER_EASE_OUT / FRAMER_EASE_IN_OUT, springEase(ω0, ζ) — plain ease functions, no GSAP plugin.
+    - F1 bg + F4 image: a presence-swap hook — `shown` key vs target key; target ≠ shown → exit tween from current values, then swap and enter from the initial values (framer mode="wait"); target changes during an exit only retarget the swap; target back to shown during the exit → re-enter from current.
+    - F2 description: mounted while active or leaving; enter height 0→auto + opacity, exit to 0 then unmount (framer AnimatePresence, parallel).
+    - F3 border: IntersectionObserver threshold 0.3 (useInView's own mechanism) → tween dasharray "v 1" to 1 / 0 over 1.5 s easeInOut from its current value.
+    - F5 annotations: on mount — dot scale 0→1 with the fitted spring (0.8 s) at d, x/y pinned to 0 like framer's inline transform; path dasharray 0→1 + opacity attr 0→0.8 at d+0.1 (0.6 s easeOut); box opacity/blur/y at d+0.5 (0.4 s easeOut).
+    - F6 sheet: rendered project vs requested project; enter y 100%→0 + opacity (0.4 s, cubic-bezier(0.22, 1, 0.36, 1)), exit back then unmount; D-21 focus/Escape/body lock unchanged.
+    - First paint: the same inline initial styles/attributes in JSX (React never rewrites unchanged style values, GSAP owns them after mount).
+    - Reduced motion (new, disclosed): every tween instant (duration 0) under prefers-reduced-motion.
+    - framer-motion imports leave WorkDesktop/WorkMobile (the package itself goes in 2.8).
+  [x] Before probe (41b0a4b build): frame-sampled curves (scratch curve-probe, trigger-aligned) — hover bg exit 0.8 s then enter (framer enter starts ~6 frames after the exit ends); project change: image exit 0.5 s → enter ~0.1 s later, descriptions collapse/expand in parallel (229→0 / 0→187 px, 0.4 s), annotation dot spring peaks ~1.15, line + label follow; border undraw/draw 1.5 s; phone sheet 0.4 s in/out.
+  [x] Implemented: src/lib/motion/eases.ts (cubicBezier = framer's algorithm, FRAMER_EASE_OUT / IN_OUT, springEase + FRAMER_SPRING_BOUNCE_05, prefersReducedMotion); WorkDesktop — usePresenceSwap (bg + image, mode="wait" semantics incl. retarget / return-during-exit), ProjectDescription (mounted while active or leaving; derived-state `leaving` list), IntersectionObserver border (threshold 0.3, isIntersecting like framer's inView), AnnotationPoint GSAP timeline on mount (dot x/y 0 + fitted spring, line dasharray + opacity attr, label); annotations take the SHOWN project's colour (the exiting layer keeps its own, as framer's snapshot did); WorkMobile — sheetProject vs requested project, gsap.set yPercent 100 on a new sheet, tween in/out with cubicBezier(0.22,1,0.36,1), unmount after exit; D-21 focus/Escape/body lock unchanged; inline first-paint styles = framer's SSR output (checked in the built HTML). framer-motion no longer imported by WorkMinimal.
+  [x] Gates: `pnpm build` ✓; `pnpm lint` ✓; `tsc --noEmit` ✓; `verify-portfolio.mjs --all` → `VERIFY: 8 passed, 1 failed, 17 warning(s)` (known ProcessSection.tsx:181 img); census 16. Budget / JS 503.0 KB gz (+0.6 — framer still shipped for Capabilities/Resume/Contact until 2.8; the eases + GSAP code now ride alongside).
+  [x] After: curves match framer after a 1–4 frame alignment (GSAP starts 14–58 ms sooner — framer waits a React render + frame; bg enter after a hover swap 106 ms sooner); residual after alignment ≤ 2.3 % on bg/box/border/sheet, 7–8 % only on the steepest spring/height segments (one 16 ms frame ≈ 10 % there). Settled states: 0 diffs vs 2.3a-kbd (work-probe: titles, images, annotations, heights, modal flow, no-JS first paint). Reduced motion: every swap instant. Stress (hover storm, scroll storm, return to the shown project mid-exit): always one bg / image / description, labels at 1, 0 errors. Shots `.visual/20260923-2.3b-after/{d,m}` + pair sheets `.visual/20260923-2.3b-pairs/` (identical to 2.3a).
+  [ ] Commit `refactor(rsc)+perf(motion): 2.3b WorkMinimal` (D-9) → LOG → STATE → push → ⛔ owner parity review on production
 Plan for 2.3a-kbd (owner 2026-09-23: "make them keyboard-accessible an push to production"; the 2.3a review itself stays open until tested on production):
   [x] Finding: globals.css shows focus rings only under body.keyboard-nav (`body:not(.keyboard-nav) *:focus { outline: none }`) and nothing ever sets that class → no focus indicator anywhere on the site today.
   Design (D-21):
@@ -214,7 +232,12 @@ Plan for 1.3a:
   [ ] Owner parity review (V4) → record approval, then 1.3b
 1.2 — closed 2026-09-13 (commit 13a65c1, owner-approved): next.config images → optimizer on, formats AVIF+WebP; Works next/image PNGs now 22–56 KB AVIF. Details: LOG.md + commit body.
 1.1 — closed 2026-09-13 (commits 9d3e03a + 2619c24): next/font Inter (normal only, owner dropped italic) + JetBrains Mono feeding --font-body/--font-mono; Resume/Contact family hardcodes → tokens; Contact accent serif stack. Details: LOG.md + commit bodies; parity notes approved (see approvals).
-Parity notes pending user review (2.3a Selected Works):
+Parity notes pending user review (2.3b Selected Works motion):
+  - The section's animations now run on GSAP instead of framer-motion, reproducing framer's exact curves (its default ease-out, the 0.5-bounce spring on the annotation dots, the sheet's custom curve). Measured side by side, every animation has the same shape, duration and end state.
+  - The one measurable difference: animations start a frame or few sooner (≈ 15–60 ms; the background swap on hover ≈ 0.1 s sooner after the old one fades), because GSAP starts at once where framer waited for React. Should read as identical, maybe a touch snappier.
+  - With "reduce motion" on: project, background and sheet changes are instant (new behaviour).
+  - What to look at (desktop): scroll through the three projects (image + description swap, annotation dots popping in with their bounce, lines drawing, labels fading up), hover the dim titles (background cross-fade), scroll the section in and out of view (the right frame's coloured border draws and undraws). Phone: open and close a project sheet (slide up/down).
+Parity notes of 2.3a Selected Works (approved 2026-09-23 on production 41b0a4b):
   - Nothing should look or move differently on desktop or phone: same three projects, same highlight/hover/background/image swaps, same phone list and project sheet — measured identical and screenshot-identical.
   - Fixed (D-20): clicking a project title on desktop now always scrolls to that project (e.g. AutoDM from FoladMarket used to stop on FoladMarket while highlighting AutoDM). The scroll is the same 1.5 s glide as the nav links.
   - Faster page load: the two project images no longer download at page load; they load as you approach the section (it's ~4,700 px down). On a slow connection the first project image could appear a moment later when you get there.
