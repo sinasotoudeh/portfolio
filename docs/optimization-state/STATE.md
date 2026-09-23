@@ -1,11 +1,21 @@
 # OPTIMIZATION STATE
-Updated: 2026-09-23T08:00:00Z
+Updated: 2026-09-23T08:30:00Z
 Approval Mode: per-task
 Phase: 2 — Section Rebuilds
-Sub-task: 2.3a — WorkMinimal: server shell, CSS breakpoint split, semantics, image loading (motion moves verbatim; GSAP port = 2.3b)
-In Flight: src/components/workminimal/WorkMinimal.tsx (→ server shell), WorkDesktop.tsx + WorkMobile.tsx (new client leaves, framer verbatim), WorkMinimal.module.css (breakpoint display/height), client-allowlist.json
-Status: done-awaiting-approval
-Waiting on User Approval: yes — V4 parity review of 2.3a + D-20 + the keyboard-access question (see Parity notes pending user review)
+Sub-task: 2.3a-kbd — owner request: keyboard-accessible Selected Works titles (+ push)
+In Flight: WorkDesktop.tsx, WorkMobile.tsx, WorkMinimal.module.css (.titleButton), providers/KeyboardFocus.tsx (new), app/layout.tsx, client-allowlist.json
+Status: in-progress
+Waiting on User Approval: no
+Plan for 2.3a-kbd (owner 2026-09-23: "make them keyboard-accessible an push to production"; the 2.3a review itself stays open until tested on production):
+  [x] Finding: globals.css shows focus rings only under body.keyboard-nav (`body:not(.keyboard-nav) *:focus { outline: none }`) and nothing ever sets that class → no focus indicator anywhere on the site today.
+  Design (D-21):
+    - Titles: a <button type="button" class="titleButton"> inside each title h3 (desktop + mobile). The item's existing onClick stays on the wrapper (mouse/touch target unchanged); Enter/Space on the button fires a click that bubbles to it. .titleButton = display block, inherits font/colour/stroke/alignment, no background/border/padding, cursor inherit → the same pixels. The custom cursor now shows its hover ring over titles (it reacts to buttons).
+    - Desktop: aria-current="true" on the active project's button.
+    - Mobile sheet: role="dialog", aria-modal, aria-labelledby its title; focus moves to the close button on open and back to the title on close; Escape closes.
+    - Focus rings: new KeyboardFocus client leaf in layout.tsx sets body.keyboard-nav on Tab and clears it on any pointer down — the authored globals.css rule then shows the 2px accent outline for keyboard users only. No visible change for mouse/touch.
+  [x] Implemented per Design (D-21). Gates: `pnpm build` ✓; `pnpm lint` ✓; `verify-portfolio.mjs --all` → `VERIFY: 8 passed, 1 failed, 17 warning(s)` (known img); client census 16 (+KeyboardFocus.tsx, allowlisted). Budget / JS 502.4 KB gz (+0.3) | CSS 18.3 KB gz.
+  [x] Probe: desktop Tab → body.keyboard-nav, focused title outline 2px solid rgb(167,139,250); Enter on AutoDM → y 6968 = target, active + aria-current AutoDM; mouse click → class cleared; visible #work buttons = the 3 desktop titles only. Phone: Enter → dialog (aria-modal, labelled "SadrHub"), focus on "Close project details", body overflow hidden; Escape → closed, focus back on SadrHub, overflow ''; tap still opens, no keyboard-nav. work-probe diff vs 2.3a after-run: 0 differences (title type, rects, states, modal). Focus shot `.visual/20260923-2.3a-kbd-focus.png` (read).
+  [x] D-21 written; commit → LOG → STATE; push (owner asked)
 2.3 split (recorded 2026-09-23 after reading WorkMinimal.tsx (409) + .module.css (492) + workminimal-projects.ts (3 projects)): 2.3a = server shell with both layouts in the HTML and a CSS breakpoint instead of the JS `isMobile` swap, heading/semantic fixes, next/image loading props — framer-motion moves verbatim into the two client leaves; 2.3b = port the five framer animations + the spring to GSAP. Same reasoning as 2.1a/2.1b: structure verifiable to the pixel, motion reviewed on its own.
 Plan for 2.3a:
   [x] Owner 2026-09-23 "approved, continue" after testing production 106887a → 2.2 Manifesto + 2.2b (D-19) approved.
@@ -210,7 +220,7 @@ Parity notes pending user review (2.3a Selected Works):
   - Faster page load: the two project images no longer download at page load; they load as you approach the section (it's ~4,700 px down). On a slow connection the first project image could appear a moment later when you get there.
   - Phones: the phone layout is in the page from the first paint (before, the desktop layout was sent first and swapped after the page's JavaScript loaded).
   - Not visible: project names are h3 under "Selected Works" (were extra page-level h1s), the sheet's close button is labelled for screen readers.
-  - Flagged, not changed: project titles are clickable divs, so keyboard users can't select them; making them buttons would also switch the custom cursor to its hover ring over the titles. Your call (can ride along with 2.3b).
+  - Keyboard access (D-21, your request): Tab reaches every project title (desktop and phone); Enter scrolls to the project / opens the sheet; Escape closes the sheet. Keyboard users now see an accent focus ring site-wide (the template's CSS always intended it, but nothing switched it on); mouse and touch users never see it. The custom cursor now shows its hover ring over the project titles.
   - What to look at: desktop — scroll through the three projects, hover the inactive titles, click each title from each project; phone — tap a project, scroll the sheet, close it.
 Parity notes of 2.2 Manifesto (approved 2026-09-23):
   - Nothing should look or move differently: each word still clears from dim + blurred + lowered as you scroll, at the same scroll positions, and "inevitable." still grows to 25× on the way out. Measured identical to the old framer-motion version at 18 scroll points on desktop and phone.

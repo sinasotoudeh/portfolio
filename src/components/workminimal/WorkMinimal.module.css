@@ -87,6 +87,22 @@
     font-size: clamp(1.5rem, 2vw, 2.5rem);
 }
 
+/* The button inside each project title (keyboard access): renders exactly like the title text */
+.titleButton {
+    display: block;
+    width: 100%;
+    margin: 0;
+    padding: 0;
+    border: 0;
+    background: none;
+    font: inherit;
+    letter-spacing: inherit;
+    text-transform: inherit;
+    text-align: inherit;
+    color: inherit;
+    cursor: inherit;
+}
+
 .leftColItem:hover .sidebarTitleInactive {
     color: var(--proj-color) !important;
     -webkit-text-stroke: 0px !important;

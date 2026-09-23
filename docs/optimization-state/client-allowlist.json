@@ -11,6 +11,7 @@
   "src/components/footer/BackToTopButton.tsx",
   "src/components/footer/NewsletterForm.tsx",
   "src/components/navigation/NavigationController.tsx",
+  "src/components/providers/KeyboardFocus.tsx",
   "src/components/providers/LenisProvider.tsx",
   "src/components/workminimal/WorkDesktop.tsx",
   "src/components/workminimal/WorkMobile.tsx"

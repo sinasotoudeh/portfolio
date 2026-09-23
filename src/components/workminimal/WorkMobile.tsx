@@ -1,6 +1,6 @@
 'use client';
 
-import React, { useState, useEffect } from 'react';
+import React, { useState, useEffect, useRef } from 'react';
 import Image from 'next/image';
 import { motion, AnimatePresence } from 'framer-motion';
 import { PROJECTS_DATA, Project } from '@/data/workminimal-projects';
@@ -12,6 +12,8 @@ import styles from './WorkMinimal.module.css';
 export default function WorkMobile() {
     const [mobileActiveProject, setMobileActiveProject] = useState<Project | null>(null);
     const [isMobile, setIsMobile] = useState(false);
+    const closeButtonRef = useRef<HTMLButtonElement>(null);
+    const openerRef = useRef<HTMLElement | null>(null);
 
     useEffect(() => {
         const query = window.matchMedia(WORK_MOBILE_QUERY);
@@ -27,6 +29,21 @@ export default function WorkMobile() {
         return () => { document.body.style.overflow = ''; };
     }, [isMobile, mobileActiveProject]);
 
+    // Keyboard: the open sheet takes focus (close button) and Escape closes it; focus then returns
+    // to the title that opened it.
+    useEffect(() => {
+        if (!mobileActiveProject) return;
+        closeButtonRef.current?.focus();
+        const onKeyDown = (e: KeyboardEvent) => {
+            if (e.key === 'Escape') setMobileActiveProject(null);
+        };
+        window.addEventListener('keydown', onKeyDown);
+        return () => {
+            window.removeEventListener('keydown', onKeyDown);
+            openerRef.current?.focus();
+        };
+    }, [mobileActiveProject]);
+
     return (
         <div className={styles.mobileShowcase}>
             <div className={styles.mobileHeader}>
@@ -41,7 +58,10 @@ export default function WorkMobile() {
                         <div
                             key={project.id}
                             className={styles.mobileTitleWrapper}
-                            onClick={() => setMobileActiveProject(project)}
+                            onClick={(e) => {
+                                openerRef.current = e.currentTarget.querySelector('button');
+                                setMobileActiveProject(project);
+                            }}
                         >
                             <h3
                                 className={styles.hugeTitleMobile}
@@ -50,7 +70,10 @@ export default function WorkMobile() {
                                     color: projColor
                                 } as React.CSSProperties}
                             >
-                                {project.title}
+                                {/* Keyboard access: Enter/Space clicks bubble to the wrapper's onClick */}
+                                <button type="button" className={styles.titleButton}>
+                                    {project.title}
+                                </button>
                             </h3>
                         </div>
                     );
@@ -61,6 +84,9 @@ export default function WorkMobile() {
                 {mobileActiveProject && (
                     <motion.div
                         className={styles.mobileModal}
+                        role="dialog"
+                        aria-modal="true"
+                        aria-labelledby="work-sheet-title"
                         initial={{ opacity: 0, y: '100%' }}
                         animate={{ opacity: 1, y: 0 }}
                         exit={{ opacity: 0, y: '100%' }}
@@ -77,7 +103,7 @@ export default function WorkMobile() {
                             <div className={styles.bgOverlaySolid} />
                         </div>
 
-                        <button className={styles.closeBtnMobile} onClick={() => setMobileActiveProject(null)} aria-label="Close project details">
+                        <button ref={closeButtonRef} className={styles.closeBtnMobile} onClick={() => setMobileActiveProject(null)} aria-label="Close project details">
                             <svg width="24" height="24" viewBox="0 0 24 24" fill="none" stroke="currentColor" strokeWidth="2">
                                 <line x1="18" y1="6" x2="6" y2="18"></line>
                                 <line x1="6" y1="6" x2="18" y2="18"></line>
@@ -86,6 +112,7 @@ export default function WorkMobile() {
 
                         <div className={styles.mobileModalContent}>
                             <h3
+                                id="work-sheet-title"
                                 className={styles.modalTitle}
                                 style={{ color: projectColor(PROJECTS_DATA.findIndex(p => p.id === mobileActiveProject.id)) }}
                             >

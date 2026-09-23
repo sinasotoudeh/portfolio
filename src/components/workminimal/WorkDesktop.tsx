@@ -149,7 +149,14 @@ export default function WorkDesktop() {
                                             color: (isActive || isHovered) ? projColor : 'transparent',
                                         } as React.CSSProperties}
                                     >
-                                        {project.title}
+                                        {/* Keyboard access: Enter/Space clicks bubble to the item's onClick */}
+                                        <button
+                                            type="button"
+                                            className={styles.titleButton}
+                                            aria-current={isActive ? 'true' : undefined}
+                                        >
+                                            {project.title}
+                                        </button>
                                     </h3>
 
                                     <AnimatePresence>
