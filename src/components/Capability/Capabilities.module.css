@@ -1,0 +1,39 @@
+/* Capabilities cylinder — CSS 3D (D-1). The stage is the old WebGL canvas box: its perspective is
+   the camera's focal length and it clips the ring like the canvas did. The ring turns as one
+   preserve-3d group; each slot places a card with rotateY(angle) translateZ(radius) scale.
+   CapabilitiesController sets the three variables from the stage's measured height; the values
+   here (same formulas on the vh-based stage height) cover the first paint. */
+.stage {
+    --cyl-perspective: calc(50vh * 1.2071068);
+    --cyl-radius: calc(50vh * 0.3793793);
+    --cyl-card-scale: 0.5458;
+    perspective: var(--cyl-perspective);
+    perspective-origin: 50% 50%;
+    overflow: hidden;
+}
+
+@media (min-width: 1024px) {
+    .stage {
+        --cyl-perspective: calc(100vh * 1.2071068);
+        --cyl-radius: calc(100vh * 0.3793793);
+        --cyl-card-scale: 1.164;
+    }
+}
+
+.ring {
+    position: absolute;
+    inset: 0;
+    transform-style: preserve-3d;
+}
+
+.slot {
+    position: absolute;
+    left: 50%;
+    top: 50%;
+    width: 320px;
+    height: 420px;
+    margin: -210px 0 0 -160px;
+    transform: rotateY(var(--card-angle)) translateZ(var(--cyl-radius)) scale(var(--cyl-card-scale));
+    pointer-events: none;
+    -webkit-font-smoothing: antialiased;
+}

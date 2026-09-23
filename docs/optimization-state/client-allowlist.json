@@ -1,6 +1,5 @@
 [
-  "src/components/Capability/CapabilitiesSection.tsx",
-  "src/components/Capability/CylinderCard.tsx",
+  "src/components/Capability/CapabilitiesController.tsx",
   "src/components/Hero/HeroCanvas.tsx",
   "src/components/Hero/HeroController.tsx",
   "src/components/Manifesto/ManifestoScrub.tsx",
