@@ -148,6 +148,9 @@
     flex-direction: column;
     pointer-events: auto;
     position: relative;
+    /* Own layer: the titles' slide/stroke transitions and the description's word animation never
+       re-rasterise the full-screen panel behind them */
+    will-change: transform;
 }
 
 .titleWrapper {
@@ -213,7 +216,9 @@
     /* نادیده گرفته شدن توسط کرسر */
     z-index: 1;
     padding-top: 1rem;
-    will-change: clip-path;
+    /* Own layer: its words lift onto (and drop off) layers while they animate — that churn stays
+       inside this small layer */
+    will-change: transform;
 }
 
 .description {

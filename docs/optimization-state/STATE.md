@@ -1,11 +1,11 @@
 # OPTIMIZATION STATE
-Updated: 2026-09-23T22:00:00Z
+Updated: 2026-09-23T23:00:00Z
 Approval Mode: per-task
 Phase: 2 — Section Rebuilds
-Sub-task: 2.5b — ProcessSection mobile: late pin ("re-fixes" mid-way) + more mobile performance
+Sub-task: 2.5c — ProcessSection mobile performance (layer stability + off-screen layer release)
 In Flight: src/components/ProcessSection/* , src/data/processData.ts
 Status: done-awaiting-approval
-Waiting on User Approval: yes — owner phone check of 2.5b on production (+ icon-replacement question still open)
+Waiting on User Approval: yes — owner phone check of 2.5c + device/browser info (and optionally a DevTools trace) for further mobile tuning; icon-replacement question open
 Plan for 2.5b (owner 2026-09-23: "it's still laggy on mobile however it got better, but the main problem is when scrolling to process section (from upper or below sections) the viewport that should be fixed to section acts late, especially on mobile … when you see it mid-way it re-fixes to viewport, fix them and make it more high performance on mobile"):
   Cause (code read): ScrollTrigger `pin` sets position: fixed from JavaScript on scroll events. Phone scrolling runs on the compositor thread ahead of JS, so the section scrolls past the top, then snaps back when the pin applies a frame or more later. Desktop scroll is driven by Lenis in the same GSAP tick as ScrollTrigger, hence mostly a phone symptom. Hero and Capabilities pin with CSS sticky (compositor-side) and don't do this.
   [x] Pin → CSS sticky (D-24): wrapper calc((--stages + 2) × 100vh), container sticky top 0, ScrollTrigger progress-only; phone icon shadow 5/12/14 px; StageIcons memoised.
@@ -286,7 +286,10 @@ Plan for 1.3a:
   [ ] Owner parity review (V4) → record approval, then 1.3b
 1.2 — closed 2026-09-13 (commit 13a65c1, owner-approved): next.config images → optimizer on, formats AVIF+WebP; Works next/image PNGs now 22–56 KB AVIF. Details: LOG.md + commit body.
 1.1 — closed 2026-09-13 (commits 9d3e03a + 2619c24): next/font Inter (normal only, owner dropped italic) + JetBrains Mono feeding --font-body/--font-mono; Resume/Contact family hardcodes → tokens; Contact accent serif stack. Details: LOG.md + commit bodies; parity notes approved (see approvals).
-Parity notes pending user review (2.5b, D-24):
+Parity notes pending user review (2.5c, D-25 — pushed with 2.5b):
+  - Pin confirmed fixed by the owner. Further mobile work: fewer redraws per stage change (titles/description on their own stable layers, icons drawn once per visit) and off-screen sections release their GPU layers (94 → 68 layers page-wide). No visual change.
+  - The emulator can't measure a real phone GPU; next step needs the owner's device model/browser (and ideally a DevTools performance recording) to target what's left.
+Parity notes of 2.5b, D-24 (owner 2026-09-23: "the view port is fixed"):
   - The Process section is now held in place by the browser itself (CSS sticky, like the Hero and Capabilities sections) instead of by a script — no more sliding past and snapping back when you scroll into or out of it on a phone. Same scroll length, same stage timing.
   - Phones: the icons' shadows are scaled down with the smaller icons (same look, lighter to draw), and a stage change does less work.
 Parity notes of 2.5 ProcessSection, D-23 (owner 2026-09-23: "it got better" — desktop OK; mobile follow-up → 2.5b):
@@ -391,8 +394,8 @@ Docs read this run (AGENTS.md gate) — Phase 0 session; every later session re-
   1.3b session (2026-09-13): re-read 01-getting-started/14-metadata-and-og-images.md; read 03-api-reference/04-functions/generate-metadata.md (title, description, metadataBase, URL composition) — Not yet read now: 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
   2.0 session (2026-09-13): re-read 01-getting-started/05-server-and-client-components.md "Context providers"; non-Next sources: @gsap/react 2.1.2 src/types, gsap 3.14.2 exports + gsap-core ticker + ScrollTrigger.update, lenis 1.3.21 README + lenis.mjs + lenis-react.mjs
   Not yet read (as of Phase 0; see per-session lines below): 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
-Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 (owner-approved, italic dropped); 1.2 (owner-approved); 1.3a (owner-approved); 1.3b (owner-approved, D-13 approved); ⛔ Phase 1 gate (owner-approved 2026-09-13); 2.0 (owner-approved); 2.1a (owner-approved 2026-09-22); 2.1c (owner-approved 2026-09-22, D-16/D-17); 2.1b (owner-approved 2026-09-22, D-15/D-18); 2.2 (owner-approved 2026-09-23); 2.2b (owner-requested copy, D-19, approved on production); 2.3a + D-20 + D-21 (owner-approved 2026-09-23); 2.3b (owner-approved 2026-09-23); 2.3c (owner-requested fixes, committed 4d4c0ac); 2.4 (desktop owner-approved 2026-09-23); 2.4b (mobile fixes D-22, owner-approved 2026-09-23); 2.5 (D-23, owner: better); 2.5b (D-24 sticky pin, pushed — owner phone check pending)
-Next Immediate Action: owner verdict on production for 2.5 (+ answer on replacing the icons with real brand icons). On approval: record it, then 2.6 Resume per phase-plan (AnimatePresence tab transitions → GSAP; shell imports resumeData server-side; the mobile intro slide-in clip from D-16 stays; motion + interaction inventory first; 'All About Me!' is a second page h1 → h2).
+Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 (owner-approved, italic dropped); 1.2 (owner-approved); 1.3a (owner-approved); 1.3b (owner-approved, D-13 approved); ⛔ Phase 1 gate (owner-approved 2026-09-13); 2.0 (owner-approved); 2.1a (owner-approved 2026-09-22); 2.1c (owner-approved 2026-09-22, D-16/D-17); 2.1b (owner-approved 2026-09-22, D-15/D-18); 2.2 (owner-approved 2026-09-23); 2.2b (owner-requested copy, D-19, approved on production); 2.3a + D-20 + D-21 (owner-approved 2026-09-23); 2.3b (owner-approved 2026-09-23); 2.3c (owner-requested fixes, committed 4d4c0ac); 2.4 (desktop owner-approved 2026-09-23); 2.4b (mobile fixes D-22, owner-approved 2026-09-23); 2.5 (D-23, owner: better); 2.5b (D-24 sticky pin, owner: pin fixed); 2.5c (D-25, pushed — owner phone check pending)
+Next Immediate Action: owner verdict on the phone for 2.5c + their device model and browser (iPhone Safari vs Android Chrome decides the next lever). If still heavy: options ready — (a) phones reveal the description words without the 3D flip (opacity + rise), (b) pre-rendered (baked) icon shadows for phones, (c) fewer icons per stage on phones; each a small visible change needing the owner's OK. Then 2.6 Resume.
 Blockers / Open Questions:
   - RESOLVED 2026-09-22 → D-15 (keep 250; measured in 2.1b) — (2.1a → 2.1b, owner call — D-15) cwv-invariants "Hero engine hygiene" item 4 asks for fewer particles on phones (≤ 768 px). That is visible (a sparser sphere/field), so it conflicts with parity. Recommendation: keep all 250 particles and take the CPU win from the parity-neutral fixes (pause off-screen, DPR cap, reduced-motion static), measuring the per-frame cost on a 4× CPU-throttled phone profile in 2.1b; only if that cost is material, propose a count with before/after screenshots.
   - (2.1a, Phase 3 copy) Hero project list copy looks like template placeholders ("Nexus Identity"… / "Branding"…).

@@ -11,6 +11,7 @@ export default function WorkMinimal() {
     return (
         <section
             id="work"
+            data-pause-offscreen=""
             aria-labelledby="work-title"
             className={styles.scrollContainer}
             style={{ '--project-count': PROJECTS_DATA.length } as CSSProperties}

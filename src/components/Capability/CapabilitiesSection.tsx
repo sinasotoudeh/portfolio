@@ -10,6 +10,7 @@ export default function CapabilitiesSection() {
     return (
         <CapabilitiesController
             id="capabilities"
+            data-pause-offscreen=""
             aria-labelledby="capabilities-title"
             className="relative w-full h-[400vh] bg-[#050505] text-white"
         >

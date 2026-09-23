@@ -104,6 +104,7 @@ export default function ResumeDashboard() {
     return (
         <section
             id='cv'
+            data-pause-offscreen=""
             ref={sectionRef}
             onClick={handleSectionClick}
             className={styles.root}

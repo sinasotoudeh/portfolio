@@ -443,13 +443,16 @@ section[data-section="awards"] {
   }
 }
 
-/* Sections marked data-pause-offscreen hold their CSS loops (marquee, glows, drifting blobs)
-   while they are out of view — OffscreenPause sets data-offscreen. Unseen, but it stops per-frame
-   main-thread style work (and the hero hint's text-shadow repaints) everywhere else on the page. */
+/* Sections marked data-pause-offscreen, while more than a screen out of view (OffscreenPause sets
+   data-offscreen): their CSS loops (marquee, glows, drifting blobs) hold, and their will-change GPU
+   layers are released — both come back before the section is visible. Unseen, but it stops per-frame
+   style work and shrinks the layer tree the browser re-computes on every frame (on phones ~94
+   layers page-wide before this). */
 [data-offscreen] *,
 [data-offscreen] *::before,
 [data-offscreen] *::after {
   animation-play-state: paused !important;
+  will-change: auto !important;
 }
 
 @media (prefers-reduced-motion: reduce) {

@@ -43,7 +43,7 @@ const SOCIAL_LINKS = [
 
 export default function Footer() {
   return (
-    <footer className={styles.footer}>
+    <footer className={styles.footer} data-pause-offscreen="">
       <div className={styles.footerInner}>
         {/* Top Section */}
         <div className={styles.footerTop}>

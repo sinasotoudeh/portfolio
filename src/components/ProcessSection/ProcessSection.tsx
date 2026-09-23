@@ -15,6 +15,9 @@ const MOBILE_QUERY = '(max-width: 767px)';
 // Stage animations set their start state before the browser paints (no one-frame flash of the icons).
 const useIsomorphicLayoutEffect = typeof window !== 'undefined' ? useLayoutEffect : useEffect;
 
+// One frame for an icon's layer to be created at its final scale before its flight starts.
+const LAYER_LEAD = 1 / 60;
+
 // Rendering notes (what keeps this section light): every drop-shadow filter sits on a static inner
 // element and all motion happens on its wrapper, so the GPU moves finished bitmaps instead of
 // re-filtering them each frame; the stage colour is its own layer, so a colour change never repaints
@@ -94,9 +97,11 @@ export default function ProcessSection() {
                 );
             }
 
-            // Icons of the other stages stop (their group is hidden by React).
+            // Icons of the other stages stop and release their layers (their group is hidden by React).
             section.querySelectorAll<HTMLElement>('[data-stage]').forEach(group => {
-                if (Number(group.dataset.stage) !== displayIndex) gsap.killTweensOf(group.children);
+                if (Number(group.dataset.stage) === displayIndex) return;
+                gsap.killTweensOf(group.children);
+                for (const icon of group.children) (icon as HTMLElement).style.willChange = '';
             });
             if (displayIndex === null) return;
 
@@ -108,20 +113,22 @@ export default function ProcessSection() {
             icons.forEach((icon, i) => {
                 const finalScale = Number(isMobile ? icon.dataset.scaleMobile : icon.dataset.scale);
                 const delay = Number(icon.dataset.delay) || (i * 0.05);
-                // Fixed raster scale while it flies (no re-rasterising the shadowed art mid-flight),
-                // released at rest so the final frame is rasterised crisp.
+                // Each icon becomes a layer at its FINAL scale (hidden, off to the right) one frame
+                // before it flies, and keeps that layer while its stage is shown: the shadowed art is
+                // rasterised once, crisp at rest, and the flight only moves the finished bitmap.
+                gsap.set(icon, { x: '100vw', scale: finalScale, opacity: 0, rotation: 10, willChange: 'transform' });
                 gsap.fromTo(icon,
-                    { x: '100vw', scale: finalScale * 0.8, opacity: 0, rotation: 10, willChange: 'transform' },
+                    { x: '100vw', scale: finalScale * 0.8, opacity: 0, rotation: 10 },
                     {
                         x: '0vw',
                         scale: finalScale,
                         opacity: 1,
                         rotation: 0,
                         duration: 1.2,
-                        delay,
+                        delay: delay + LAYER_LEAD,
                         ease: 'power4.out',
-                        overwrite: true,
-                        onComplete: () => { icon.style.willChange = ''; },
+                        overwrite: 'auto',
+                        immediateRender: false,
                     }
                 );
             });
@@ -147,7 +154,7 @@ export default function ProcessSection() {
     };
 
     return (
-        <div ref={wrapperRef} className={styles.wrapper} style={{ '--stages': processNodes.length } as React.CSSProperties}>
+        <div ref={wrapperRef} className={styles.wrapper} data-pause-offscreen="" style={{ '--stages': processNodes.length } as React.CSSProperties}>
             <section
                 ref={sectionRef}
                 id='process'
