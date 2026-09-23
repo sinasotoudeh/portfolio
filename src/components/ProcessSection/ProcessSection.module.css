@@ -11,8 +11,18 @@
     display: flex;
     align-items: center;
     padding: 0 5vw;
-    transition: background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1), color 0.6s ease;
+    transition: color 0.6s ease;
     overflow: hidden;
+    will-change: transform;
+}
+
+/* Stage colour — alone on its own layer: a colour change repaints nothing else */
+.bgColor {
+    position: absolute;
+    inset: 0;
+    z-index: 0;
+    pointer-events: none;
+    transition: background-color 0.6s cubic-bezier(0.16, 1, 0.3, 1);
     will-change: transform;
 }
 
@@ -22,16 +32,23 @@
 .bgImage {
     position: absolute;
     inset: 0;
-    background-position: center;
-    background-size: cover;
-    background-repeat: no-repeat;
     pointer-events: none;
     opacity: 0.5;
     z-index: 0;
+    transition: opacity 0.6s ease, transform 0.6s ease;
+    transform: scale(1);
+    /* Its own layer: the fade/zoom moves the already-filtered picture (filters live on .bgImageArt) */
+    will-change: transform, opacity;
+}
+
+.bgImageArt {
+    position: absolute;
+    inset: 0;
+    background-position: center;
+    background-size: cover;
+    background-repeat: no-repeat;
     filter:
         drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(-1px -1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(1px -1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(-1px 1px 0 rgba(255, 255, 255, 0.8)) drop-shadow(20px 20px 0 rgba(138, 43, 226, 0.9));
-    transition: opacity 0.6s ease, transform 0.6s ease, filter 0.5s ease;
-    transform: scale(1);
 }
 
 .bgImageHidden {
@@ -50,18 +67,56 @@
     overflow: hidden;
     width: 100%;
     height: 100%;
+    /* Own layer: resting icons (with their shadows) aren't repainted by title/colour changes */
+    will-change: transform;
 }
 
+/* One group per stage, kept mounted once shown; React toggles its visibility */
+.stageIcons {
+    position: absolute;
+    inset: 0;
+}
+
+/* Icon wrapper: positioned and animated (fly-in); the shadowed picture inside never moves itself */
 .fixedImage {
     position: absolute;
+    top: var(--top);
+    right: var(--right);
     height: 15vh;
     min-height: 80px;
     max-height: 200px;
+    transform-origin: center center;
+}
+
+.fixedImageArt {
+    display: block;
+    height: 100%;
     width: auto;
     object-fit: contain;
-    will-change: transform, opacity;
-    transform-origin: center center;
     filter: drop-shadow(8px 20px 24px rgba(0, 0, 0, 0.25)) drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.2));
+}
+
+/* Which icons a screen size shows: phones priority 1, tablets priority ≤ 2, desktop all */
+@media (max-width: 767px) {
+    .fixedImage {
+        top: var(--top-mobile);
+        right: var(--right-mobile);
+        /* Smaller icons on phones (owner request 2026-09-23): 60 % of the former size */
+        height: 9vh;
+        min-height: 48px;
+        max-height: 120px;
+    }
+
+    .fixedImage[data-priority="2"],
+    .fixedImage[data-priority="3"] {
+        display: none;
+    }
+}
+
+@media (min-width: 768px) and (max-width: 1023px) {
+    .fixedImage[data-priority="3"] {
+        display: none;
+    }
 }
 
 /* =========================================
@@ -171,7 +226,6 @@
 .word {
     display: inline-block;
     transform-origin: 0% 100%;
-    will-change: transform, opacity;
 }
 
 /* =========================================

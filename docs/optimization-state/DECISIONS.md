@@ -200,4 +200,23 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 3. Contact's background is a `position: fixed` `::before` layer clipped to the section with `clip-path: inset(0)`, replacing `background-attachment: fixed`. The pixels are the same (desktop and phone pixel diffs inside Contact are 0 beyond antialiasing), but it's composited instead of repainted. Side effect: iOS Safari ignored `background-attachment: fixed` (the image scrolled there), so iPhones now see the fixed background the design intended.
 4. Capabilities background and ring get `will-change: transform`. Card depth styles are written only when they change.
 **Result (same traced touch scroll, 4× CPU):** layout 244 → 0 ms, style 525 → 234 ms, paint 251 → 136 ms, layerize 824 → 597 ms, script 565 → 369 ms, frames > 25 ms 18 → 4. Idle page: style recalc 60/s → 0, paints → 0. Cylinder geometry is still 0.00 px against the WebGL original (desktop and phone, scroll and drag).
-**Approved by user:** requested by the owner 2026-09-23; result to be checked on a real phone on production.
+**Approved by user:** yes — requested by the owner 2026-09-23; result approved on production ("it's better now (less laggy)").
+
+## D-23 — ProcessSection performance rebuild and smaller phone icons
+
+**Context:** On 2026-09-23 the owner called ProcessSection "the major laggy section in the whole site … a disaster in performance even on a desktop pc". They like the design, and want it "blazing". They also said the icons are too big on phones and are not real app icons (replace only if cheap). A traced wheel walk through all six stages at 1440×900 ran at 15 fps (median frame 83 ms, 235 of 365 frames over 50 ms), with raster 1.1 s/s and GPU 1.75 s/s. The main thread was light, so the cost was rendering:
+- five chained drop-shadow filters on the full-screen background, re-evaluated during its fade;
+- a 24 px drop-shadow filter on every flying icon, applied to the same element that scales and rotates, so it was re-filtered every frame;
+- icons unmounted and remounted (re-decoded) per stage;
+- 40–60 permanent `will-change` word layers;
+- a stage-colour transition that repainted the layer holding the giant stroked titles and the art;
+- a manual `ScrollTrigger.refresh()` on every resize, which on phones fires while scrolling as the URL bar moves.
+**Decision (same look and choreography — D-2's timeline unchanged):**
+1. Every filter sits on a static inner element, and motion happens on a wrapper: `.bgImage` (fade/zoom, own layer) around `.bgImageArt` (the five drop-shadows); `.fixedImage` wrapper (fly-in) around the `next/image` art (its drop-shadow). While an icon flies it gets `will-change: transform` (a fixed raster scale, so no mid-flight re-raster), which is released at rest so the final frame rasterises crisp.
+2. The stage colour lives on its own `.bgColor` layer. `.imagesContainer` is its own layer, so resting icons aren't repainted by title or colour changes.
+3. Icons go through `next/image` (intrinsic sizes added to processData; AVIF/WebP). Each stage's group mounts once and stays mounted; the next stage is mounted ahead. Groups toggle visibility, and hidden groups' tweens are killed. Breakpoint selection (priority, mobile top/right) moved to CSS, with the mobile scale read at animation time. The windowWidth state and the manual refresh are gone (ScrollTrigger's own resize refresh ignores height-only resizes on touch devices).
+4. No permanent `will-change` on the words. Stage animations run in a layout effect, which also removes a one-frame flash of the icons at their resting spots before the fly-in.
+5. Phone icons (≤ 767 px) are 60 % of their former size (9vh, min 48 / max 120 px instead of 15vh, 80 / 200 px), at the same positions. This is the owner's request.
+**Not changed:** the icon artwork. The icons are stylised 3D renders rather than real brand marks; replacing them is a separate proposal.
+**Result:** desktop walk 15 → 50 fps average, median frame 83 → 17 ms, frames > 50 ms 235 → 15, GPU 1.75 → 1.41 s/s on this software-GPU box. Phone profile (4× CPU) 31 → 46 fps, GPU 1.47 → 0.32 s/s, raster 0.68 → 0.36 s/s. The remaining cost is the icons' own shadows, rasterised once per fly-in; switching them off entirely would only add ~25 % more on this box. Stage states, icon sets per breakpoint, colours, hover override, pin length and page height are identical to before (probe). Desktop screenshots are identical. `verify-portfolio.mjs --all`: 9/9 (the raw-`<img>` failure is gone).
+**Approved by user:** requested by the owner 2026-09-23; to be checked on production.
