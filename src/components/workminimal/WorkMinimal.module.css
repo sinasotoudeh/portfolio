@@ -112,6 +112,9 @@
 
 .projectDescContainer {
     overflow: hidden;
+}
+
+.projectDescInner {
     padding-top: 1rem;
 }
 

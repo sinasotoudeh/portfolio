@@ -1,11 +1,16 @@
 # OPTIMIZATION STATE
-Updated: 2026-09-23T10:30:00Z
-Approval Mode: per-task
+Updated: 2026-09-23T11:00:00Z
+Approval Mode: per-task   # owner 2026-09-23: "dont stop for approval, continue to 2.4 and push when done" — 2.3c + 2.4 run through without a stop; push at the end
 Phase: 2 — Section Rebuilds
-Sub-task: 2.3b — WorkMinimal motion port: framer F1–F6 → GSAP (then push, owner pre-authorised)
-In Flight: src/components/workminimal/WorkDesktop.tsx, WorkMobile.tsx, src/lib/motion/eases.ts (new)
-Status: done-awaiting-approval
-Waiting on User Approval: yes — V4 of 2.3b on production (pushed per the owner's instruction)
+Sub-task: 2.3c — owner-reported fixes: annotation line/dot alignment + left-column jump (then 2.4 without a stop)
+In Flight: WorkDesktop.tsx (dot centring, description inner wrapper), WorkMinimal.module.css
+Status: in-progress
+Waiting on User Approval: no
+Plan for 2.3c (owner 2026-09-23: "the line going out of the point are not placed precisely (in each slide one point and line are exactly in sync but two other lines are a little off the point) … there is a small layout shift in left columns when moving from one to another (whether scrolling or clicking) fix it … then dont stop for approval, continue to 2.4 and push when done"):
+  Hypotheses (from the code): (1) framer's inline `transform: scale()` replaced `.pinDotWrapper`'s `translate(-50%, -50%)`, so every dot sits +9/+9 px from the pin origin where its line starts (2.3b kept that faithfully); (2) `.projectDescContainer` keeps `padding-top: 1rem` at height 0 → a new description mounts 16 px tall and a leaving one unmounts from 16 px; the left column is vertically centred, so the titles jump ~8 px at the start and end of every change (framer had the same).
+  [x] Measured on the 2.3b build: every pin's dot centre − line start = (9.0, 9.0) px (9 pins, 3 projects); FoladMarket title steps 3.2 / −3.4 / 8.0 px in single frames at 44 / 401 / 517 ms of a change (mount + unmount of the padded description).
+  [x] Fixed: dot gets xPercent/yPercent −50 under the scale (first paint `translate(-50%, -50%) scale(0)`); `.projectDescContainer` keeps only overflow hidden, its `padding-top: 1rem` moves to a new inner `.projectDescInner` (settled layout identical).
+  [x] Re-measured: all 9 pins (0.0, 0.0); no title step > 3 px in either direction (1→2, 2→0), positions continuous; settled states 0 diffs vs 2.3b (work-probe). Gates: build ✓, lint ✓, verify 8/1 known img/17.
 Plan for 2.3b (WorkMinimal motion port):
   [x] Owner 2026-09-23 "approved, continue (and push when done to check everything on production)" → 2.3a + D-20 + D-21 approved on production 41b0a4b; push pre-authorised for 2.3b.
   [x] framer 12.38 facts (read in node_modules/motion-dom 12.38.0 + motion-utils 12.36.0): a transition with only `duration` is a keyframes tween with ease "easeOut" = cubic-bezier(0, 0, 0.58, 1) (animateMotionValue default); easeInOut = cubic-bezier(0.42, 0, 0.58, 1); `{ type: 'spring', bounce: 0.5 }` → duration-based spring, 800 ms, damping ratio 0.5 — framer's own generator sampled and fitted: closed-form underdamped spring ω0 = 15.897 rad/s, ζ = 0.5, max error 0.00097. SSR first paint = inline initial styles (bg opacity 0 / blur 20 / scale 1.05; desc opacity 0 height 0; image opacity 0 scale 0.95; pin dot scale(0) — replaces the class translate(-50%, -50%); box opacity 0 / blur 5 / translateY(±10); SVG rect + path pathLength="1" stroke-dasharray="0 1", path opacity attr 0).
@@ -24,7 +29,7 @@ Plan for 2.3b (WorkMinimal motion port):
   [x] Gates: `pnpm build` ✓; `pnpm lint` ✓; `tsc --noEmit` ✓; `verify-portfolio.mjs --all` → `VERIFY: 8 passed, 1 failed, 17 warning(s)` (known ProcessSection.tsx:181 img); census 16. Budget / JS 503.0 KB gz (+0.6 — framer still shipped for Capabilities/Resume/Contact until 2.8; the eases + GSAP code now ride alongside).
   [x] After: curves match framer after a 1–4 frame alignment (GSAP starts 14–58 ms sooner — framer waits a React render + frame; bg enter after a hover swap 106 ms sooner); residual after alignment ≤ 2.3 % on bg/box/border/sheet, 7–8 % only on the steepest spring/height segments (one 16 ms frame ≈ 10 % there). Settled states: 0 diffs vs 2.3a-kbd (work-probe: titles, images, annotations, heights, modal flow, no-JS first paint). Reduced motion: every swap instant. Stress (hover storm, scroll storm, return to the shown project mid-exit): always one bg / image / description, labels at 1, 0 errors. Shots `.visual/20260923-2.3b-after/{d,m}` + pair sheets `.visual/20260923-2.3b-pairs/` (identical to 2.3a).
   [x] Commit b95c4ff `refactor(rsc)+perf(motion): 2.3b WorkMinimal` (D-9) → LOG → STATE → push
-  [ ] ⛔ owner parity review on production → then 2.4 Capabilities (CSS-3D cylinder, D-1 — the longest parity stop)
+  [x] ⛔ owner parity review — approved 2026-09-23 ("everything approved but two small problems" → 2.3c)
 Plan for 2.3a-kbd (owner 2026-09-23: "make them keyboard-accessible an push to production"; the 2.3a review itself stays open until tested on production):
   [x] Finding: globals.css shows focus rings only under body.keyboard-nav (`body:not(.keyboard-nav) *:focus { outline: none }`) and nothing ever sets that class → no focus indicator anywhere on the site today.
   Design (D-21):
@@ -233,7 +238,7 @@ Plan for 1.3a:
   [ ] Owner parity review (V4) → record approval, then 1.3b
 1.2 — closed 2026-09-13 (commit 13a65c1, owner-approved): next.config images → optimizer on, formats AVIF+WebP; Works next/image PNGs now 22–56 KB AVIF. Details: LOG.md + commit body.
 1.1 — closed 2026-09-13 (commits 9d3e03a + 2619c24): next/font Inter (normal only, owner dropped italic) + JetBrains Mono feeding --font-body/--font-mono; Resume/Contact family hardcodes → tokens; Contact accent serif stack. Details: LOG.md + commit bodies; parity notes approved (see approvals).
-Parity notes pending user review (2.3b Selected Works motion):
+Parity notes of 2.3b Selected Works motion (approved 2026-09-23):
   - The section's animations now run on GSAP instead of framer-motion, reproducing framer's exact curves (its default ease-out, the 0.5-bounce spring on the annotation dots, the sheet's custom curve). Measured side by side, every animation has the same shape, duration and end state.
   - The one measurable difference: animations start a frame or few sooner (≈ 15–60 ms; the background swap on hover ≈ 0.1 s sooner after the old one fades), because GSAP starts at once where framer waited for React. Should read as identical, maybe a touch snappier.
   - With "reduce motion" on: project, background and sheet changes are instant (new behaviour).
@@ -317,7 +322,7 @@ Docs read this run (AGENTS.md gate) — Phase 0 session; every later session re-
   1.3b session (2026-09-13): re-read 01-getting-started/14-metadata-and-og-images.md; read 03-api-reference/04-functions/generate-metadata.md (title, description, metadataBase, URL composition) — Not yet read now: 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
   2.0 session (2026-09-13): re-read 01-getting-started/05-server-and-client-components.md "Context providers"; non-Next sources: @gsap/react 2.1.2 src/types, gsap 3.14.2 exports + gsap-core ticker + ScrollTrigger.update, lenis 1.3.21 README + lenis.mjs + lenis-react.mjs
   Not yet read (as of Phase 0; see per-session lines below): 02-guides/json-ld.md (3.2), 02-guides/forms.md (5.2)
-Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 (owner-approved, italic dropped); 1.2 (owner-approved); 1.3a (owner-approved); 1.3b (owner-approved, D-13 approved); ⛔ Phase 1 gate (owner-approved 2026-09-13); 2.0 (owner-approved); 2.1a (owner-approved 2026-09-22); 2.1c (owner-approved 2026-09-22, D-16/D-17); 2.1b (owner-approved 2026-09-22, D-15/D-18); 2.2 (owner-approved 2026-09-23); 2.2b (owner-requested copy, D-19, approved on production); 2.3a + D-20 + D-21 (owner-approved 2026-09-23); 2.3b (committed b95c4ff, pushed — owner review pending)
+Completed sub-tasks: 0.1, 0.2, 0.3, 0.4, ⛔ Phase 0 gate (plan re-confirmed; D-9 authorship, D-10 visual tooling, D-11 casing check, D-12 gate decisions); 1.1 (owner-approved, italic dropped); 1.2 (owner-approved); 1.3a (owner-approved); 1.3b (owner-approved, D-13 approved); ⛔ Phase 1 gate (owner-approved 2026-09-13); 2.0 (owner-approved); 2.1a (owner-approved 2026-09-22); 2.1c (owner-approved 2026-09-22, D-16/D-17); 2.1b (owner-approved 2026-09-22, D-15/D-18); 2.2 (owner-approved 2026-09-23); 2.2b (owner-requested copy, D-19, approved on production); 2.3a + D-20 + D-21 (owner-approved 2026-09-23); 2.3b (owner-approved 2026-09-23)
 Next Immediate Action: owner verdict on production for 2.3b. On approval: record it, then 2.4 Capabilities — the CSS-3D cylinder rebuild (D-1): read CapabilitiesSection.tsx + CylinderCard.tsx + src/data/capabilities.ts fully, extract N / card size / radius / rotation mapping / spring feel / active styling into the STATE inventory, capture the WebGL original's states (screens + drag/scroll behaviour) before any edit; split 2.4a (static CSS-3D ring + cards as real DOM) / 2.4b (drag inertia + scroll rotation) if needed; schedule the owner's attention (longest parity stop).
 Blockers / Open Questions:
   - RESOLVED 2026-09-22 → D-15 (keep 250; measured in 2.1b) — (2.1a → 2.1b, owner call — D-15) cwv-invariants "Hero engine hygiene" item 4 asks for fewer particles on phones (≤ 768 px). That is visible (a sparser sphere/field), so it conflicts with parity. Recommendation: keep all 250 particles and take the CPU win from the parity-neutral fixes (pause off-screen, DPR cap, reduced-motion static), measuring the per-frame cost on a 4× CPU-throttled phone profile in 2.1b; only if that cost is material, propose a count with before/after screenshots.

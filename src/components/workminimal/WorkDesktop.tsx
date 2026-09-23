@@ -364,7 +364,8 @@ function ProjectDescription({ open, onClosed, children }: { open: boolean; onClo
 
     return (
         <div ref={ref} className={styles.projectDescContainer} style={{ opacity: 0, height: 0 }}>
-            {children}
+            {/* The top spacing lives inside, so height 0 is truly 0 (no jump when it mounts or leaves) */}
+            <div className={styles.projectDescInner}>{children}</div>
         </div>
     );
 }
@@ -399,8 +400,8 @@ function AnnotationPoint({ annotation, index, color }: { annotation: Annotation,
     }
     const boxFromY = dir === 'bottom' ? -10 : 10;
 
-    // On mount: the dot springs in, then the line draws, then the label fades up. The dot's
-    // transform is only its scale (x/y 0), as framer's inline transform replaced the class translate.
+    // On mount: the dot springs in, then the line draws, then the label fades up. The dot is centred
+    // on the pin (−50%/−50%, where its line starts) under the scale.
     useGSAP(() => {
         const dot = dotRef.current;
         const path = pathRef.current;
@@ -409,7 +410,7 @@ function AnnotationPoint({ annotation, index, color }: { annotation: Annotation,
         const instant = prefersReducedMotion();
         const at = (seconds: number) => (instant ? 0 : seconds);
 
-        gsap.fromTo(dot, { x: 0, y: 0, scale: 0 }, {
+        gsap.fromTo(dot, { xPercent: -50, yPercent: -50, scale: 0 }, {
             scale: 1,
             delay: at(delay),
             duration: at(FRAMER_SPRING_BOUNCE_05.duration),
@@ -458,7 +459,7 @@ function AnnotationPoint({ annotation, index, color }: { annotation: Annotation,
                 />
             </svg>
 
-            <div ref={dotRef} className={styles.pinDotWrapper} style={{ transform: 'scale(0)' }}>
+            <div ref={dotRef} className={styles.pinDotWrapper} style={{ transform: 'translate(-50%, -50%) scale(0)' }}>
                 <div
                     className={styles.pinDot}
                     style={{
