@@ -89,6 +89,8 @@
     height: 15vh;
     min-height: 80px;
     max-height: 200px;
+    /* The icon's own proportions (its width follows the height, also when only the phone art shows) */
+    aspect-ratio: var(--ratio);
     transform-origin: center center;
 }
 
@@ -98,6 +100,18 @@
     width: auto;
     object-fit: contain;
     filter: drop-shadow(8px 20px 24px rgba(0, 0, 0, 0.25)) drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.2));
+}
+
+/* Phone art: the icon with its shadow baked in (scripts/bake-process-shadows.mjs), laid over the
+   icon's box so the icon pixels land exactly where the filtered icon's did (D-26) */
+.fixedImagePhone {
+    display: none;
+    position: absolute;
+    left: var(--phone-left);
+    top: var(--phone-top);
+    width: var(--phone-width);
+    height: var(--phone-height);
+    max-width: none;
 }
 
 /* Which icons a screen size shows: phones priority 1, tablets priority ≤ 2, desktop all */
@@ -111,9 +125,14 @@
         max-height: 120px;
     }
 
-    /* Their shadow scales with them (60 % of 8/20/24 px): same look, a cheaper blur on phone GPUs */
+    /* Phones show the baked-shadow art (the shadow scaled with the 60 % icons, 5/12/14 px) instead
+       of computing a drop-shadow filter */
     .fixedImageArt {
-        filter: drop-shadow(5px 12px 14px rgba(0, 0, 0, 0.25)) drop-shadow(1px 1px 0 rgba(255, 255, 255, 0.2));
+        display: none;
+    }
+
+    .fixedImagePhone {
+        display: block;
     }
 
     .fixedImage[data-priority="2"],

@@ -5,6 +5,7 @@ import React, { useState, useRef, useEffect, useLayoutEffect, useCallback, memo 
 import Image from 'next/image';
 import { gsap, ScrollTrigger } from '@/lib/motion/gsap';
 import { processNodes, type ProcessNode } from '../../data/processData';
+import { PHONE_ICONS } from '../../data/processPhoneIcons';
 import styles from './ProcessSection.module.css';
 import clsx from 'clsx';
 
@@ -85,13 +86,16 @@ export default function ProcessSection() {
                 );
             }
 
+            // Words rise into place; on desktop they also flip up in 3D, on phones they only rise and
+            // fade (D-26 — same timing, far fewer GPU layers).
+            const isPhone = window.matchMedia(MOBILE_QUERY).matches;
             const descriptionElements = section.querySelectorAll(`.${styles.word}`);
             if (descriptionElements.length > 0 && displayIndex !== null) {
                 gsap.fromTo(
                     descriptionElements,
-                    { y: 30, opacity: 0, rotateX: -60 },
+                    isPhone ? { y: 30, opacity: 0 } : { y: 30, opacity: 0, rotateX: -60 },
                     {
-                        y: 0, opacity: 1, rotateX: 0,
+                        y: 0, opacity: 1, ...(isPhone ? {} : { rotateX: 0 }),
                         duration: 0.6, stagger: 0.015, ease: 'power3.out', overwrite: true, delay: 0.1
                     }
                 );
@@ -107,11 +111,10 @@ export default function ProcessSection() {
 
             // The shown stage's icons fly in. Hidden ones (priority for this screen size) are skipped
             // and don't count toward the stagger.
-            const isMobile = window.matchMedia(MOBILE_QUERY).matches;
             const group = section.querySelector<HTMLElement>(`[data-stage="${displayIndex}"]`);
             const icons = group ? [...group.children].filter((el): el is HTMLElement => el instanceof HTMLElement && el.offsetParent !== null) : [];
             icons.forEach((icon, i) => {
-                const finalScale = Number(isMobile ? icon.dataset.scaleMobile : icon.dataset.scale);
+                const finalScale = Number(isPhone ? icon.dataset.scaleMobile : icon.dataset.scale);
                 const delay = Number(icon.dataset.delay) || (i * 0.05);
                 // Each icon becomes a layer at its FINAL scale (hidden, off to the right) one frame
                 // before it flies, and keeps that layer while its stage is shown: the shadowed art is
@@ -230,6 +233,7 @@ const StageIcons = memo(function StageIcons({ node, stage, visible }: { node: Pr
             {node.images.map((image, index) => {
                 const cfg = image.config;
                 const mobile = cfg.mobileOverride;
+                const phone = PHONE_ICONS[image.src];
                 return (
                     <div
                         key={`${node.id}-img-${index}`}
@@ -243,15 +247,30 @@ const StageIcons = memo(function StageIcons({ node, stage, visible }: { node: Pr
                             '--right': `${cfg.right}%`,
                             '--top-mobile': `${mobile?.top ?? cfg.top}%`,
                             '--right-mobile': `${mobile?.right ?? cfg.right}%`,
+                            '--ratio': `${image.width} / ${image.height}`,
+                            // Phone art: the baked image around the icon, as fractions of the icon's box
+                            '--phone-left': `${(-phone.left / image.width) * 100}%`,
+                            '--phone-top': `${(-phone.top / image.height) * 100}%`,
+                            '--phone-width': `${(phone.width / image.width) * 100}%`,
+                            '--phone-height': `${(phone.height / image.height) * 100}%`,
                             zIndex: cfg.zIndex !== undefined ? cfg.zIndex : Math.floor(cfg.scale * 10),
                         } as React.CSSProperties}
                     >
+                        {/* Desktop/tablet: the icon with its live drop-shadow filter */}
                         <Image
                             src={image.src}
                             alt={image.alt}
                             width={image.width}
                             height={image.height}
                             className={styles.fixedImageArt}
+                        />
+                        {/* Phones: the same icon with the shadow baked in (no filter to compute) */}
+                        <Image
+                            src={phone.src}
+                            alt={image.alt}
+                            width={phone.width}
+                            height={phone.height}
+                            className={styles.fixedImagePhone}
                         />
                     </div>
                 );

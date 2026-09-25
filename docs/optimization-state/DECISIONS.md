@@ -239,3 +239,17 @@ D-1…D-4 were settled in the structured Technical Realignment Interview on 2026
 3. The off-screen mechanism now also releases `will-change` layers (`[data-offscreen] * { will-change: auto !important }`). The observer margin widens to one full screen so layers come back before a section is visible. Sections marked: hero, Manifesto, Selected Works, Capabilities, Process, Resume, Contact, footer.
 **Result:** page-wide layers at a phone stage change 94 → 68. Desktop raster 1278–1357 → 1081 ms/s (−15–20 %). The phone emulation stays at its ~46–49 fps floor, which is this box's software GPU compositing 3×-density frames, so real-device gains can't be measured here. Stage states, icon sets, hover, pin geometry and screenshots (icons crisp at rest) are identical to before.
 **Approved by user:** requested by the owner 2026-09-23; to be checked on a real phone. A real-device trace would guide the next step.
+
+## D-26 — Phones: flat word reveal and baked icon shadows in ProcessSection
+
+**Context:** On 2026-09-25 the owner reported Process was "still heavy on my phone" after D-25 and chose two of the three phone-only options: "do the Word reveal, Baked icon shadows (icons are already fewer on mobile, so dont change this one)".
+**Decision (phones ≤ 767 px only; desktop and tablet unchanged):**
+1. Description words rise 30 px and fade in with the same duration (0.6 s), stagger (0.015 s), delay (0.1 s) and ease (power3.out), but without the 3D flip (no `rotateX(-60deg)`). There is no 3D rendering context for the words on phones.
+2. Icons show pre-rendered art with the phone shadow baked in instead of a live `drop-shadow` filter. `scripts/bake-process-shadows.mjs` renders the phone filter (5/12/14 px + 1 px edge, at the 9vh-tall icon of an 844 px phone) with Chromium's canvas — the same Skia filter code as CSS — into `public/images/Process/phone/<stage>/<name>.png`, scaled to each source's resolution with transparent padding. It also writes `src/data/processPhoneIcons.ts` (size + padding). The icon wrapper keeps the icon's own box (`aspect-ratio`), and the baked image is laid over it, offset by its padding, so the icon pixels land where the filtered icon's did. Desktop keeps the original image with its live filter; each breakpoint's image is `display: none` on the other, so only one loads.
+**Verification:**
+- The probe is identical to the 2.5 baseline on all 6 stages × desktop/phone (active title, colour, description, icon set per breakpoint) and all interactions.
+- Phone words: mid-animation `translate(0px, 30px)` with no rotateX; at rest all 24 are visible. Desktop keeps `rotateX(-60deg)` mid-animation.
+- Baked vs live filter on phone screenshots: icons on the same pixels, and shadows the same shape and placement (mean difference 0.65–2.34/255; the baked shadow is marginally softer in places).
+- The phone emulation stays at this box's ~47 fps software-GPU floor (raster 301–324 vs 326–345 ms/s), so the real-device effect is for the owner to judge.
+**Cost:** +2.4 KB gz JS (the phone-icon size map), +6.4 MB of source PNGs in the repo (phones get them as AVIF/WebP through next/image).
+**Approved by user:** yes — the owner's choice 2026-09-25; the result is to be checked on their phone.
