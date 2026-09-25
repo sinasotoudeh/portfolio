@@ -45,3 +45,16 @@ export const FRAMER_SPRING_BOUNCE_05 = { ease: springEase(15.897, 0.5, 0.8), dur
 // Reduced motion: ported animations become instant (duration 0).
 export const prefersReducedMotion = () =>
     typeof window !== 'undefined' && window.matchMedia('(prefers-reduced-motion: reduce)').matches;
+
+// framer's default tween for a value given only a delay: 0.3 s on this curve.
+export const FRAMER_DEFAULT_TWEEN = { ease: cubicBezier(0.25, 0.1, 0.35, 1), duration: 0.3 };
+
+// Springs framer resolved for the Resume section (fitted to / stepped with framer's own generator;
+// duration = when framer declares the spring finished):
+// { type: 'spring', bounce: 0.4, duration: 0.8 } → ω0 13.8, ζ 0.6.
+export const FRAMER_SPRING_BOUNCE_04_08 = { ease: springEase(13.8, 0.6, 0.8), duration: 0.8 };
+// layoutId transitions: stiffness 400 / damping 35 (ω0 20, ζ 0.875) and 500 / 40 (ω0 22.361, ζ 0.894).
+export const FRAMER_SPRING_400_35 = { ease: springEase(20, 0.875, 0.555), duration: 0.555 };
+export const FRAMER_SPRING_500_40 = { ease: springEase(22.361, 0.8944, 0.504), duration: 0.504 };
+// framer's default transform spring (stiffness 500, damping 25) over a short (8 px) move.
+export const FRAMER_SPRING_500_25_SHORT = { ease: springEase(22.361, 0.559, 0.245), duration: 0.245 };

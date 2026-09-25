@@ -1,10 +1,11 @@
 'use client';
 
-import React, { useState, useEffect, useRef, useCallback, type ReactNode, type RefObject } from 'react';
+import React, { useState, useEffect, useRef, useCallback, type ReactNode } from 'react';
 import Image from 'next/image';
 import { useLenis } from 'lenis/react';
 import { gsap, useGSAP } from '@/lib/motion/gsap';
 import { FRAMER_EASE_IN_OUT, FRAMER_EASE_OUT, FRAMER_SPRING_BOUNCE_05, prefersReducedMotion } from '@/lib/motion/eases';
+import { usePresenceSwap, type PresenceStates } from '@/lib/motion/usePresenceSwap';
 import { PROJECTS_DATA, Annotation } from '@/data/workminimal-projects';
 import { WORK_MOBILE_QUERY, projectColor } from './workTheme';
 import styles from './WorkMinimal.module.css';
@@ -267,14 +268,7 @@ export default function WorkDesktop() {
 // Ported framer animations are instant with reduced motion.
 const motionDuration = (seconds: number) => (prefersReducedMotion() ? 0 : seconds);
 
-// Enter/exit states of the two swapping layers. `style` is the first paint (server HTML and each
-// new mount) and matches `vars`, the state GSAP animates from on enter and back to on exit.
-interface PresenceStates {
-    from: { vars: gsap.TweenVars; style: React.CSSProperties };
-    to: gsap.TweenVars;
-    duration: number;
-}
-
+// Enter/exit states of the two swapping layers (usePresenceSwap: framer AnimatePresence mode="wait").
 const BG_PRESENCE: PresenceStates = {
     from: {
         vars: { opacity: 0, filter: 'blur(20px)', scale: 1.05 },
@@ -292,53 +286,6 @@ const IMAGE_PRESENCE: PresenceStates = {
     to: { opacity: 1, scale: 1 },
     duration: 0.5,
 };
-
-// Shows one keyed layer at a time: when `target` changes, the shown layer animates out, then the
-// target is shown and animates in (also on first mount). A change during the exit only retargets
-// the swap; returning to the shown key during the exit brings it back from where it is.
-function usePresenceSwap(target: number, ref: RefObject<HTMLDivElement | null>, presence: PresenceStates): number {
-    const [shown, setShown] = useState(target);
-    const latestTarget = useRef(target);
-    const exiting = useRef(false);
-
-    // Enter: every newly shown layer (a new keyed element) animates in from its first paint.
-    useGSAP(() => {
-        const el = ref.current;
-        if (!el) return;
-        gsap.fromTo(el, presence.from.vars, {
-            ...presence.to,
-            duration: motionDuration(presence.duration),
-            ease: FRAMER_EASE_OUT,
-        });
-    }, { dependencies: [shown] });
-
-    useEffect(() => {
-        latestTarget.current = target;
-        const el = ref.current;
-        if (!el) return;
-        if (target === shown) {
-            if (exiting.current) {
-                exiting.current = false;
-                gsap.to(el, { ...presence.to, duration: motionDuration(presence.duration), ease: FRAMER_EASE_OUT, overwrite: true });
-            }
-            return;
-        }
-        if (exiting.current) return;
-        exiting.current = true;
-        gsap.to(el, {
-            ...presence.from.vars,
-            duration: motionDuration(presence.duration),
-            ease: FRAMER_EASE_OUT,
-            overwrite: true,
-            onComplete: () => {
-                exiting.current = false;
-                setShown(latestTarget.current);
-            },
-        });
-    }, [target, shown, ref, presence]);
-
-    return shown;
-}
 
 // The active project's description: expands from height 0 when mounted/opened, collapses when
 // closed and then reports back so the list unmounts it (framer AnimatePresence, 0.4 s).
